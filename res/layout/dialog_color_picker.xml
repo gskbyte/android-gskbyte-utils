@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    
+    android:minWidth="280dip"
+    >
+    <LinearLayout 
+        android:layout_width="80dip"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_margin="4dip">
+	    <ImageView android:id="@+id/image"
+	        android:layout_width="80dip"
+	        android:layout_height="80dip"
+            android:layout_marginTop="10dip"
+	        android:src="@drawable/ic_launcher"
+	        android:scaleType="centerInside"/>
+	    <FrameLayout 
+            android:layout_width="50dip"
+            android:layout_height="50dip">
+            <ImageView 
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/color_preview_bg"/>
+            <ImageView android:id="@+id/colorPreview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+            <ImageView android:id="@+id/colorPreview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/color_preview_frame"/>
+	    </FrameLayout>
+    </LinearLayout>
+    
+    <TableLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="5dip"
+        android:paddingRight="5dip"
+        android:paddingTop="5dip"
+        android:paddingBottom="10dip">
+        <TableRow 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="10"
+            android:layout_marginTop="10dp">
+            <TextView 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:gravity="right"
+                android:text="R"/>
+	        <SeekBar android:id="@+id/red"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:max="255"
+                android:layout_weight="8"/>
+	        <TextView android:id="@+id/redValue"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:layout_weight="1"
+	            android:gravity="center"
+	            android:text="255"/>
+        </TableRow>
+        <TableRow 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="10"
+            android:layout_marginTop="10dp">
+	        <TextView 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:gravity="right"
+                android:text="G"/>
+	        <SeekBar android:id="@+id/green"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:max="255"
+                android:layout_weight="8"/>
+            <TextView android:id="@+id/greenValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="255"/>
+        </TableRow>
+        <TableRow 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="10"
+            android:layout_marginTop="10dp">
+            <TextView 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:gravity="right"
+                android:text="B"/>
+	        <SeekBar android:id="@+id/blue"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:max="255"
+                android:layout_weight="8"/>
+            <TextView android:id="@+id/blueValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="255"/>
+        </TableRow>
+        <TableRow 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="10"
+            android:layout_marginTop="10dp">
+            <TextView 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:gravity="right"
+                android:text="A"/>
+	        <SeekBar android:id="@+id/alpha"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:max="255"
+                android:layout_weight="9"/>
+            <TextView android:id="@+id/alphaValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="255"/>
+        </TableRow>
+    </TableLayout>
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="5dip"
+        android:paddingRight="5dip"
+        android:paddingTop="5dip"
+        android:paddingBottom="10dip">
+    </LinearLayout>
+</LinearLayout>
