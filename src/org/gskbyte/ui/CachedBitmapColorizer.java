@@ -11,11 +11,21 @@ import android.graphics.Color;
 import android.support.v4.util.LruCache;
 
 public final class CachedBitmapColorizer extends BitmapColorizer
-{        
-    // Max size is 20% of the memory size
-    private final LruCache<Integer, Bitmap> cache;
+{
+    private final class BitmapCache extends LruCache<Integer, Bitmap>
+    {
+        public BitmapCache(int maxSize)
+        { super(maxSize); }
+        
+        protected int sizeOf(Integer key, Bitmap value)
+        { return bitmapByteCount; }
+        
+        protected void entryRemoved(boolean evicted, Integer key, Bitmap oldValue, Bitmap newValue)
+        { Logger.info(getClass(), "Entry removed from cache, "+cache.size()/bitmapByteCount+" elements use " + cache.size()/1024 +"/" + maxCacheSize/1024 + "KB used"); }
+    }
     
-    // Default max sizes
+    private final BitmapCache cache;
+    
     @Getter
     private final int maxCacheSize;
     
@@ -31,6 +41,8 @@ public final class CachedBitmapColorizer extends BitmapColorizer
     {
         super(context, bitmap, bitmapConfig);
         int bbc = baseBitmap.getWidth() * baseBitmap.getHeight();
+        
+        // Computation is done "by hand" becase .getByteCount() is available only from API 12
         switch(bitmapConfig) {
         case ALPHA_8: bbc*= 1; break;
         case ARGB_4444: bbc*= 2; break;
@@ -41,19 +53,6 @@ public final class CachedBitmapColorizer extends BitmapColorizer
         maxCacheSize    = (int) (Runtime.getRuntime().maxMemory() * memoryRate);
         
         cache = new BitmapCache(maxCacheSize);
-    }
-
-    private final class BitmapCache extends LruCache<Integer, Bitmap>
-    {
-        public BitmapCache(int maxSize)
-        { super(maxSize); }
-        
-        protected int sizeOf(Integer key, Bitmap value)
-        { return bitmapByteCount; }
-        
-        protected void entryRemoved(boolean evicted, Integer key, Bitmap oldValue, Bitmap newValue)
-        { Logger.info(getClass(), "Entry removed from cache, "+cache.size()/bitmapByteCount+" elements use " + cache.size()/1024 +"/" + maxCacheSize/1024 + "KB used"); }
-
     }
     
     public Bitmap colorize(int r, int g, int b, int bgcolor)

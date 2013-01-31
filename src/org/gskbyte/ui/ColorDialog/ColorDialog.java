@@ -32,8 +32,12 @@ public final class ColorDialog extends AlertDialog implements
     private int currentColor;
     private final BitmapColorizer colorPreviewColorizer, imagePreviewColorizer;
     
+    public static interface ColorDialogListener
+    {
+        public void onColorChosen(ColorDialog dialog, int color);
+    }
     @Getter @Setter
-    private OnColorChangedListener listener;
+    private ColorDialogListener listener;
 
     public ColorDialog(Context context, boolean useAlpha, int color)
     {
@@ -98,7 +102,7 @@ public final class ColorDialog extends AlertDialog implements
     public void onClick(final DialogInterface dialog, final int which)
     {
         if (which == DialogInterface.BUTTON_POSITIVE) {
-            listener.onColorChanged(currentColor);
+            listener.onColorChosen(this, currentColor);
         }
         dismiss();
     }

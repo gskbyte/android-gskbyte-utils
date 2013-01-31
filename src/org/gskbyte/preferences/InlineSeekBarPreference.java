@@ -20,21 +20,21 @@ public class InlineSeekBarPreference extends Preference implements
         OnSeekBarChangeListener
 {
 
-    private final String TAG = getClass().getName();
+    private final String TAG = InlineSeekBarPreference.class.getSimpleName();
 
     private static final String NS_ANDROID = "http://schemas.android.com/apk/res/android";
     private static final String NS_GSKBYTE = "http://www.gskbyte.net/";
     private static final int DEFAULT_VALUE = 50;
 
-    private int mMaxValue = 100;
-    private int mMinValue = 0;
-    private int mInterval = 1;
-    private int mCurrentValue;
-    private String mUnitsLeft = "";
-    private String mUnitsRight = "";
-    private SeekBar mSeekBar;
+    private int maxValue = 100;
+    private int minValue = 0;
+    private int interval = 1;
+    private int currentValue;
+    private String unitsLeft = "";
+    private String unitsRight = "";
+    private SeekBar seekBar;
 
-    private TextView mStatusText;
+    private TextView statusText;
 
     public InlineSeekBarPreference(Context context, AttributeSet attrs)
     {
@@ -52,25 +52,25 @@ public class InlineSeekBarPreference extends Preference implements
     private void initPreference(Context context, AttributeSet attrs)
     {
         setValuesFromXml(attrs);
-        mSeekBar = new SeekBar(context, attrs);
-        mSeekBar.setMax(mMaxValue - mMinValue);
-        mSeekBar.setOnSeekBarChangeListener(this);
+        seekBar = new SeekBar(context, attrs);
+        seekBar.setMax(maxValue - minValue);
+        seekBar.setOnSeekBarChangeListener(this);
     }
 
     private void setValuesFromXml(AttributeSet attrs)
     {
-        mMaxValue = attrs.getAttributeIntValue(NS_ANDROID, "max", 100);
-        mMinValue = attrs.getAttributeIntValue(NS_GSKBYTE, "min", 0);
+        maxValue = attrs.getAttributeIntValue(NS_ANDROID, "max", 100);
+        minValue = attrs.getAttributeIntValue(NS_GSKBYTE, "min", 0);
 
-        mUnitsLeft = getAttributeStringValue(attrs, NS_GSKBYTE, "unitsLeft",  "");
+        unitsLeft = getAttributeStringValue(attrs, NS_GSKBYTE, "unitsLeft",  "");
         String units = getAttributeStringValue(attrs, NS_GSKBYTE, "units", "");
-        mUnitsRight = getAttributeStringValue(attrs, NS_GSKBYTE, "unitsRight", units);
+        unitsRight = getAttributeStringValue(attrs, NS_GSKBYTE, "unitsRight", units);
 
         try {
             String newInterval = attrs.getAttributeValue(NS_GSKBYTE,
                     "interval");
             if (newInterval != null)
-                mInterval = Integer.parseInt(newInterval);
+                interval = Integer.parseInt(newInterval);
         } catch (Exception e) {
             Log.e(TAG, "Invalid interval value", e);
         }
@@ -114,19 +114,19 @@ public class InlineSeekBarPreference extends Preference implements
 
         try {
             // move our seekbar to the new view we've been given
-            ViewParent oldContainer = mSeekBar.getParent();
+            ViewParent oldContainer = seekBar.getParent();
             ViewGroup newContainer = (ViewGroup) view
                     .findViewById(R.id.seekBarPrefBarContainer);
 
             if (oldContainer != newContainer) {
                 // remove the seekbar from the old view
                 if (oldContainer != null) {
-                    ((ViewGroup) oldContainer).removeView(mSeekBar);
+                    ((ViewGroup) oldContainer).removeView(seekBar);
                 }
                 // remove the existing seekbar (there may not be one) and add
                 // ours
                 newContainer.removeAllViews();
-                newContainer.addView(mSeekBar,
+                newContainer.addView(seekBar,
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
             }
@@ -148,19 +148,19 @@ public class InlineSeekBarPreference extends Preference implements
         try {
             RelativeLayout layout = (RelativeLayout) view;
 
-            mStatusText = (TextView) layout.findViewById(R.id.seekBarPrefValue);
-            mStatusText.setText(String.valueOf(mCurrentValue));
-            mStatusText.setMinimumWidth(30);
+            statusText = (TextView) layout.findViewById(R.id.seekBarPrefValue);
+            statusText.setText(String.valueOf(currentValue));
+            statusText.setMinimumWidth(30);
 
-            mSeekBar.setProgress(mCurrentValue - mMinValue);
+            seekBar.setProgress(currentValue - minValue);
 
-            TextView unitsRight = (TextView) layout
+            TextView unitsTextRight = (TextView) layout
                     .findViewById(R.id.seekBarPrefUnitsRight);
-            unitsRight.setText(mUnitsRight);
+            unitsTextRight.setText(unitsRight);
 
-            TextView unitsLeft = (TextView) layout
+            TextView unitsTextLeft = (TextView) layout
                     .findViewById(R.id.seekBarPrefUnitsLeft);
-            unitsLeft.setText(mUnitsLeft);
+            unitsTextLeft.setText(unitsLeft);
 
         } catch (Exception e) {
             Log.e(TAG, "Error updating seek bar preference", e);
@@ -172,24 +172,24 @@ public class InlineSeekBarPreference extends Preference implements
     public void onProgressChanged(SeekBar seekBar, int progress,
             boolean fromUser)
     {
-        int newValue = progress + mMinValue;
+        int newValue = progress + minValue;
 
-        if (newValue > mMaxValue)
-            newValue = mMaxValue;
-        else if (newValue < mMinValue)
-            newValue = mMinValue;
-        else if (mInterval != 1 && newValue % mInterval != 0)
-            newValue = Math.round(((float) newValue) / mInterval) * mInterval;
+        if (newValue > maxValue)
+            newValue = maxValue;
+        else if (newValue < minValue)
+            newValue = minValue;
+        else if (interval != 1 && newValue % interval != 0)
+            newValue = Math.round(((float) newValue) / interval) * interval;
 
         // change rejected, revert to the previous value
         if (!callChangeListener(newValue)) {
-            seekBar.setProgress(mCurrentValue - mMinValue);
+            seekBar.setProgress(currentValue - minValue);
             return;
         }
 
         // change accepted, store it
-        mCurrentValue = newValue;
-        mStatusText.setText(String.valueOf(newValue));
+        currentValue = newValue;
+        statusText.setText(String.valueOf(newValue));
         persistInt(newValue);
 
     }
@@ -217,7 +217,7 @@ public class InlineSeekBarPreference extends Preference implements
     {
 
         if (restoreValue) {
-            mCurrentValue = getPersistedInt(mCurrentValue);
+            currentValue = getPersistedInt(currentValue);
         } else {
             int temp = 0;
             try {
@@ -227,7 +227,7 @@ public class InlineSeekBarPreference extends Preference implements
             }
 
             persistInt(temp);
-            mCurrentValue = temp;
+            currentValue = temp;
         }
 
     }
