@@ -1,7 +1,5 @@
 package org.gskbyte.util;
 
-import org.acra.ACRA;
-
 import android.util.SparseArray;
 
 public final class Logger
@@ -20,7 +18,7 @@ public final class Logger
     }
     public static void info(Class<?> clazz, String message)
     { info(clazz.getSimpleName(), message); }
-    
+
     public static void debug(String tag, String message)
     {
         if(LOG_INFO) {
@@ -29,17 +27,19 @@ public final class Logger
     }
     public static void debug(Class<?> clazz, String message)
     { debug(clazz.getSimpleName(), message); }
-
+    
     public static void error(String tag, String message)
-    { android.util.Log.e(tag, message); }
+    {
+        if(LOG_INFO) {
+            android.util.Log.e(tag, message);
+        }
+    }
     public static void error(Class<?> clazz, String message)
     { error(clazz.getSimpleName(), message); }
-    
-    
+
     public static void except(String tag, Exception exception)
     {
-        android.util.Log.e(tag, exception.getLocalizedMessage());
-        ACRA.getErrorReporter().handleSilentException(exception);
+        android.util.Log.e(tag, ""+exception.getMessage());
     }
     public static void except(Class<?> clazz, Exception exception)
     { except(clazz.getSimpleName(), exception); }
