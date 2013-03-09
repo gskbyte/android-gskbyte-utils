@@ -41,3 +41,8 @@ Usage
 
 The project itself is an Android Library Project, to use it within your project, just import is as a library via right click -> Properties -> Android -> Add... (in the library section)
 
+Demo Project
+------------
+
+There is no demo project yet, it will be added soon!
+
