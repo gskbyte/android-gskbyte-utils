@@ -4,7 +4,7 @@ import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Listenable<ListenerClass>
+public abstract class Listenable<ListenerClass>
 {
 
 protected final CopyOnWriteArrayList< WeakReference<ListenerClass> > listeners = new CopyOnWriteArrayList< WeakReference<ListenerClass> >();

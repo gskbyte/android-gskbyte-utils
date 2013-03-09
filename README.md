@@ -12,6 +12,12 @@ Included components
 
 - Double sparse array: a map with integer keys, with fast access per key but also per value.
 
+### Bitmap stuff ###
+
+- BitmapManager class: manages bitmaps referenced by their path and depending on their location (resources, assets, private directory or external directory). Loads images using lazy load.
+- ReferencedBitmaps: class used to reference subsets of a BitmapManager, allowing to have just a BitmapManager per application.
+- IndexedBitmaps: same functionality as ReferencedBitmaps, allowing to refer to bitmaps by index.
+
 ### Views / Interface components ###
 
 - BitmapColorizer: useful class to colorize a Bitmap. Simplifies getting lots of colorized copies of an android.graphics.Bitmap object. Supports different color configurations and transparency.
@@ -31,6 +37,10 @@ Included components
 - DialogSeekBarPreference: an integer preference using a SeekBar. Supports minimum, maximum, suffix and some description text.
 - InlineSeekBarPreference: an integer preference using a SeekBar, embedded in the preference, without opening a dialog.
 - ColorPreference: based on the ColorDialog, not yet finished!!!
+
+### Listener ###
+
+- Listenable class: thread-safe abstract class that includes methods to manage listeners using weak references.
 
 ### Other utilities ###
 
