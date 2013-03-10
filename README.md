@@ -3,17 +3,20 @@ AndroidUtils
 
 Some utility views, utility classes, fragments and Activities for Android projects. It is intended to be used as an Android Library Project on Eclipse.
 
-This is a not-yet-finished project and will be improved while I develop new stuff. I hope it is somehow useful.
+This is a not-yet-finished project and will be improved while I develop new stuff. I hope it is somehow useful for you!
 
 Included components
 -------------------
 
 ### Collections ###
 
-- Double sparse array: a map with integer keys, with fast access per key but also per value.
+- Double sparse array: a map with integer keys, with fast access by key but also by value.
 
 ### Bitmap stuff ###
 
+- LRUBitmapCache: an implementation of an LRU cache especially designed for Bitmaps.
+- BitmapColorizer: utility class to get colorized copies of a given Bitmap.
+    - CachedBitmapColorizer: utilizes an LRU cache to improve access speed.
 - BitmapManager class: manages bitmaps referenced by their path and depending on their location (resources, assets, private directory or external directory). Loads images using lazy load.
 - ReferencedBitmaps: class used to reference subsets of a BitmapManager, allowing to have just a BitmapManager per application.
 - IndexedBitmaps: same functionality as ReferencedBitmaps, allowing to refer to bitmaps by index.
@@ -42,14 +45,24 @@ Included components
 
 - Listenable class: thread-safe abstract class that includes methods to manage listeners using weak references.
 
-### Other utilities ###
+### Utility classes ###
 
 - Logger: wraps the android.util.Log class, while giving some extra methods.
+- IOUtils: includes methods to copy and move files from different locations, as well as some other small things.
+- XMLUtils: utility class to have a more direct and faster access to DOM XML objects.
 
 Usage
 -----
 
 The project itself is an Android Library Project, to use it within your project, just import is as a library via right click -> Properties -> Android -> Add... (in the library section)
+
+License
+-------
+
+This project is released under the LGPLv3 license. Basically, it implies:
+1. If you make changes to any component, you must make your changes public.
+2. If you use use any component in an own project, please include a reference this original project.
+3. You can create closed-source using this project, just pay attention to point 2 :)
 
 Demo Project
 ------------
