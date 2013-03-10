@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (c) 2013 Jose Alcalá Correa.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the GNU Lesser Public License v3.0
+  which accompanies this distribution, and is available at
+  http://www.gnu.org/licenses/lgpl-3.0.txt
+  
+  Contributors:
+      Jose Alcalá Correa - initial API and implementation
+-->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -18,7 +28,6 @@
 	        android:layout_width="80dip"
 	        android:layout_height="80dip"
             android:layout_marginTop="10dip"
-	        android:src="@drawable/ic_launcher"
 	        android:scaleType="centerInside"/>
 	    <FrameLayout 
             android:layout_width="50dip"

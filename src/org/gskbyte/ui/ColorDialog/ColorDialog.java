@@ -1,10 +1,20 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Jose Alcalá Correa.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-3.0.txt
+ * 
+ * Contributors:
+ *     Jose Alcalá Correa - initial API and implementation
+ ******************************************************************************/
 package org.gskbyte.ui.ColorDialog;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import org.gskbyte.R;
-import org.gskbyte.ui.BitmapColorizer;
+import org.gskbyte.bitmap.BitmapColorizer;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -59,7 +69,7 @@ public final class ColorDialog extends AlertDialog implements
 
         this.colorPreview = (ImageView) root.findViewById(R.id.colorPreview);
         Bitmap colorBitmap = BitmapFactory.decodeResource(res, R.drawable.color_preview_fg);
-        this.colorPreviewColorizer = new BitmapColorizer(context, colorBitmap, Bitmap.Config.ARGB_8888);
+        this.colorPreviewColorizer = new BitmapColorizer(colorBitmap, Bitmap.Config.ARGB_8888);
         
         imagePreview = (ImageView) root.findViewById(R.id.image);
         if(imageBitmap == null) {
@@ -67,7 +77,7 @@ public final class ColorDialog extends AlertDialog implements
             this.imagePreviewColorizer = null;
         } else {
             imagePreview.setImageBitmap(imageBitmap);
-            this.imagePreviewColorizer = new BitmapColorizer(context, imageBitmap, Bitmap.Config.ARGB_8888);
+            this.imagePreviewColorizer = new BitmapColorizer(imageBitmap, Bitmap.Config.ARGB_8888);
         }
         
         redSeek = (SeekBar) root.findViewById(R.id.red);

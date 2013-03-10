@@ -1,9 +1,20 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Jose Alcalá Correa.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-3.0.txt
+ * 
+ * Contributors:
+ *     Jose Alcalá Correa - initial API and implementation
+ ******************************************************************************/
 package org.gskbyte.bitmap;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.gskbyte.util.IOUtils;
 import org.gskbyte.util.Logger;
 
 import android.content.Context;
@@ -12,7 +23,10 @@ import android.graphics.Bitmap;
 /**
  * BitmapManager class
  * 
- * A bitmap manager stores bitmaps and allows referencing them using their path
+ * A bitmap manager stores bitmaps and allows referencing them using their path.
+ * The bitmaps are loaded only when they are requested for the first time.
+ * 
+ * TODO: add support for the BitmapCache in order to stabilize memory usage.
  * */
 
 public class BitmapManager
@@ -66,7 +80,7 @@ public void clear()
  * */
 public void addAssetPath(String path)
 {
-    references.put(path, new BitmapReference(BitmapReference.LOCATION_ASSETS, path));
+    references.put(path, new BitmapReference(IOUtils.LOCATION_ASSETS, path));
 }
 
 /**
@@ -75,7 +89,7 @@ public void addAssetPath(String path)
  * */
 public void addAssetUpdatablePath(String path)
 {
-    references.put(path, new BitmapReference(BitmapReference.LOCATION_ASSETS_UPDATABLE, path));
+    references.put(path, new BitmapReference(IOUtils.LOCATION_ASSETS_UPDATABLE, path));
 }
 
 /**
@@ -84,7 +98,7 @@ public void addAssetUpdatablePath(String path)
  * */
 public void addAssetPrivateUpdatablePath(String path)
 {
-    references.put(path, new BitmapReference(BitmapReference.LOCATION_ASSETS_UPDATABLE_PRIVATE, path));
+    references.put(path, new BitmapReference(IOUtils.LOCATION_ASSETS_UPDATABLE_PRIVATE, path));
 }
 
 /**
@@ -93,7 +107,7 @@ public void addAssetPrivateUpdatablePath(String path)
  * */
 public void addPrivatePath(String path)
 {
-    references.put(path, new BitmapReference(BitmapReference.LOCATION_PRIVATE, path));
+    references.put(path, new BitmapReference(IOUtils.LOCATION_PRIVATE, path));
 }
 
 /**
@@ -102,7 +116,7 @@ public void addPrivatePath(String path)
  * */
 public void addForeignPath(String path)
 {
-    references.put(path, new BitmapReference(BitmapReference.LOCATION_FOREIGN, path));
+    references.put(path, new BitmapReference(IOUtils.LOCATION_FOREIGN, path));
 }
 
 /**

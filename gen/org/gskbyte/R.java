@@ -936,7 +936,6 @@ containing a value of this type.
         public static int color_preview_bg=0x7f02006f;
         public static int color_preview_fg=0x7f020070;
         public static int color_preview_frame=0x7f020071;
-        public static int ic_launcher=0x7f020072;
     }
     public static final class id {
         public static int abs__action_bar=0x7f040022;
@@ -1087,24 +1086,8 @@ containing a value of this type.
         /**  Description of a share target (both in the list of such or the default share button) in a ShareActionProvider (share UI). [CHAR LIMIT=NONE] 
          */
         public static int abs__shareactionprovider_share_with_application=0x7f090009;
-        public static int app_name=0x7f09000f;
     }
     public static final class style {
-        /** 
-        Base application theme, dependent on API level. This theme is replaced
-        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
-    
-
-            Theme customizations available in newer API levels can go in
-            res/values-vXX/styles.xml, while customizations related to
-            backward-compatibility can go here.
-        
-         */
-        public static int AppBaseTheme=0x7f0a0059;
-        /**  Application theme. 
- All customizations that are NOT specific to a particular API-level can go here. 
-         */
-        public static int AppTheme=0x7f0a005a;
         public static int DialogWindowTitle_Sherlock=0x7f0a0036;
         public static int DialogWindowTitle_Sherlock_Light=0x7f0a0037;
         public static int Sherlock___TextAppearance_Small=0x7f0a004a;
