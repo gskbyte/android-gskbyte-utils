@@ -234,6 +234,14 @@ containing a value of this type.
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
          */
         public static int expandActivityOverflowButtonDrawable=0x7f01005e;
+        /** <p>Must be a string value, using '\\;' to escape characters such as '\\n' or '\\uxxxx' for a unicode character.
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+         */
+        public static int font=0x7f010063;
         /**  Default background for the menu header. 
          <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
@@ -3364,5 +3372,59 @@ containing a value of this type.
           @attr name android:android_focusable
         */
         public static final int SherlockView_android_focusable = 0;
+        /** Attributes that can be used with a org_gskbyte_view_FontableButton.
+           <p>Includes the following attributes:</p>
+           <table>
+           <colgroup align="left" />
+           <colgroup align="left" />
+           <tr><th>Attribute</th><th>Description</th></tr>
+           <tr><td><code>{@link #org_gskbyte_view_FontableButton_font org.gskbyte:font}</code></td><td></td></tr>
+           </table>
+           @see #org_gskbyte_view_FontableButton_font
+         */
+        public static final int[] org_gskbyte_view_FontableButton = {
+            0x7f010063
+        };
+        /**
+          <p>This symbol is the offset where the {@link org.gskbyte.R.attr#font}
+          attribute's value can be found in the {@link #org_gskbyte_view_FontableButton} array.
+
+
+          <p>Must be a string value, using '\\;' to escape characters such as '\\n' or '\\uxxxx' for a unicode character.
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name android:font
+        */
+        public static final int org_gskbyte_view_FontableButton_font = 0;
+        /** Attributes that can be used with a org_gskbyte_view_FontableTextView.
+           <p>Includes the following attributes:</p>
+           <table>
+           <colgroup align="left" />
+           <colgroup align="left" />
+           <tr><th>Attribute</th><th>Description</th></tr>
+           <tr><td><code>{@link #org_gskbyte_view_FontableTextView_font org.gskbyte:font}</code></td><td></td></tr>
+           </table>
+           @see #org_gskbyte_view_FontableTextView_font
+         */
+        public static final int[] org_gskbyte_view_FontableTextView = {
+            0x7f010063
+        };
+        /**
+          <p>This symbol is the offset where the {@link org.gskbyte.R.attr#font}
+          attribute's value can be found in the {@link #org_gskbyte_view_FontableTextView} array.
+
+
+          <p>Must be a string value, using '\\;' to escape characters such as '\\n' or '\\uxxxx' for a unicode character.
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name android:font
+        */
+        public static final int org_gskbyte_view_FontableTextView_font = 0;
     };
 }
