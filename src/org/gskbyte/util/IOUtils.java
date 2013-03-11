@@ -52,6 +52,11 @@ public static final int LOCATION_ASSETS_UPDATABLE =         LOCATION_ASSETS | LO
 public static final int LOCATION_ASSETS_UPDATABLE_PRIVATE = LOCATION_ASSETS | LOCATION_PRIVATE;
 public static final int LOCATION_FOREIGN =                  LOCATION_PRIVATE | LOCATION_EXTERNAL;
 
+/**
+ * Utility method to print a location integer in a pretty way.
+ * @param location The location for which to have a nice String.
+ * @return A String representing the passed location.
+ * */
 public static String StringForLocation(int location)
 {
     String ret = "";
@@ -89,9 +94,9 @@ public static String InputStreamToString( InputStream is ) throws IOException
  * @param location Location, can not be a combination of the default values.
  * @param path The path of the file.
  * @param context The context needed to access files.
+ * @throws IllegalArgumentException If the location is invalid
  * */
 public static boolean ExistsFile(int location, String path, Context context)
-throws IllegalArgumentException
 {
     File f = null;
     switch(location) {
@@ -106,8 +111,47 @@ throws IllegalArgumentException
         f = context.getFileStreamPath(path);
         return f.exists();
     case LOCATION_EXTERNAL:
-        f = new File(Environment.getExternalStoragePublicDirectory(null), path);
+        f = new File(Environment.getExternalStorageDirectory(), path);
         return f.exists();
+    }
+    
+    throw new IllegalArgumentException("Invalid location was supplied: "+StringForLocation(location));
+}
+
+/**
+ * Deletes a file on writable space.
+ * @param location Location, can be only LOCATION_PRIVATE and LOCATION_EXTERNAL
+ * @param path The path of the file.
+ * @param context The context needed to access files.
+ * @throws IllegalArgumentException If the location is invalid
+ * */
+public static boolean DeleteFile(int location, String path, Context context)
+{
+    switch(location) {
+    case LOCATION_PRIVATE:
+        return context.deleteFile(path);
+    case LOCATION_EXTERNAL:
+        File f = new File(Environment.getExternalStorageDirectory(), path);
+        return f.delete();
+    }
+    
+    throw new IllegalArgumentException("Invalid location was supplied: "+StringForLocation(location));
+}
+
+/**
+ * Gets a file given a path.
+ * @param location Location, can be only LOCATION_PRIVATE and LOCATION_EXTERNAL
+ * @param path The path of the file.
+ * @param context The context needed to access files.
+ * @throws IllegalArgumentException If the location is invalid
+ * */
+public static File GetFile(int location, String path, Context context)
+{
+    switch(location) {
+    case LOCATION_PRIVATE:
+        return context.getFileStreamPath(path);
+    case LOCATION_EXTERNAL:
+        return new File(Environment.getExternalStorageDirectory(), path);
     }
     
     throw new IllegalArgumentException("Invalid location was supplied: "+StringForLocation(location));
@@ -129,26 +173,44 @@ public static void CopyFileStream(FileInputStream fis, FileOutputStream fos)
 }
 
 /**
- * Get a FileInputStream given a location and a file.
+ * Get an InputStream given a location and a file.
  * @param location A single location for the file. Can not be LOCATION_RESOURCES nor a combination of locations.
  * @param path The path for the file.
  * @param context The context used to open the file.
  * @throws IOException if the file does not exist.
  * @throws IllegalArgumentException If the location is set to resources, or is a combination.
  * */
-public static FileInputStream GetInputStream(int location, String path, Context context)
+public static InputStream GetInputStream(int location, String path, Context context)
         throws IOException
 {
     switch(location) {
-    case LOCATION_RESOURCES:
-        throw new IllegalArgumentException("Can not get resource id from path");
     case LOCATION_ASSETS:
-        return (FileInputStream) context.getAssets().open(path);
+        return context.getAssets().open(path);
     case LOCATION_PRIVATE:
         return context.openFileInput(path);
     case LOCATION_EXTERNAL:
-        File f = new File(Environment.getExternalStoragePublicDirectory(null), path);
+        File externalDir = Environment.getExternalStorageDirectory();
+        File f = new File(externalDir, path);
         return new FileInputStream(f);
+    }
+    throw new IllegalArgumentException("Invalid origin location: "+StringForLocation(location));
+}
+
+/**
+ * Get an InputStream given a location and a file.
+ * @param location A single location for the file. Can only be LOCATION_PRIVATE or LOCATION_EXTERNAL
+ * @param path The path for the file.
+ * @param context The context used to open the file.
+ * @throws IOException if the file does not exist.
+ * @throws IllegalArgumentException If the location is set to resources, or is a combination.
+ * */
+public static FileInputStream GetFileInputStream(int location, String path, Context context)
+        throws IOException
+{
+    switch(location) {
+    case LOCATION_PRIVATE:
+    case LOCATION_EXTERNAL:
+        return (FileInputStream) GetInputStream(location, path, context);
     }
     throw new IllegalArgumentException("Invalid origin location: "+StringForLocation(location));
 }
@@ -162,14 +224,15 @@ public static FileInputStream GetInputStream(int location, String path, Context 
  * @throws IOException if the file can not be created.
  * @throws IllegalArgumentException If the location is not LOCATION_PRIVATE or LOCATION_EXTERNAL.
  * */
-public static FileOutputStream GetOutputStream(int location, String path, Context context)
+public static FileOutputStream GetFileOutputStream(int location, String path, Context context)
         throws FileNotFoundException
 {
     switch(location) {
     case LOCATION_PRIVATE:
         return context.openFileOutput(path, Context.MODE_PRIVATE);
     case LOCATION_EXTERNAL:
-        File f = new File(Environment.getExternalStoragePublicDirectory(null), path);
+        File externalDir = Environment.getExternalStorageDirectory();
+        File f = new File(externalDir, path);
         return new FileOutputStream(f);
     }
     throw new IllegalArgumentException("Invalid destination location: "+StringForLocation(location));
@@ -190,13 +253,13 @@ public static void CopyFileFromResources(int resourceId, int destinationLocation
                 throws IOException
 {
     FileInputStream fis = (FileInputStream) context.getResources().openRawResource(resourceId);
-    FileOutputStream fos = GetOutputStream(destinationLocation, destinationPath, context);
+    FileOutputStream fos = GetFileOutputStream(destinationLocation, destinationPath, context);
     CopyFileStream(fis, fos);
 }
 
 /**
  * Copies a file to the app's private folder or the external storage.
- * @param originLocation The origin location. Can not be LOCATION_RESOURCES, see the previous method.
+ * @param originLocation The origin location. Can not only be LOCATION_PRIVATE or LOCATION_EXTERNAL.
  * @param originPath The path for the origin file.
  * @param destinationLocation A single location for the file. Can only be LOCATION_PRIVATE or LOCATION_EXTERNAL.
  * @param destinationPath The path for the output file.
@@ -208,8 +271,8 @@ public static void CopyFile(int originLocation, String originPath,
     int destinationLocation, String destinationPath, Context context)
     throws IOException
 {
-    FileInputStream fis = GetInputStream(originLocation, originPath, context);
-    FileOutputStream fos = GetOutputStream(destinationLocation, destinationPath, context);
+    FileInputStream fis = GetFileInputStream(originLocation, originPath, context);
+    FileOutputStream fos = GetFileOutputStream(destinationLocation, destinationPath, context);
     CopyFileStream(fis, fos);
 }
 
@@ -234,9 +297,9 @@ public static void MoveFile(int location, String originPath,
         outputFile = context.getFileStreamPath(destinationPath);
         break;
     case LOCATION_EXTERNAL:
-        inputFile = new File(Environment.getExternalStoragePublicDirectory(null),
+        inputFile = new File(Environment.getExternalStorageDirectory(),
                 originPath);
-        outputFile = new File(Environment.getExternalStoragePublicDirectory(null), 
+        outputFile = new File(Environment.getExternalStorageDirectory(), 
                 destinationPath);
         break;
     }

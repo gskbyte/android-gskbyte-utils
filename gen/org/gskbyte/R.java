@@ -936,6 +936,7 @@ containing a value of this type.
         public static int color_preview_bg=0x7f02006f;
         public static int color_preview_fg=0x7f020070;
         public static int color_preview_frame=0x7f020071;
+        public static int ic_pulltorefresh_arrow=0x7f020072;
     }
     public static final class id {
         public static int abs__action_bar=0x7f040022;
@@ -992,6 +993,11 @@ containing a value of this type.
         public static int image=0x7f040033;
         public static int listMode=0x7f040002;
         public static int normal=0x7f040001;
+        public static int pull_to_refresh_header=0x7f040044;
+        public static int pull_to_refresh_image=0x7f040046;
+        public static int pull_to_refresh_progress=0x7f040045;
+        public static int pull_to_refresh_text=0x7f040047;
+        public static int pull_to_refresh_updated_at=0x7f040048;
         public static int red=0x7f040035;
         public static int redValue=0x7f040036;
         public static int seekBarPrefBarContainer=0x7f040043;
@@ -1037,8 +1043,9 @@ containing a value of this type.
         public static int dialog_color_picker=0x7f030017;
         public static int icon_menu_item=0x7f030018;
         public static int inline_seekbar_preference=0x7f030019;
-        public static int sherlock_spinner_dropdown_item=0x7f03001a;
-        public static int sherlock_spinner_item=0x7f03001b;
+        public static int pull_to_refresh_header=0x7f03001a;
+        public static int sherlock_spinner_dropdown_item=0x7f03001b;
+        public static int sherlock_spinner_item=0x7f03001c;
     }
     public static final class string {
         /**  Content description for the action bar "home" affordance. [CHAR LIMIT=NONE] 
@@ -1086,6 +1093,10 @@ containing a value of this type.
         /**  Description of a share target (both in the list of such or the default share button) in a ShareActionProvider (share UI). [CHAR LIMIT=NONE] 
          */
         public static int abs__shareactionprovider_share_with_application=0x7f090009;
+        public static int pull_to_refresh_pull_label=0x7f09000f;
+        public static int pull_to_refresh_refreshing_label=0x7f090011;
+        public static int pull_to_refresh_release_label=0x7f090010;
+        public static int pull_to_refresh_tap_label=0x7f090012;
     }
     public static final class style {
         public static int DialogWindowTitle_Sherlock=0x7f0a0036;
