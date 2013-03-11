@@ -23,4 +23,7 @@
     <declare-styleable name="org.gskbyte.view.FontableButton">
         <attr name="font" />
     </declare-styleable>
+    <declare-styleable name="org.gskbyte.view.FontableEditText">
+        <attr name="font" />
+    </declare-styleable>
 </resources>
