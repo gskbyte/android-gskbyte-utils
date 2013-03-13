@@ -18,6 +18,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
+ * @deprecated Do not use this, use jDOM from now on.
+ * 
  * This class contains some static auxiliary methods to be used with the DOM
  * Java implementation.
  * 
@@ -27,6 +29,8 @@ import org.w3c.dom.NodeList;
  * 
  * A better solution would be to implement my own DOM parser or finding a good
  * one. This is why this class will remain undocumented.
+ * 
+ * 
  * */
 public class XmlUtils
 {

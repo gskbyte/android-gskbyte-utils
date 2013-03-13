@@ -42,8 +42,8 @@ public final class EntryView_
     }
 
     private void afterSetContentView_() {
-        title = ((TextView) findViewById(id.title));
         subtitle = ((TextView) findViewById(id.subtitle));
+        title = ((TextView) findViewById(id.title));
         icon = ((ImageView) findViewById(id.icon));
     }
 
