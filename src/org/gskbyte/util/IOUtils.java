@@ -52,6 +52,8 @@ public static final int LOCATION_ASSETS_UPDATABLE =         LOCATION_ASSETS | LO
 public static final int LOCATION_ASSETS_UPDATABLE_PRIVATE = LOCATION_ASSETS | LOCATION_PRIVATE;
 public static final int LOCATION_FOREIGN =                  LOCATION_PRIVATE | LOCATION_EXTERNAL;
 
+public static int PRIVATE_FILES_MODE = Context.MODE_WORLD_READABLE;
+
 /**
  * Utility method to print a location integer in a pretty way.
  * @param location The location for which to have a nice String.
@@ -98,6 +100,9 @@ public static String InputStreamToString( InputStream is ) throws IOException
  * */
 public static boolean ExistsFile(int location, String path, Context context)
 {
+	if(path.length()==0)
+		return false;
+	
     File f = null;
     switch(location) {
     case LOCATION_ASSETS:
@@ -229,7 +234,7 @@ public static FileOutputStream GetFileOutputStream(int location, String path, Co
 {
     switch(location) {
     case LOCATION_PRIVATE:
-        return context.openFileOutput(path, Context.MODE_PRIVATE);
+        return context.openFileOutput(path, PRIVATE_FILES_MODE);
     case LOCATION_EXTERNAL:
         File externalDir = Environment.getExternalStorageDirectory();
         File f = new File(externalDir, path);
@@ -273,6 +278,23 @@ public static void CopyFile(int originLocation, String originPath,
 {
     FileInputStream fis = GetFileInputStream(originLocation, originPath, context);
     FileOutputStream fos = GetFileOutputStream(destinationLocation, destinationPath, context);
+    CopyFileStream(fis, fos);
+}
+
+/**
+ * Copies a file to the app's private folder or the external storage. Shortcut for the previous method.
+ * @param origin The location for both the origin and the destination. Can not only be LOCATION_PRIVATE or LOCATION_EXTERNAL.
+ * @param originPath The path for the origin file.
+ * @param destinationPath The path for the output file.
+ * @param context The context used to open the file.
+ * @throws IOException if the file can not be created.
+ * @throws IllegalArgumentException If the location is LOCATION_RESOURCES or LOCATION_ASSETS
+ * */
+public static void CopyFile(int location, String originPath, String destinationPath, Context context)
+    throws IOException
+{
+    FileInputStream fis = GetFileInputStream(location, originPath, context);
+    FileOutputStream fos = GetFileOutputStream(location, destinationPath, context);
     CopyFileStream(fis, fos);
 }
 

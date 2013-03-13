@@ -234,6 +234,14 @@ containing a value of this type.
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
          */
         public static int expandActivityOverflowButtonDrawable=0x7f01005e;
+        /** <p>Must be a string value, using '\\;' to escape characters such as '\\n' or '\\uxxxx' for a unicode character.
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+         */
+        public static int font=0x7f010063;
         /**  Default background for the menu header. 
          <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
@@ -692,6 +700,146 @@ containing a value of this type.
         public static int abs__split_action_bar_is_narrow=0x7f050001;
     }
     public static final class color {
+        public static int AliceBlue=0x7f060045;
+        public static int AntiqueWhite=0x7f06003b;
+        public static int Aqua=0x7f060095;
+        public static int Aquamarine=0x7f06007a;
+        public static int Azure=0x7f060043;
+        public static int Beige=0x7f060040;
+        public static int Bisque=0x7f060026;
+        public static int Black=0x7f0600a4;
+        public static int BlanchedAlmond=0x7f060024;
+        public static int Blue=0x7f0600a0;
+        public static int BlueViolet=0x7f060073;
+        public static int Brown=0x7f060067;
+        public static int BurlyWood=0x7f06004d;
+        public static int CadetBlue=0x7f060085;
+        public static int Chartreuse=0x7f06007b;
+        public static int Chocolate=0x7f060057;
+        public static int Coral=0x7f060030;
+        public static int CornflowerBlue=0x7f060084;
+        public static int Cornsilk=0x7f060020;
+        public static int Crimson=0x7f060050;
+        public static int Cyan=0x7f060096;
+        public static int DarkBlue=0x7f0600a2;
+        public static int DarkCyan=0x7f06009c;
+        public static int DarkGoldenrod=0x7f06005f;
+        public static int DarkGray=0x7f060066;
+        public static int DarkGreen=0x7f06009f;
+        public static int DarkKhaki=0x7f06005c;
+        public static int DarkMagenta=0x7f060071;
+        public static int DarkOliveGreen=0x7f060086;
+        public static int DarkOrange=0x7f06002f;
+        public static int DarkOrchid=0x7f06006a;
+        public static int DarkRed=0x7f060072;
+        public static int DarkSalmon=0x7f06004a;
+        public static int DarkSeaGreen=0x7f06006f;
+        public static int DarkSlateBlue=0x7f060089;
+        public static int DarkSlateGray=0x7f06008f;
+        public static int DarkTurquoise=0x7f06009a;
+        public static int DarkViolet=0x7f06006c;
+        public static int DeepPink=0x7f060034;
+        public static int DeepSkyBlue=0x7f06009b;
+        public static int DimGray=0x7f060082;
+        public static int DodgerBlue=0x7f060093;
+        public static int FireBrick=0x7f060060;
+        public static int FloralWhite=0x7f06001e;
+        public static int ForestGreen=0x7f060091;
+        public static int Fuchsia=0x7f060035;
+        public static int Gainsboro=0x7f06004f;
+        public static int GhostWhite=0x7f06003d;
+        public static int Gold=0x7f06002a;
+        public static int Goldenrod=0x7f060052;
+        public static int Gray=0x7f060076;
+        public static int Green=0x7f06009e;
+        public static int GreenYellow=0x7f060064;
+        public static int Honeydew=0x7f060044;
+        public static int HotPink=0x7f060031;
+        public static int IndianRed=0x7f060059;
+        public static int Indigo=0x7f060087;
+        public static int Ivory=0x7f06001a;
+        public static int Khaki=0x7f060046;
+        public static int Lavender=0x7f06004b;
+        public static int LavenderBlush=0x7f060022;
+        public static int LawnGreen=0x7f06007c;
+        public static int LemonChiffon=0x7f06001f;
+        public static int LightBlue=0x7f060065;
+        public static int LightCoral=0x7f060047;
+        public static int LightCyan=0x7f06004c;
+        public static int LightGoldenrodYellow=0x7f060039;
+        public static int LightGreen=0x7f06006e;
+        public static int LightGrey=0x7f060055;
+        public static int LightPink=0x7f06002c;
+        public static int LightSalmon=0x7f06002e;
+        public static int LightSeaGreen=0x7f060092;
+        public static int LightSkyBlue=0x7f060074;
+        public static int LightSlateGray=0x7f06007e;
+        public static int LightSteelBlue=0x7f060062;
+        public static int LightYellow=0x7f06001b;
+        public static int Lime=0x7f060098;
+        public static int LimeGreen=0x7f06008e;
+        public static int Linen=0x7f06003a;
+        public static int Magenta=0x7f060036;
+        public static int Maroon=0x7f060079;
+        public static int MediumAquamarine=0x7f060083;
+        public static int MediumBlue=0x7f0600a1;
+        public static int MediumOrchid=0x7f06005e;
+        public static int MediumPurple=0x7f06006d;
+        public static int MediumSeaGreen=0x7f06008d;
+        public static int MediumSlateBlue=0x7f06007d;
+        public static int MediumSpringGreen=0x7f060099;
+        public static int MediumTurquoise=0x7f060088;
+        public static int MediumVioletRed=0x7f06005a;
+        public static int MidnightBlue=0x7f060094;
+        public static int MintCream=0x7f06003e;
+        public static int MistyRose=0x7f060025;
+        public static int Moccasin=0x7f060027;
+        public static int NavajoWhite=0x7f060028;
+        public static int Navy=0x7f0600a3;
+        public static int OldLace=0x7f060038;
+        public static int Olive=0x7f060077;
+        public static int OliveDrab=0x7f060080;
+        public static int Orange=0x7f06002d;
+        public static int OrangeRed=0x7f060033;
+        public static int Orchid=0x7f060053;
+        public static int PaleGoldenrod=0x7f060048;
+        public static int PaleGreen=0x7f06006b;
+        public static int PaleTurquoise=0x7f060063;
+        public static int PaleVioletRed=0x7f060051;
+        public static int PapayaWhip=0x7f060023;
+        public static int PeachPuff=0x7f060029;
+        public static int Peru=0x7f060058;
+        public static int Pink=0x7f06002b;
+        public static int Plum=0x7f06004e;
+        public static int PowderBlue=0x7f060061;
+        public static int Purple=0x7f060078;
+        public static int Red=0x7f060037;
+        public static int RosyBrown=0x7f06005d;
+        public static int RoyalBlue=0x7f06008b;
+        public static int SaddleBrown=0x7f060070;
+        public static int Salmon=0x7f06003c;
+        public static int SandyBrown=0x7f060042;
+        public static int SeaGreen=0x7f060090;
+        public static int Seashell=0x7f060021;
+        public static int Sienna=0x7f060068;
+        public static int Silver=0x7f06005b;
+        public static int SkyBlue=0x7f060075;
+        public static int SlateBlue=0x7f060081;
+        public static int SlateGray=0x7f06007f;
+        public static int Snow=0x7f06001d;
+        public static int SpringGreen=0x7f060097;
+        public static int SteelBlue=0x7f06008a;
+        public static int Tan=0x7f060056;
+        public static int Teal=0x7f06009d;
+        public static int Thistle=0x7f060054;
+        public static int Tomato=0x7f060032;
+        public static int Turquoise=0x7f06008c;
+        public static int Violet=0x7f060049;
+        public static int Wheat=0x7f060041;
+        public static int White=0x7f060019;
+        public static int WhiteSmoke=0x7f06003f;
+        public static int Yellow=0x7f06001c;
+        public static int YellowGreen=0x7f060069;
         public static int abs__background_holo_dark=0x7f060000;
         public static int abs__background_holo_light=0x7f060001;
         public static int abs__bright_foreground_disabled_holo_dark=0x7f060004;
@@ -701,10 +849,26 @@ containing a value of this type.
         public static int abs__bright_foreground_inverse_holo_dark=0x7f060006;
         public static int abs__bright_foreground_inverse_holo_light=0x7f060007;
         public static int abs__holo_blue_light=0x7f060008;
-        public static int abs__primary_text_disable_only_holo_dark=0x7f060009;
-        public static int abs__primary_text_disable_only_holo_light=0x7f06000a;
-        public static int abs__primary_text_holo_dark=0x7f06000b;
-        public static int abs__primary_text_holo_light=0x7f06000c;
+        public static int abs__primary_text_disable_only_holo_dark=0x7f0600a5;
+        public static int abs__primary_text_disable_only_holo_light=0x7f0600a6;
+        public static int abs__primary_text_holo_dark=0x7f0600a7;
+        public static int abs__primary_text_holo_light=0x7f0600a8;
+        public static int aqua=0x7f060012;
+        public static int black=0x7f060018;
+        public static int blue=0x7f060016;
+        public static int fuchsia=0x7f06000b;
+        public static int gray=0x7f06000e;
+        public static int green=0x7f060015;
+        public static int lime=0x7f060013;
+        public static int maroon=0x7f060011;
+        public static int navy=0x7f060017;
+        public static int olive=0x7f06000f;
+        public static int purple=0x7f060010;
+        public static int red=0x7f06000c;
+        public static int silver=0x7f06000d;
+        public static int teal=0x7f060014;
+        public static int white=0x7f060009;
+        public static int yellow=0x7f06000a;
     }
     public static final class dimen {
         /**  Default height of an action bar. 
@@ -3364,5 +3528,86 @@ containing a value of this type.
           @attr name android:android_focusable
         */
         public static final int SherlockView_android_focusable = 0;
+        /** Attributes that can be used with a org_gskbyte_view_FontableButton.
+           <p>Includes the following attributes:</p>
+           <table>
+           <colgroup align="left" />
+           <colgroup align="left" />
+           <tr><th>Attribute</th><th>Description</th></tr>
+           <tr><td><code>{@link #org_gskbyte_view_FontableButton_font org.gskbyte:font}</code></td><td></td></tr>
+           </table>
+           @see #org_gskbyte_view_FontableButton_font
+         */
+        public static final int[] org_gskbyte_view_FontableButton = {
+            0x7f010063
+        };
+        /**
+          <p>This symbol is the offset where the {@link org.gskbyte.R.attr#font}
+          attribute's value can be found in the {@link #org_gskbyte_view_FontableButton} array.
+
+
+          <p>Must be a string value, using '\\;' to escape characters such as '\\n' or '\\uxxxx' for a unicode character.
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name android:font
+        */
+        public static final int org_gskbyte_view_FontableButton_font = 0;
+        /** Attributes that can be used with a org_gskbyte_view_FontableEditText.
+           <p>Includes the following attributes:</p>
+           <table>
+           <colgroup align="left" />
+           <colgroup align="left" />
+           <tr><th>Attribute</th><th>Description</th></tr>
+           <tr><td><code>{@link #org_gskbyte_view_FontableEditText_font org.gskbyte:font}</code></td><td></td></tr>
+           </table>
+           @see #org_gskbyte_view_FontableEditText_font
+         */
+        public static final int[] org_gskbyte_view_FontableEditText = {
+            0x7f010063
+        };
+        /**
+          <p>This symbol is the offset where the {@link org.gskbyte.R.attr#font}
+          attribute's value can be found in the {@link #org_gskbyte_view_FontableEditText} array.
+
+
+          <p>Must be a string value, using '\\;' to escape characters such as '\\n' or '\\uxxxx' for a unicode character.
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name android:font
+        */
+        public static final int org_gskbyte_view_FontableEditText_font = 0;
+        /** Attributes that can be used with a org_gskbyte_view_FontableTextView.
+           <p>Includes the following attributes:</p>
+           <table>
+           <colgroup align="left" />
+           <colgroup align="left" />
+           <tr><th>Attribute</th><th>Description</th></tr>
+           <tr><td><code>{@link #org_gskbyte_view_FontableTextView_font org.gskbyte:font}</code></td><td></td></tr>
+           </table>
+           @see #org_gskbyte_view_FontableTextView_font
+         */
+        public static final int[] org_gskbyte_view_FontableTextView = {
+            0x7f010063
+        };
+        /**
+          <p>This symbol is the offset where the {@link org.gskbyte.R.attr#font}
+          attribute's value can be found in the {@link #org_gskbyte_view_FontableTextView} array.
+
+
+          <p>Must be a string value, using '\\;' to escape characters such as '\\n' or '\\uxxxx' for a unicode character.
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name android:font
+        */
+        public static final int org_gskbyte_view_FontableTextView_font = 0;
     };
 }

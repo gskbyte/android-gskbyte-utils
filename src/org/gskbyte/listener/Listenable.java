@@ -11,7 +11,7 @@
 package org.gskbyte.listener;
 
 import java.lang.ref.WeakReference;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -65,14 +65,15 @@ public synchronized boolean addListener(ListenerClass listener)
  * Removes listener references that point to null (because the pointer object
  * has been removed by the garbage collector)
  * */
+private final ArrayList<WeakReference<ListenerClass>> toRemove = new ArrayList<WeakReference<ListenerClass>>();
 protected synchronized void cleanupListeners()
 {
-    Iterator< WeakReference<ListenerClass> > it = listeners.iterator();
-    while(it.hasNext()) {
-        ListenerClass l = it.next().get();
-        if(l == null)
-            it.remove();
-    }
+	for(WeakReference<ListenerClass> lref : listeners) {
+		ListenerClass l = lref.get();
+		if(l == null) toRemove.add(lref);
+	}
+	listeners.removeAll(toRemove);
+	toRemove.clear();
 }
 
 /**
@@ -83,16 +84,17 @@ protected synchronized void cleanupListeners()
 public synchronized boolean removeListener(ListenerClass listener)
 {
     boolean removed = false;
-    Iterator< WeakReference<ListenerClass> > it = listeners.iterator();
-    while(it.hasNext()) {
-        ListenerClass l = it.next().get();
-        if(l == listener) {
-            it.remove();
-            removed = true;
-        } else if(l == null) {
-            it.remove();
-        }
-    }
+	for(WeakReference<ListenerClass> lref : listeners) {
+		ListenerClass l = lref.get();
+		if(l == null) {
+			toRemove.add(lref);
+		} else if(l == listener) {
+			removed = true;
+			toRemove.add(lref);
+		}
+	}
+	listeners.removeAll(toRemove);
+	toRemove.clear();
     return removed;
 }
 
