@@ -9,9 +9,9 @@
       Jose Alcalá Correa - initial API and implementation
 -->
 <resources>
-    <string name="pull_to_refresh_pull_label">Pull to refresh&#8230;</string>
-    <string name="pull_to_refresh_release_label">Release to refresh&#8230;</string>
-    <string name="pull_to_refresh_refreshing_label">Loading&#8230;</string>
-    <string name="pull_to_refresh_tap_label">Tap to refresh&#8230;</string>
+    <string name="pull_to_refresh_pull_label">Ziehen, um zu aktualisieren&#8230;</string>
+    <string name="pull_to_refresh_release_label">Loslassen, um zu aktualisieren&#8230;</string>
+    <string name="pull_to_refresh_refreshing_label">Lade&#8230;</string>
+    <string name="pull_to_refresh_tap_label">Drücken, um zu aktualisieren&#8230;</string>
     
 </resources>
