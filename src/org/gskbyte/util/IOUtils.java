@@ -132,15 +132,21 @@ public static boolean ExistsFile(int location, String path, Context context)
  * */
 public static boolean DeleteFile(int location, String path, Context context)
 {
+	boolean success = false;
     switch(location) {
     case LOCATION_PRIVATE:
-        return context.deleteFile(path);
+        success = context.deleteFile(path);
+        break;
     case LOCATION_EXTERNAL:
         File f = new File(Environment.getExternalStorageDirectory(), path);
-        return f.delete();
+        success =  f.delete();
+        break;
+    default:
+        throw new IllegalArgumentException("Invalid location was supplied: "+StringForLocation(location));
     }
     
-    throw new IllegalArgumentException("Invalid location was supplied: "+StringForLocation(location));
+	Logger.info("IOUtils", "Deleting file: "+path + "(sucess: "+success+")");
+	return success;
 }
 
 /**
