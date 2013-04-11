@@ -38,6 +38,8 @@ import android.os.Environment;
 public class IOUtils
 {
 
+/** File does not exist. */
+public static final int LOCATION_NONEXISTENT  = 0x0000;
 /** File is located under the res/ folder of the app. */
 public static final int LOCATION_RESOURCES  = 0x0001;
 /** File is located under the assets/ folder of the app. */
