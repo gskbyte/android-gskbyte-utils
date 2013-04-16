@@ -11,9 +11,13 @@
 package org.gskbyte.listener;
 
 import java.lang.ref.WeakReference;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
+
+import org.gskbyte.util.Logger;
 
 /**
  * Abstract base class for classes who can have listeners (implementation of the
@@ -33,6 +37,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * 
  * */
 public abstract class Listenable<ListenerClass>
+implements IListenable<ListenerClass>
 {
 
 /**
@@ -101,5 +106,44 @@ public synchronized boolean removeListener(ListenerClass listener)
 /** Removes all listeners */
 public synchronized void removeAllListeners()
 { listeners.clear(); }
+
+public synchronized void invokeMethodOnListeners(Method m, Object ... args)
+        throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
+{
+    cleanupListeners();
+    for(WeakReference<ListenerClass> lref : listeners) {
+        ListenerClass l = lref.get();
+        m.invoke(l, args);
+    }
+}
+
+public synchronized void invokeMethodOnListeners(String methodName, Object arg)
+        throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException
+{
+    cleanupListeners();
+    if(listeners.size()>0) {
+        Method m = listeners.get(0).get().getClass().getMethod(methodName, new Class[]{arg.getClass()});
+        Object [] args = {arg};
+        for(WeakReference<ListenerClass> lref : listeners) {
+            ListenerClass l = lref.get();
+            m.invoke(l, args);
+        }
+    }
+}
+
+public synchronized void invokeMethodOnListeners(String methodName, Object arg0, Object arg1)
+        throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException
+{
+    if(listeners.size()>0) {
+        Method m = listeners.get(0).get().getClass().getMethod(methodName, new Class[]{arg0.getClass(), arg1.getClass()});
+        Object [] args = {arg0, arg1};
+        for(WeakReference<ListenerClass> lref : listeners) {
+            ListenerClass l = lref.get();
+            m.invoke(l, args);
+        }
+    }
+}
+
+
 
 }

@@ -23,28 +23,28 @@ import com.googlecode.androidannotations.annotations.ViewById;
 @EViewGroup(resName="icon_menu_item")
 public class EntryView extends RelativeLayout
 {
-    // IDs are the same in the XML file
-    // https://github.com/excilys/androidannotations/wiki/Library-projects
-    @ViewById
-    ImageView icon;
+// IDs are the same in the XML file
+// https://github.com/excilys/androidannotations/wiki/Library-projects
+@ViewById
+ImageView icon;
+
+@ViewById
+TextView title;
+
+@ViewById
+TextView subtitle;
+
+public EntryView(Context context, AttributeSet attrs)
+{ super(context, attrs); }
+
+public void set(MenuEntry entry)
+{
+    icon.setImageResource(entry.iconRes);
+    title.setText(entry.title);
     
-    @ViewById
-    TextView title;
+    subtitle.setVisibility( (entry.subtitle.length() == 0) ? View.GONE : View.VISIBLE);
+    subtitle.setText(entry.subtitle);
     
-    @ViewById
-    TextView subtitle;
-    
-    public EntryView(Context context, AttributeSet attrs)
-    { super(context, attrs); }
-    
-    public void set(MenuEntry entry)
-    {
-        icon.setImageResource(entry.iconRes);
-        title.setText(entry.title);
-        
-        subtitle.setVisibility( (entry.subtitle.length() == 0) ? View.GONE : View.VISIBLE);
-        subtitle.setText(entry.subtitle);
-        
-        setTag(entry);
-    }
+    setTag(entry);
+}
 }
