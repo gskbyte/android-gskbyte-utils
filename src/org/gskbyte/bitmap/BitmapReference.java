@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.gskbyte.bitmap;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,10 +64,10 @@ public BitmapReference(int location, String path)
  * Load bitmap if it's not already loaded.
  * @param context The current context
  * */
-void loadBitmapIfNecessary(Context context, String externalBasePath)
+void loadBitmapIfNecessary(Context context)
 {
     if(bitmap == null || bitmap.isRecycled()) {
-        if((location & IOUtils.LOCATION_EXTERNAL) != 0 && loadExternal(context, externalBasePath))
+        if((location & IOUtils.LOCATION_EXTERNAL) != 0 && loadExternal(context))
             return;
         if((location & IOUtils.LOCATION_PRIVATE) != 0 && loadPrivate(context) )
             return;
@@ -83,13 +82,15 @@ void loadBitmapIfNecessary(Context context, String externalBasePath)
  * Load bitmap from the external storage. Uses the path with separators.
  * @param context The current context
  * */
-protected boolean loadExternal(Context context, String externalBasePath)
+protected boolean loadExternal(Context context)
 {
     try {
-        InputStream is = new FileInputStream(externalBasePath+path);
+        InputStream is = IOUtils.GetInputStream(IOUtils.LOCATION_EXTERNAL, path, context);
         bitmap = BitmapFactory.decodeStream(is);
         return (bitmap != null);
     } catch (FileNotFoundException e) {
+        return false;
+    } catch (IOException e) {
         return false;
     }
 }
@@ -102,10 +103,12 @@ protected boolean loadExternal(Context context, String externalBasePath)
 protected boolean loadPrivate(Context context)
 {
     try {
-        InputStream is = context.openFileInput(pathWithoutSeparators);
+        InputStream is = IOUtils.GetInputStream(IOUtils.LOCATION_PRIVATE, pathWithoutSeparators, context);
         bitmap = BitmapFactory.decodeStream(is);
         return (bitmap != null);
     } catch (FileNotFoundException e) {
+        return false;
+    } catch (IOException e) {
         return false;
     }
 }
@@ -117,7 +120,7 @@ protected boolean loadPrivate(Context context)
 protected boolean loadAsset(Context context)
 {
     try {
-        InputStream is = context.getAssets().open(path);
+        InputStream is = IOUtils.GetInputStream(IOUtils.LOCATION_ASSETS, path, context);
         bitmap = BitmapFactory.decodeStream(is);
         return (bitmap != null);
     } catch (IOException e) {
@@ -143,7 +146,7 @@ protected boolean loadResource(Context context)
 public void freeResources()
 {
     if(bitmap!=null) {
-        bitmap.recycle();
+        //bitmap.recycle();
         bitmap = null;
     }
 }

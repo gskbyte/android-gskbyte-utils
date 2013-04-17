@@ -72,10 +72,10 @@ public Bitmap get(String path)
 
 
 /**
- * Clears all references to bitmaps, and releases them.
+ * Clears all references to bitmaps, but does not release them.
  * */
 public void clear()
-{ clear(true); }
+{ clear(false); }
 
 /**
  * Clears all references to bitmaps.

@@ -21,7 +21,8 @@ import android.graphics.Bitmap;
  * access the bitmaps in the order their paths were added.
  * */
 
-public class IndexedBitmaps extends ReferencedBitmaps
+public class IndexedBitmaps
+extends ReferencedBitmaps
 {
 
 protected final List<String> pathList = new ArrayList<String>();
@@ -44,6 +45,18 @@ public void addPath(String path)
 {
     super.addPath(path);
     pathList.add(path);
+}
+
+/**
+ * Adds a list of paths to a bitmap, depending on the initial default location, and adds
+ * their path to the end of the list.
+ * @param paths A list of paths to bitmaps
+ * */
+public void addPaths(List<String> path)
+{
+    for(String s : path) {
+        addPath(s);
+    }
 }
 
 /**

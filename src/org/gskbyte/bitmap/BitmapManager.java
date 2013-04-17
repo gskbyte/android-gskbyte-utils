@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.gskbyte.bitmap;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,27 +32,14 @@ public class BitmapManager
 
 protected final Context context;
 protected final Map<String, BitmapReference> references = new HashMap<String, BitmapReference>();
-protected final String externalBasePath;
-
-/**
- * Creates external folder with the package name
- * @param context The manager's context. Recommended to be the Application context
- * */
-public BitmapManager(Context context)
-{
-    this(context, context.getPackageName());
-}
 
 /**
  * Creates suggested external folder, if not exists.
  * @param context The manager's context. Recommended to be the Application context
  * */
-public BitmapManager(Context context, String externalFolderName)
+public BitmapManager(Context context)
 {
     this.context = context;
-    File external = new File( context.getExternalFilesDir(null), externalFolderName);
-    external.mkdir();
-    externalBasePath = external.getAbsolutePath();
 }
 
 /**
@@ -113,7 +99,7 @@ public BitmapReference getReference(String path)
         Logger.error(getClass(), "Trying to retrieve bitmap without reference: "+path);
         return null;
     } else {
-        ref.loadBitmapIfNecessary(context, externalBasePath);
+        ref.loadBitmapIfNecessary(context);
         return ref;
     }
 }
