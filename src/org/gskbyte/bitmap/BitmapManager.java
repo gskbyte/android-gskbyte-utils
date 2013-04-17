@@ -14,7 +14,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.gskbyte.util.IOUtils;
 import org.gskbyte.util.Logger;
 
 import android.content.Context;
@@ -67,65 +66,26 @@ public void addReference(BitmapReference reference)
 }
 
 /**
+ * Shortcut method to add a reference to a bitmap located under the specified location.
+ * @param location Integer value specifying location (@see IOUtils)
+ * @param path The file's path.
+ * */
+public void addPath(int location, String path)
+{
+    references.put(path, new BitmapReference(location, path));
+}
+
+/**
  * Clears all references to bitmaps and frees memory.
  * */
 public void clear()
-{
-    references.clear();
-}
-
-/**
- * Shortcut method to add a reference to a bitmap located under the assets folder.
- * @param path The file's path.
- * */
-public void addAssetPath(String path)
-{
-    references.put(path, new BitmapReference(IOUtils.LOCATION_ASSETS, path));
-}
-
-/**
- * Shortcut method to add a reference to a bitmap located in the assets, the private folder or the SD card.
- * @param path The file's path.
- * */
-public void addAssetUpdatablePath(String path)
-{
-    references.put(path, new BitmapReference(IOUtils.LOCATION_ASSETS_UPDATABLE, path));
-}
-
-/**
- * Shortcut method to add a reference to a bitmap located in the assets or the private folder.
- * @param path The file's path.
- * */
-public void addAssetPrivateUpdatablePath(String path)
-{
-    references.put(path, new BitmapReference(IOUtils.LOCATION_ASSETS_UPDATABLE_PRIVATE, path));
-}
-
-/**
- * Shortcut method to add a reference to a bitmap located in the app's private folder.
- * @param path The file's path.
- * */
-public void addPrivatePath(String path)
-{
-    references.put(path, new BitmapReference(IOUtils.LOCATION_PRIVATE, path));
-}
-
-/**
- * Shortcut method to add a reference to a bitmap located in the app's private folder, or the external storage.
- * @param path The file's path.
- * */
-public void addForeignPath(String path)
-{
-    references.put(path, new BitmapReference(IOUtils.LOCATION_FOREIGN, path));
-}
+{ references.clear(); }
 
 /**
  * Returns the number of references stored in the manager.
  * */
 public int size()
-{
-    return references.size();
-}
+{ return references.size(); }
 
 /**
  * Returns the number of loaded bitmaps
