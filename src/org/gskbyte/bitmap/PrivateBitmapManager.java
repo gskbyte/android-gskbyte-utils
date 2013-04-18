@@ -23,6 +23,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 /** 
+ * @deprecated
  * A bitmap manager stores bitmaps and allows referencing them using their path
  * inside the app's private folder.
  * 
@@ -35,6 +36,7 @@ import android.graphics.BitmapFactory;
  * addPrivatePath() instead of addPath().
  * */
 
+@Deprecated
 public class PrivateBitmapManager
 {
 

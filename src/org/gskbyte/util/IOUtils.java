@@ -20,6 +20,7 @@ import java.nio.channels.FileChannel;
 import java.util.Scanner;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Environment;
 
 /**
@@ -35,7 +36,7 @@ import android.os.Environment;
  * For files in the private folder, can not contain path separators.
  * For external files, the relative path into the external folder is needed. The absolute path is computed by the BitmapManager, check its constructors to know how.
  * */
-public class IOUtils
+public final class IOUtils
 {
 
 /** File does not exist. */
@@ -54,7 +55,8 @@ public static final int LOCATION_ASSETS_UPDATABLE =         LOCATION_ASSETS | LO
 public static final int LOCATION_ASSETS_UPDATABLE_PRIVATE = LOCATION_ASSETS | LOCATION_PRIVATE;
 public static final int LOCATION_FOREIGN =                  LOCATION_PRIVATE | LOCATION_EXTERNAL;
 
-public static int PRIVATE_FILES_MODE = Context.MODE_WORLD_READABLE;
+@SuppressWarnings("deprecation") // just from API 17
+public static int PRIVATE_FILES_MODE = Context.MODE_WORLD_READABLE; 
 
 /**
  * Utility method to print a location integer in a pretty way.
@@ -200,13 +202,67 @@ public static InputStream GetInputStream(int location, String path, Context cont
     case LOCATION_ASSETS:
         return context.getAssets().open(path);
     case LOCATION_PRIVATE:
-        return context.openFileInput(path);
+        return context.openFileInput( LastPathComponent(path) );
     case LOCATION_EXTERNAL:
         File externalDir = Environment.getExternalStorageDirectory();
         File f = new File(externalDir, path);
         return new FileInputStream(f);
     }
     throw new IllegalArgumentException("Invalid origin location: "+StringForLocation(location));
+}
+
+
+/**
+ * Get an InputStream given a location and a file. The location can be a logic combination of the
+ * default ones. The file is searched from the outside to the outside, this means the following
+ * order: external -> private -> assets. Resources is not explored
+ * @param location A single location for the file. Can be a combination of locations.
+ * @param path The path for the file.
+ * @param context The context used to open the file.
+ * @throws IOException if the file does not exist in any of the given locations.
+ * */
+public static InputStream GetInputStreamCombinedLocation(int p_location, String path, Context context)
+        throws IOException
+{
+    final int [] validLocations = {LOCATION_EXTERNAL, LOCATION_PRIVATE, LOCATION_ASSETS};
+
+    InputStream is = null;
+    IOException lastException = null;
+    for(int validLocation : validLocations) {
+        if( (p_location | validLocation) != 0 ) {
+            try {
+                is = GetInputStream(validLocation, path, context);
+                return is;
+            } catch (IOException e) {
+                lastException = e;
+            }
+        }
+    }
+    
+    throw lastException;
+}
+
+/**
+ * Get an InputStream given a location and a file. The location can be a logic combination of the
+ * default ones. The file is searched from the outside to the outside, this means the following
+ * order: external -> private -> assets -> resources (under res/drawable)
+ * @param location A single location for the file. Can be a combination of locations.
+ * @param path The path for the file.
+ * @param context The context used to open the file.
+ * @throws IOException if the file does not exist in any of the given locations.
+ * */
+public static InputStream GetInputStreamForDrawable(int location, String path, Context context)
+        throws IOException, Resources.NotFoundException
+{
+    InputStream is = null;
+    try {
+        is = GetInputStream(location, path, context);
+        return is;
+    } catch (IOException e) {
+        final Resources resources = context.getResources();
+        int id = resources.getIdentifier( LastPathComponent(path) , "drawable", context.getPackageName());
+        return resources.openRawResource(id);
+    }
 }
 
 /**
@@ -242,7 +298,7 @@ public static FileOutputStream GetFileOutputStream(int location, String path, Co
 {
     switch(location) {
     case LOCATION_PRIVATE:
-        return context.openFileOutput(path, PRIVATE_FILES_MODE);
+        return context.openFileOutput(LastPathComponent(path), PRIVATE_FILES_MODE);
     case LOCATION_EXTERNAL:
         File externalDir = Environment.getExternalStorageDirectory();
         File f = new File(externalDir, path);
@@ -348,10 +404,10 @@ public static void MoveFile(int location, String originPath,
  * @param path A path from where to retrieve the file name.
  * @return The contents of the string after the last "/" character.
  * */
-public static String LastPathComponent(String path)
+public final static String LastPathComponent(String path)
 {
-    int index = path.lastIndexOf("/");
-    if(index>=0 && index<path.length()) {
+    final int index = path.lastIndexOf("/");
+    if(index>=0/* && index<path.length()*/) {
         return path.substring(index+1, path.length());
     } else {
         return path;

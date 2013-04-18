@@ -10,10 +10,7 @@
  ******************************************************************************/
 package org.gskbyte.bitmap;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.gskbyte.util.Logger;
+import org.gskbyte.util.IOUtils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -23,116 +20,87 @@ import android.graphics.Bitmap;
  * 
  * A bitmap manager stores bitmaps and allows referencing them using their path.
  * The bitmaps are loaded only when they are requested for the first time.
- * 
- * TODO: add support for the BitmapCache in order to stabilize memory usage.
  * */
 
 public class BitmapManager
+extends AbstractBitmapManager
 {
 
-protected final Context context;
-protected final Map<String, BitmapReference> references = new HashMap<String, BitmapReference>();
-
-/**
- * Creates suggested external folder, if not exists.
- * @param context The manager's context. Recommended to be the Application context
- * */
 public BitmapManager(Context context)
 {
-    this.context = context;
+    super(context);
 }
 
-/**
- * Adds a bitmap reference to the manager.
- * @param reference The bitmap reference to add.
- * */
-public void addReference(BitmapReference reference)
+@Override
+protected BitmapRef initializeReference(int location, String path)
 {
-    references.put(reference.path, reference);
+    return new BitmapReference(location, path);
 }
 
-/**
- * Shortcut method to add a reference to a bitmap located under the specified location.
- * @param location Integer value specifying location (@see IOUtils)
- * @param path The file's path.
- * */
-public void addPath(int location, String path)
-{
-    references.put(path, new BitmapReference(location, path));
-}
 
-/**
- * Clears all references to bitmaps and frees memory.
- * */
-public void clear()
-{ references.clear(); }
-
-/**
- * Returns the number of references stored in the manager.
- * */
-public int size()
-{ return references.size(); }
-
-/**
- * Returns the number of loaded bitmaps
- * */
-public int loadedBitmaps()
+@Override
+public int countLoadedBitmaps()
 {
     // this could be optimized, but it's not likely to be called often
     int count = 0;
-    for(BitmapReference r : references.values()) {
-        if(r.bitmap != null)
+    for(BitmapRef r : references.values()) {
+        if(((BitmapReference)r).bitmap != null)
             ++count;
     }
     
     return count;
 }
 
-/**
- * Returns a bitmap reference given a path. Loads the bitmap if necessary.
- * @param path The bitmaps' path, used as a key to retrieve it.
- * */
-public BitmapReference getReference(String path)
-{
-    BitmapReference ref = references.get(path);
-    if(ref == null) {
-        Logger.error(getClass(), "Trying to retrieve bitmap without reference: "+path);
-        return null;
-    } else {
-        ref.loadBitmapIfNecessary(context);
-        return ref;
-    }
-}
-
-/**
- * Returns a bitmap given a path.
- * @param path The bitmaps' path, used as a key to retrieve it.
- * */
-public Bitmap get(String path)
-{
-    BitmapReference ref = getReference(path);
-    if(ref != null) {
-        return ref.getBitmap();
-    } else {
-        return null;
-    }
-}
-
-public void freeBitmap(String path)
-{
-    BitmapReference ref = references.get(path);
-    if(ref != null)
-        ref.freeResources();
-}
-
-/**
- * Frees memory by releasing all bitmaps.
- * */
+@Override
 public void freeResources()
 {
-    for(BitmapReference r : references.values()) {
+    for(BitmapRef r : references.values()) {
         r.freeResources();
     }
+}
+
+
+/**
+ * BitmapReference is the internal class used by the BitmapManager to store information
+ * about the managed Bitmaps.
+ * 
+ * Bitmaps can be loaded from different locations. The locations can be combined,
+ * and the BitmapManager will try to load in the following sequence:
+ * external > private > assets > resources
+ * 
+ * See {@link IOUtils} to check more details about file locations
+ * */
+final class BitmapReference
+extends AbstractBitmapManager.BitmapRef
+{
+
+Bitmap bitmap;
+
+public BitmapReference(int location, String path)
+{
+    super(location, path);
+}
+
+@Override
+public Bitmap getBitmap()
+{
+    if(bitmap == null) {
+        bitmap = loadBitmap(path);
+    }
+    
+    return bitmap;
+    
+}
+
+@Override
+public void freeResources()
+{
+    if(bitmap!=null) {
+        //bitmap.recycle();
+        bitmap = null;
+    }
+}
+
 }
 
 }

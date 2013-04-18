@@ -9,7 +9,8 @@ import android.support.v4.util.LruCache;
  * Contains helper methods to compute bitmap memory size, because they are active
  * only in newer Android versions
  * */
-public class LRUBitmapCache extends LruCache<Integer, Bitmap>
+public class LRUBitmapCache<KeyClass>
+extends LruCache<KeyClass, Bitmap>
 {
 
 @Getter
@@ -35,7 +36,7 @@ public LRUBitmapCache(float memoryRate)
  * Returns the size of a bitmap
  * */
 @Override
-protected int sizeOf(Integer key, Bitmap value)
+protected int sizeOf(KeyClass key, Bitmap value)
 { return BitmapMemorySize(value); }
 
 /**

@@ -29,7 +29,8 @@ public final class CachedBitmapColorizer extends BitmapColorizer
 /**
  * Optimizd version of the BitmapCache for fixed bitmap sizes and configurations.
  * */
-private final class FixedSizeBitmapCache extends LRUBitmapCache
+private final class FixedSizeBitmapCache
+extends LRUBitmapCache<Integer> // int color value used as key
 {
 @Getter
 private final int fixedBitmapByteCount;

@@ -31,7 +31,7 @@ public class ReferencedBitmaps
 protected final Set<String> paths = new HashSet<String>();
 
 @Getter
-protected final BitmapManager manager;
+protected final AbstractBitmapManager manager;
 
 @Getter
 protected final int locationForBitmaps;
@@ -41,7 +41,7 @@ protected final int locationForBitmaps;
  * @param manager The referenced manager
  * @param locationForBitmaps Default location for added paths
  * */
-public ReferencedBitmaps(BitmapManager manager, int locationForBitmaps)
+public ReferencedBitmaps(AbstractBitmapManager manager, int locationForBitmaps)
 {
     this.manager = manager;
     this.locationForBitmaps = locationForBitmaps;
@@ -53,7 +53,7 @@ public ReferencedBitmaps(BitmapManager manager, int locationForBitmaps)
  * */
 public void addPath(String path)
 {
-    manager.addReference(new BitmapReference(locationForBitmaps, path));
+    manager.addPath(locationForBitmaps, path);
     paths.add(path);
 }
 

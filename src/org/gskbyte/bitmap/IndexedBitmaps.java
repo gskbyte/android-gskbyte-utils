@@ -32,7 +32,7 @@ protected final List<String> pathList = new ArrayList<String>();
  * @param manager The referenced manager
  * @param locationForBitmaps Default location for added paths
  * */
-public IndexedBitmaps(BitmapManager manager, int locationForBitmaps)
+public IndexedBitmaps(AbstractBitmapManager manager, int locationForBitmaps)
 { super(manager, locationForBitmaps); }
 
 /**
