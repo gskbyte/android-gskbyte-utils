@@ -229,7 +229,7 @@ public static InputStream GetInputStreamCombinedLocation(int p_location, String 
     InputStream is = null;
     IOException lastException = null;
     for(int validLocation : validLocations) {
-        if( (p_location | validLocation) != 0 ) {
+        if( (p_location & validLocation) != 0 ) {
             try {
                 is = GetInputStream(validLocation, path, context);
                 return is;
@@ -259,9 +259,13 @@ public static InputStream GetInputStreamForDrawable(int location, String path, C
         is = GetInputStream(location, path, context);
         return is;
     } catch (IOException e) {
-        final Resources resources = context.getResources();
-        int id = resources.getIdentifier( LastPathComponent(path) , "drawable", context.getPackageName());
-        return resources.openRawResource(id);
+        if((location & LOCATION_RESOURCES) != 0) {
+            final Resources resources = context.getResources();
+            int id = resources.getIdentifier( LastPathComponent(path) , "drawable", context.getPackageName());
+            return resources.openRawResource(id);
+        } else {
+            throw e;
+        }
     }
 }
 
@@ -301,6 +305,10 @@ public static FileOutputStream GetFileOutputStream(int location, String path, Co
         return context.openFileOutput(LastPathComponent(path), PRIVATE_FILES_MODE);
     case LOCATION_EXTERNAL:
         File externalDir = Environment.getExternalStorageDirectory();
+        
+        File containingFolder = new File(externalDir, DirectoryPath(path));
+        containingFolder.mkdirs();
+        
         File f = new File(externalDir, path);
         return new FileOutputStream(f);
     }
@@ -375,12 +383,11 @@ public static void MoveFile(int location, String originPath,
         String destinationPath, Context context)
     throws IOException
 {
-    
     File inputFile = null, outputFile = null;
     switch(location) {
     case LOCATION_PRIVATE:
-        inputFile = context.getFileStreamPath(originPath);
-        outputFile = context.getFileStreamPath(destinationPath);
+        inputFile = context.getFileStreamPath( LastPathComponent(originPath) );
+        outputFile = context.getFileStreamPath( LastPathComponent(destinationPath) );
         break;
     case LOCATION_EXTERNAL:
         inputFile = new File(Environment.getExternalStorageDirectory(),
@@ -391,6 +398,7 @@ public static void MoveFile(int location, String originPath,
     }
     
     if(inputFile != null) {
+        // needs outputFile.mkdirs()?
         boolean result = inputFile.renameTo(outputFile);
         if(!result)
             throw new IOException("Failed moving file "+originPath +" to "+destinationPath + " in location: "+StringForLocation(location));
@@ -409,6 +417,21 @@ public final static String LastPathComponent(String path)
     final int index = path.lastIndexOf("/");
     if(index>=0/* && index<path.length()*/) {
         return path.substring(index+1, path.length());
+    } else {
+        return path;
+    }
+}
+
+/**
+ * Returns a path's directory path (without the file name)
+ * @param path A path from where to retrieve the file directory.
+ * @return The contents of the string before the last "/" character, including it
+ * */
+public final static String DirectoryPath(String path)
+{
+    final int index = path.lastIndexOf("/");
+    if(index>=0/* && index<path.length()*/) {
+        return path.substring(0, index);
     } else {
         return path;
     }

@@ -1,5 +1,7 @@
 package org.gskbyte.bitmap;
 
+import org.gskbyte.util.Logger;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 
@@ -66,7 +68,11 @@ public Bitmap getBitmap()
     Bitmap bitmap = bitmapCache.get(path);
     if(bitmap == null) {
         bitmap = loadBitmap(path);
-        bitmapCache.put(path, bitmap);
+        if(bitmap != null) {
+            bitmapCache.put(path, bitmap);
+        } else {
+            Logger.error(getClass(), "Bitmap not found: " + path);
+        }
     }
     return bitmap;
 }
