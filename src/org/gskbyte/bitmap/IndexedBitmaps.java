@@ -77,6 +77,27 @@ public Bitmap get(int index)
 }
 
 /**
+ * Returns true if the given Bitmap is present in memory
+ * @param The bitmap's path index
+ * @returns true if a Bitmap for the given path is loaded into memory
+ * */
+public boolean isBitmapLoaded(int index)
+{
+    return manager.isBitmapLoaded( pathList.get(index) );
+}
+
+
+/**
+ * Returns true if the given Bitmap's file is present in the file system. Asks the underlying manager.
+ * @param The bitmap's path index
+ * @returns true if a file for the given path index exists
+ * */
+public boolean existsBitmapFile(int index)
+{
+    return manager.existsBitmapFile( pathList.get(index) );
+}
+
+/**
  * Clears all references to bitmaps.
  * @param releaseBitmaps Wether the referenced bitmaps should be cleared or not.
  * */

@@ -58,6 +58,26 @@ public void addPath(String path)
 }
 
 /**
+ * Returns true if the given Bitmap is present in memory. Asks the underlying manager.
+ * @param The bitmap's path
+ * @returns true if a Bitmap for the given path is loaded into memory
+ * */
+public boolean isBitmapLoaded(String path)
+{
+    return manager.isBitmapLoaded(path);
+}
+
+/**
+ * Returns true if the given Bitmap's file is present in the file system. Asks the underlying manager.
+ * @param The bitmap's path
+ * @returns true if a file for the given path exists
+ * */
+public boolean existsBitmapFile(String path)
+{
+    return manager.existsBitmapFile(path);
+}
+
+/**
  * Returns the number of references.
  * */
 public int size()

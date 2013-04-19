@@ -53,7 +53,7 @@ public int countLoadedBitmaps()
 }
 
 @Override
-public void freeResources()
+public void releaseAllBitmaps()
 {
     for(BitmapRef r : references.values()) {
         r.freeResources();
@@ -83,7 +83,12 @@ public Bitmap getBitmap()
     }
     
     return bitmap;
-    
+}
+
+@Override
+public boolean isLoaded()
+{
+    return bitmap != null;
 }
 
 @Override

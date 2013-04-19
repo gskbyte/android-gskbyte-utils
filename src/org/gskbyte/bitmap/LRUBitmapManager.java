@@ -72,7 +72,7 @@ public int countLoadedBitmaps()
 }
 
 @Override
-public void freeResources()
+public void releaseAllBitmaps()
 {
     bitmapCache.evictAll();
 }
@@ -87,6 +87,12 @@ extends AbstractBitmapManager.BitmapRef
 public LRUBitmapRef(int location, String path)
 {
     super(location, path);
+}
+
+@Override
+public boolean isLoaded()
+{
+    return bitmapCache.get(path) != null;
 }
 
 @Override

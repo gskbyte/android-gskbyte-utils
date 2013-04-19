@@ -139,7 +139,7 @@ public static boolean DeleteFile(int location, String path, Context context)
 	boolean success = false;
     switch(location) {
     case LOCATION_PRIVATE:
-        success = context.deleteFile(path);
+        success = context.deleteFile( LastPathComponent(path) );
         break;
     case LOCATION_EXTERNAL:
         File f = new File(Environment.getExternalStorageDirectory(), path);
@@ -149,7 +149,7 @@ public static boolean DeleteFile(int location, String path, Context context)
         throw new IllegalArgumentException("Invalid location was supplied: "+StringForLocation(location));
     }
     
-	Logger.info("IOUtils", "Deleting file: "+path + "(sucess: "+success+")");
+	//Logger.info("IOUtils", "Deleting file: "+path + "(sucess: "+success+")");
 	return success;
 }
 

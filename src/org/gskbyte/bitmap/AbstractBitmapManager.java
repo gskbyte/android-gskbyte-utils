@@ -76,6 +76,38 @@ public int size()
 public abstract int countLoadedBitmaps();
 
 /**
+ * Returns true if the given Bitmap is present in memory
+ * @param The bitmap's path
+ * @returns true if a Bitmap for the given path is loaded into memory
+ * */
+public boolean isBitmapLoaded(String path)
+{
+    BitmapRef ref = references.get(path);
+    if(ref != null) {
+        return ref.isLoaded();
+    } else {
+        Logger.error(getClass(), "Trying to retrieve bitmap presence without reference: "+path);
+        return false;
+    }
+}
+
+/**
+ * Returns true if the given Bitmap's file is present in the file system
+ * @param The bitmap's path
+ * @returns true if a file for the given path exists
+ * */
+public boolean existsBitmapFile(String path)
+{
+    BitmapRef ref = references.get(path);
+    if(ref != null) {
+        return ref.existsFile();
+    } else {
+        Logger.error(getClass(), "Trying to retrieve bitmap file existence without reference: "+path);
+        return false;
+    }
+}
+
+/**
  * Returns a bitmap given a path.
  * @param path The bitmap's path, used as a key to retrieve it.
  * */
@@ -103,7 +135,7 @@ public void freeBitmap(String path)
 /**
  * Frees memory by releasing all bitmaps.
  * */
-public abstract void freeResources();
+public abstract void releaseAllBitmaps();
 
 
 /**
@@ -129,6 +161,12 @@ public BitmapRef(int location, String path)
 }
 
 public abstract Bitmap getBitmap();
+public abstract boolean isLoaded();
+
+public boolean existsFile()
+{
+    return IOUtils.ExistsFile(location, path, context);
+}
 
 protected final Bitmap loadBitmap(String path)
 {
