@@ -5,17 +5,37 @@ import org.gskbyte.util.Logger;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+/**
+ * LRUBitmapManager class
+ * 
+ * This implementation of AbstractBitmapManager uses an LRUCache to store bitmaps
+ * and refer to them. This allows the programmer not to abuse of memory usage, while not
+ * keeping too much attention on it.
+ * 
+ * */
 public class LRUBitmapManager
 extends AbstractBitmapManager
 {
 
 private final LRUBitmapCache<String> bitmapCache;
 
+
+/**
+ * Constructor. Uses a memory rate of 25%, which is a good value when this
+ * is the only LRUBitmapCache present in an application.
+ * @param context The application context, needed to load files.
+ * */
 public LRUBitmapManager(Context context)
 {
-    this(context, 0.2f);
+    this(context, 0.25f);
 }
 
+/**
+ * Constructor. Allows to specify a maximum memory rate. Low values will cause the Bitmaps to load
+ * frequently, which can lead to a slow application. Too high values can provoke an OutOfMemoryError.
+ * @param context The application context, needed to load files.
+ * @param memoryRate The maximum application's memory rate to be used by this manager.
+ * */
 public LRUBitmapManager(Context context, float memoryRate)
 {
     super(context);
@@ -35,6 +55,10 @@ public void clear()
     bitmapCache.evictAll();
 }
 
+/**
+ * This could be optimized having a counter, but this method is not very likely
+ * to be used, we keep it simple.
+ * */
 @Override
 public int countLoadedBitmaps()
 {
@@ -53,6 +77,9 @@ public void freeResources()
     bitmapCache.evictAll();
 }
 
+/**
+ * Specialization of a BitmapReference. Refers to Bitmaps from the Manager's LRUCache.
+ * */
 final class LRUBitmapRef
 extends AbstractBitmapManager.BitmapRef
 {
@@ -84,4 +111,5 @@ public void freeResources()
 }
 
 }
+
 }

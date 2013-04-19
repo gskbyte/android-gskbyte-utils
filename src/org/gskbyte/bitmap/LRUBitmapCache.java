@@ -43,7 +43,7 @@ protected int sizeOf(KeyClass key, Bitmap value)
  * Returns number of bytes per pixel given a bitmap config.
  * */
 // Computation is done "by hand" becase .getByteCount() is available only from API 12
-public static int BytesPerPixel(Bitmap.Config config)
+public final static int BytesPerPixel(Bitmap.Config config)
 {
     switch(config) {
     case ALPHA_8: return 1;
@@ -65,12 +65,12 @@ public static int BitmapMemorySize(Bitmap bitmap)
 
 /**
  * Returns the memory required for a bitmap configuration
- * @param width The bitmaps' width.
- * @param height The bitmaps' height.
- * @param config The bitmaps' color configuration.
+ * @param width The bitmap's width.
+ * @param height The bitmap's height.
+ * @param config The bitmap's color configuration.
  * @return Its size, in bytes.
  * */
-public static int BitmapMemorySize(int width, int height, Bitmap.Config config)
+public final static int BitmapMemorySize(int width, int height, Bitmap.Config config)
 { return width * height * BytesPerPixel(config); }
 
 

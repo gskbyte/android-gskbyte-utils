@@ -13,6 +13,18 @@ import android.content.res.Resources.NotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+/**
+ * AbstractBitmapManager class
+ * 
+ * A bitmap manager stores bitmaps and allows referencing them using their path.
+ * The bitmaps are loaded only when they are requested for the first time.
+ * 
+ * This is an abstract class that defines interface and basic methods for
+ * specific implementations.
+ * 
+ * @see BitmapManager for a simple specialization
+ * @see LRUBitmapManager for a manager using an LRU cache as backend
+ * */
 public abstract class AbstractBitmapManager
 {
 
@@ -38,6 +50,12 @@ public void addPath(int location, String path)
     references.put(path, initializeReference(location, path));
 }
 
+/**
+ * Just initializes a specialization of BitmapRef, depending on the child class
+ * @param location The location for the bitmap
+ * @param path The path for the bitmap, given a location
+ * @return A BitmapRef object to be used to look for the Bitmap 
+ * */
 protected abstract BitmapRef initializeReference(int location, String path);
 
 /**
@@ -59,7 +77,7 @@ public abstract int countLoadedBitmaps();
 
 /**
  * Returns a bitmap given a path.
- * @param path The bitmaps' path, used as a key to retrieve it.
+ * @param path The bitmap's path, used as a key to retrieve it.
  * */
 public Bitmap get(String path)
 {

@@ -10,8 +10,6 @@
  ******************************************************************************/
 package org.gskbyte.bitmap;
 
-import org.gskbyte.util.IOUtils;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 
@@ -20,6 +18,9 @@ import android.graphics.Bitmap;
  * 
  * A bitmap manager stores bitmaps and allows referencing them using their path.
  * The bitmaps are loaded only when they are requested for the first time.
+ * 
+ * This is a simple implementation that doesn't care too much about memory usage.
+ * LRUBitmapManager is much more interesting.
  * */
 
 public class BitmapManager
@@ -61,14 +62,7 @@ public void freeResources()
 
 
 /**
- * BitmapReference is the internal class used by the BitmapManager to store information
- * about the managed Bitmaps.
- * 
- * Bitmaps can be loaded from different locations. The locations can be combined,
- * and the BitmapManager will try to load in the following sequence:
- * external > private > assets > resources
- * 
- * See {@link IOUtils} to check more details about file locations
+ * Simple specialization of a BitmapReference. Just stores a bitmap in it.
  * */
 final class BitmapReference
 extends AbstractBitmapManager.BitmapRef

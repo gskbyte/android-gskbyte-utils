@@ -33,7 +33,7 @@ import android.graphics.BitmapFactory;
  * The interfaces are, however, very similar.
  * 
  * A BitmapManager can be used as a PrivateBitmapManager just by calling
- * addPrivatePath() instead of addPath().
+ * addPath(IOUtils.LOCATION_PRIVATE, path) instead of addPath(path).
  * */
 
 @Deprecated
@@ -87,7 +87,7 @@ public int loadedBitmaps()
 
 /**
  * Returns a bitmap given a path.
- * @param path The bitmaps' path, used as a key to retrieve it.
+ * @param path The bitmap's path, used as a key to retrieve it.
  * */
 public Bitmap get(String path)
 {
