@@ -12,6 +12,9 @@ package org.gskbyte.bitmap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
+import lombok.Getter;
 
 import android.graphics.Bitmap;
 
@@ -25,6 +28,7 @@ public class IndexedBitmaps
 extends ReferencedBitmaps
 {
 
+@Getter
 protected final List<String> pathList = new ArrayList<String>();
 
 /**
@@ -63,14 +67,14 @@ public void addPaths(List<String> path)
  * Returns a path given the index in which it was added.
  * @param index The path's index.
  * */
-public String getPath(int index)
+public String getPathAt(int index)
 { return pathList.get(index); }
 
 /**
  * Returns a Bitmap given the index in which its path it was added.
  * @param index The bitmap's path index.
  * */
-public Bitmap get(int index)
+public Bitmap getAt(int index)
 {
     String path = pathList.get(index);
     return manager.get(path);
@@ -81,21 +85,63 @@ public Bitmap get(int index)
  * @param The bitmap's path index
  * @returns true if a Bitmap for the given path is loaded into memory
  * */
-public boolean isBitmapLoaded(int index)
+public boolean isBitmapLoadedAt(int index)
 {
     return manager.isBitmapLoaded( pathList.get(index) );
 }
-
 
 /**
  * Returns true if the given Bitmap's file is present in the file system. Asks the underlying manager.
  * @param The bitmap's path index
  * @returns true if a file for the given path index exists
  * */
-public boolean existsBitmapFile(int index)
+public boolean existsBitmapFileAt(int index)
 {
     return manager.existsBitmapFile( pathList.get(index) );
 }
+
+
+/**
+ * Returns the path for the first existing path. The paths are iterated in insertion order.
+ * @return The path for the fist existing bitmap file
+ * */
+@Override
+public String getFirstExistingFilePath()
+{
+    for(int i=0; i<size(); ++i) {
+        boolean exists = existsBitmapFileAt(i);
+        if(exists) {
+            return getPathAt( i );
+        }
+    }
+    
+    return null;
+}
+
+/**
+ * Returns the file path for a random bitmap.
+ * @return A file path for an existing bitmap file
+ * */
+public String getRandomExistingFilePath()
+{
+    final int numBitmaps = size();
+    if(numBitmaps > 1) {
+        Random r = new Random();
+        int startindex = r.nextInt( numBitmaps );
+        for(int i=0; i<numBitmaps; ++i) {
+            int index = (startindex+i) %numBitmaps;
+            boolean exists = existsBitmapFileAt(index);
+            if(exists) {
+                return getPathAt( index );
+            }
+        }
+        return null;
+    } else {
+        return getFirstExistingFilePath();
+    }
+}
+
+
 
 /**
  * Clears all references to bitmaps.

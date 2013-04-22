@@ -3,13 +3,14 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content" >
     
-    <ImageView android:id="@+id/image"
+    <ImageView android:id="@+id/asyncimageview_image"
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
-	    android:layout_gravity="center"/>
+	    android:layout_gravity="center"
+	    android:adjustViewBounds="true"/>
 
     <ProgressBar
-        android:id="@+id/progress_bar"
+        android:id="@+id/asyncimageview_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center" />

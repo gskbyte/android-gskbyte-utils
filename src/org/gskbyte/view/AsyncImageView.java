@@ -3,6 +3,8 @@ package org.gskbyte.view;
 import java.io.IOException;
 import java.io.InputStream;
 
+import lombok.Getter;
+
 import org.gskbyte.R;
 import org.gskbyte.bitmap.AbstractBitmapManager;
 import org.gskbyte.util.IOUtils;
@@ -11,6 +13,7 @@ import android.content.Context;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -31,39 +34,37 @@ public class AsyncImageView
 extends FrameLayout
 {
 
-private final ImageView image;
+@Getter
+private final ImageView imageView;
 private final ProgressBar progressBar;
 
 private AsyncTask<String, Void, Bitmap> currentTask;
-
-public AsyncImageView(Context context)
-{
-    super(context);
-    LayoutInflater.from(context).inflate(R.layout.async_imageview, this, true);
-    image = (ImageView) findViewById(R.id.image);
-    progressBar = (ProgressBar) findViewById(R.id.progress_bar);
-}
 
 public AsyncImageView(Context context, AttributeSet attrs, int defStyle)
 {
     super(context, attrs, defStyle);
     LayoutInflater.from(context).inflate(R.layout.async_imageview, this, true);
-    image = (ImageView) findViewById(R.id.image);
-    progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+    imageView = (ImageView) findViewById(R.id.asyncimageview_image);
+    progressBar = (ProgressBar) findViewById(R.id.asyncimageview_progress_bar);
 }
 
 public AsyncImageView(Context context, AttributeSet attrs)
 {
     super(context, attrs);
     LayoutInflater.from(context).inflate(R.layout.async_imageview, this, true);
-    image = (ImageView) findViewById(R.id.image);
-    progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+    imageView = (ImageView) findViewById(R.id.asyncimageview_image);
+    progressBar = (ProgressBar) findViewById(R.id.asyncimageview_progress_bar);
 }
 
 public void setLoading(boolean loading)
 {
-    image.setVisibility(loading ? GONE : VISIBLE);
+    imageView.setVisibility(loading ? GONE : VISIBLE);
     progressBar.setVisibility(loading ? VISIBLE : GONE);
+}
+
+public Drawable getDrawable()
+{
+    return imageView.getDrawable();
 }
 
 public synchronized void setImageBitmap(Bitmap bitmap)
@@ -74,10 +75,10 @@ public synchronized void setImageBitmap(Bitmap bitmap)
     }
     
     if(bitmap != null && !bitmap.isRecycled()) {
-        image.setImageBitmap(bitmap);
+        imageView.setImageBitmap(bitmap);
         setLoading(false);
     } else {
-        image.setVisibility( GONE );
+        imageView.setVisibility( GONE );
         progressBar.setVisibility( GONE );
     }
 }
@@ -112,7 +113,6 @@ public synchronized void setImageBitmap(AbstractBitmapManager manager, String pa
         currentTask.execute(path);
     }
 }
-
 
 private final class LoadBitmapFromFileTask
 extends AsyncTask<String, Void, Bitmap>

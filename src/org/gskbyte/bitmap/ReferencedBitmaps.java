@@ -84,12 +84,41 @@ public int size()
 { return paths.size(); }
 
 /**
+ * Returns the number of existing bitmap files from the referenced by this.
+ * @return the number of existing referenced bitmap files
+ * */
+public int countExistingBitmapFiles()
+{
+    int counter = 0;
+    for(String path : paths) {
+        if(manager.existsBitmapFile(path)) {
+            ++counter;
+        }
+    }
+    return counter;
+}
+
+/**
  * Returns a bitmap given its path.
  * @param path The path to the bitmap, which depends on the default location.
  * */
 public Bitmap get(String path)
 { return manager.get(path); }
 
+/**
+ * Returns the path for the first existing path.
+ * @return The path for the fist existing bitmap file
+ * */
+protected String getFirstExistingFilePath()
+{
+    for(String path : paths) {
+        boolean exists = existsBitmapFile(path);
+        if(exists)
+            return path;
+    }
+    
+    return null;
+}
 
 /**
  * Clears all references to bitmaps, but does not release them.
