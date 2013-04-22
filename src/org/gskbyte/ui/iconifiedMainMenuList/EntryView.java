@@ -10,32 +10,35 @@
  ******************************************************************************/
 package org.gskbyte.ui.iconifiedMainMenuList;
 
+import org.gskbyte.R;
+
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.googlecode.androidannotations.annotations.EViewGroup;
-import com.googlecode.androidannotations.annotations.ViewById;
-
-@EViewGroup(resName="icon_menu_item")
 public class EntryView extends RelativeLayout
 {
-// IDs are the same in the XML file
-// https://github.com/excilys/androidannotations/wiki/Library-projects
-@ViewById
-ImageView icon;
 
-@ViewById
-TextView title;
-
-@ViewById
-TextView subtitle;
+protected ImageView icon;
+protected TextView title, subtitle;
 
 public EntryView(Context context, AttributeSet attrs)
-{ super(context, attrs); }
+{
+    super(context, attrs);
+    LayoutInflater.from(context).inflate(R.layout.icon_menu_item, this);
+    initViews();
+}
+
+protected void initViews()
+{
+    icon = (ImageView) findViewById(R.id.icon);
+    title = (TextView) findViewById(R.id.title);
+    subtitle = (TextView) findViewById(R.id.subtitle);
+}
 
 public void set(MenuEntry entry)
 {

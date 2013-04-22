@@ -26,6 +26,6 @@ protected void configureView(EntryView view, MenuEntry entry)
 
 @Override
 protected EntryView initializeView()
-{ return EntryView_.build(context, null); }
+{ return new EntryView(context, null); }
 
 }
