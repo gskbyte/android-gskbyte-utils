@@ -42,6 +42,12 @@ public LRUBitmapManager(Context context, float memoryRate)
     this.bitmapCache = new LRUBitmapCache<String>(memoryRate);
 }
 
+public LRUBitmapManager(Context context, int numLoadThreads, float memoryRate)
+{
+    super(context, numLoadThreads);
+    this.bitmapCache = new LRUBitmapCache<String>(memoryRate);
+}
+
 protected BitmapRef initializeReference(int location, String path)
 {
     return new LRUBitmapRef(location, path);

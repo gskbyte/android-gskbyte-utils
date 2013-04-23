@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import lombok.Getter;
+
 import org.gskbyte.util.IOUtils;
 import org.gskbyte.util.Logger;
 
@@ -31,7 +33,6 @@ import android.os.AsyncTask;
 public abstract class AbstractBitmapManager
 {
 
-public final static int MAX_LOAD_THREADS = 2;
 
 protected final Context context;
 protected final Map<String, BitmapRef> references = new HashMap<String, BitmapRef>();
@@ -41,14 +42,29 @@ private final Map<String, HashSet<BackgroundLoadListener>> backgroundListeners =
 private final ArrayList<AsyncLoadTask> backgroundLoadTasks = new ArrayList<AsyncLoadTask>();
 private final ArrayList<AsyncLoadTask> runningLoadTasks = new ArrayList<AsyncLoadTask>();
 
+@Getter
+private final int numLoadThreads;
+
 /**
- * Default constructor.
- * @param context The manager's context. Recommended to be the Application context
+ * Default constructor. Will establish one load thread
+ * @param context The manager's context. Recommended to be the Application context.
  * */
 public AbstractBitmapManager(Context context)
 {
-    this.context = context;
+    this(context, Runtime.getRuntime().availableProcessors() - 1);
 }
+
+/**
+ * Constructor specifying number of threads.
+ * @param context The manager's context. Recommended to be the Application context.
+ * @param numLoadThreads Maximum number of threads to be used. Must be at least 1.
+ * */
+public AbstractBitmapManager(Context context, int numLoadThreads)
+{
+    this.context = context;
+    this.numLoadThreads = Math.max(numLoadThreads, 1);
+}
+
 
 /**
  * Shortcut method to add a reference to a bitmap located under the specified location.
@@ -245,7 +261,7 @@ public synchronized Bitmap getInBackground(String path, BackgroundLoadListener l
 
 private synchronized void processLoadTaskQueue()
 {
-    while(backgroundLoadTasks.size()>0 && runningLoadTasks.size()<MAX_LOAD_THREADS) {
+    while(backgroundLoadTasks.size()>0 && runningLoadTasks.size()<numLoadThreads) {
         AsyncLoadTask task = backgroundLoadTasks.get(0);
         backgroundLoadTasks.remove(0);
         runningLoadTasks.add(task);

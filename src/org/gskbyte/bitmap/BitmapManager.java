@@ -32,6 +32,11 @@ public BitmapManager(Context context)
     super(context);
 }
 
+public BitmapManager(Context context, int numLoadThreads)
+{
+    super(context, numLoadThreads);
+}
+
 @Override
 protected BitmapRef initializeReference(int location, String path)
 {
