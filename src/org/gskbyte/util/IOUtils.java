@@ -94,6 +94,16 @@ public static String InputStreamToString( InputStream is ) throws IOException
 }
 
 /**
+ * Returns true if the external storage (wether if it's emulated or not) can be
+ * written
+ * @return true if we can write to the external storage
+ * */
+public static boolean ISExternalStorageMounted()
+{
+    return android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+}
+
+/**
  * Checks if a file exists. Only accepts the following exact locations:
  *  LOCATION_ASSETS, LOCATION_PRIVATE and LOCATION_EXTERNAL.
  * Does not accept combinations of those using bitwise operations.
