@@ -1,20 +1,13 @@
 package org.gskbyte.view;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import lombok.Getter;
 
 import org.gskbyte.R;
 import org.gskbyte.bitmap.AbstractBitmapManager;
-import org.gskbyte.util.IOUtils;
 
 import android.content.Context;
-import android.content.res.Resources.NotFoundException;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
@@ -32,13 +25,16 @@ import android.widget.ProgressBar;
 
 public class AsyncImageView
 extends FrameLayout
+implements AbstractBitmapManager.BackgroundLoadListener
 {
 
 @Getter
 private final ImageView imageView;
 private final ProgressBar progressBar;
 
-private AsyncTask<String, Void, Bitmap> currentTask;
+@Getter
+private volatile boolean loading;
+private volatile String path;
 
 public AsyncImageView(Context context, AttributeSet attrs, int defStyle)
 {
@@ -46,6 +42,8 @@ public AsyncImageView(Context context, AttributeSet attrs, int defStyle)
     LayoutInflater.from(context).inflate(R.layout.async_imageview, this, true);
     imageView = (ImageView) findViewById(R.id.asyncimageview_image);
     progressBar = (ProgressBar) findViewById(R.id.asyncimageview_progress_bar);
+    
+    setLoading(true);
 }
 
 public AsyncImageView(Context context, AttributeSet attrs)
@@ -54,10 +52,13 @@ public AsyncImageView(Context context, AttributeSet attrs)
     LayoutInflater.from(context).inflate(R.layout.async_imageview, this, true);
     imageView = (ImageView) findViewById(R.id.asyncimageview_image);
     progressBar = (ProgressBar) findViewById(R.id.asyncimageview_progress_bar);
+    
+    setLoading(true);
 }
 
-public void setLoading(boolean loading)
+public synchronized void setLoading(boolean loading)
 {
+    this.loading = loading;
     imageView.setVisibility(loading ? GONE : VISIBLE);
     progressBar.setVisibility(loading ? VISIBLE : GONE);
 }
@@ -67,107 +68,34 @@ public Drawable getDrawable()
     return imageView.getDrawable();
 }
 
-public synchronized void setImageBitmap(Bitmap bitmap)
+private synchronized void setBitmap(Bitmap bitmap)
 {
-    if(currentTask != null) {
-        currentTask.cancel(true);
-        currentTask = null;
-    }
-    
     if(bitmap != null && !bitmap.isRecycled()) {
-        imageView.setImageBitmap(bitmap);
         setLoading(false);
+        imageView.setImageBitmap(bitmap);
     } else {
         imageView.setVisibility( GONE );
         progressBar.setVisibility( GONE );
     }
 }
 
-public synchronized void setImageBitmap(int location, String path)
-{
-    if(path != null) {
-        if(currentTask != null) {
-            currentTask.cancel(true);
-            currentTask = null;
-        }
-        setLoading(true);
-        
-        currentTask = new LoadBitmapFromFileTask(location);
-        currentTask.execute(path);
-    } else {
-        setImageBitmap(null);
-    }
-}
-
 public synchronized void setImageBitmap(AbstractBitmapManager manager, String path)
 {
-    if(path != null && manager.isBitmapLoaded(path)) {
-        setImageBitmap( manager.get(path) );
+    this.path = path;
+    Bitmap bitmap = manager.getInBackground(path, this);
+    if(bitmap != null) {
+        setBitmap(bitmap);
     } else {
-        if(currentTask != null) {
-            currentTask.cancel(true);
-            currentTask = null;
-        }
         setLoading(true);
-        currentTask = new LoadBitmapFromManagerTask(manager);
-        currentTask.execute(path);
     }
 }
 
-private final class LoadBitmapFromFileTask
-extends AsyncTask<String, Void, Bitmap>
+@Override
+public synchronized void bitmapLoadedInManager(Bitmap bitmap, String loadedPath, AbstractBitmapManager manager)
 {
-    private final int location;
-    public LoadBitmapFromFileTask(int location)
-    {
-        this.location = location;
+    if(loadedPath.equals(this.path)) {
+        setBitmap(bitmap);
     }
-
-    @Override
-    protected Bitmap doInBackground(String... params)
-    {
-        try {
-            InputStream is = IOUtils.GetInputStreamForDrawable(location, params[0], getContext());
-            return BitmapFactory.decodeStream(is);
-        } catch (NotFoundException e) {
-            return null;
-        } catch (IOException e) {
-            return null;
-        }
-    }
-    
-    @Override
-    protected void onPostExecute( Bitmap result )
-    {
-        super.onPostExecute(result);
-        setImageBitmap(result);  
-    }
-
-}
-
-private final class LoadBitmapFromManagerTask
-extends AsyncTask<String, Void, Bitmap>
-{
-    private final AbstractBitmapManager manager;    
-    
-    public LoadBitmapFromManagerTask(AbstractBitmapManager manager)
-    {
-        this.manager = manager;
-    }
-    
-    @Override
-    protected Bitmap doInBackground(String... params)
-    {
-        return manager.get(params[0]);
-    }
-    
-    @Override
-    protected void onPostExecute( Bitmap result )
-    {
-        super.onPostExecute(result);
-        setImageBitmap(result);  
-    }
-
 }
 
 }

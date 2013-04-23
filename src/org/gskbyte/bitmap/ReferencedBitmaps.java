@@ -58,6 +58,15 @@ public void addPath(String path)
 }
 
 /**
+ * Indicates if this contains the given path.
+ * @return true if there is a bitmap reference for the given path
+ * */
+public boolean containsPath(String path)
+{
+    return paths.contains(path);
+}
+
+/**
  * Returns true if the given Bitmap is present in memory. Asks the underlying manager.
  * @param The bitmap's path
  * @returns true if a Bitmap for the given path is loaded into memory

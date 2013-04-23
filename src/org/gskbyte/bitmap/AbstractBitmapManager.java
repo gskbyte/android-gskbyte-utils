@@ -2,7 +2,9 @@ package org.gskbyte.bitmap;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.gskbyte.util.IOUtils;
@@ -12,6 +14,7 @@ import android.content.Context;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 
 /**
  * AbstractBitmapManager class
@@ -28,8 +31,15 @@ import android.graphics.BitmapFactory;
 public abstract class AbstractBitmapManager
 {
 
+public final static int MAX_LOAD_THREADS = 2;
+
 protected final Context context;
 protected final Map<String, BitmapRef> references = new HashMap<String, BitmapRef>();
+
+/* Used for background work */
+private final Map<String, HashSet<BackgroundLoadListener>> backgroundListeners = new HashMap<String, HashSet<BackgroundLoadListener>>();
+private final ArrayList<AsyncLoadTask> backgroundLoadTasks = new ArrayList<AsyncLoadTask>();
+private final ArrayList<AsyncLoadTask> runningLoadTasks = new ArrayList<AsyncLoadTask>();
 
 /**
  * Default constructor.
@@ -111,7 +121,7 @@ public boolean existsBitmapFile(String path)
  * Returns a bitmap given a path.
  * @param path The bitmap's path, used as a key to retrieve it.
  * */
-public Bitmap get(String path)
+public synchronized Bitmap get(String path)
 {
     BitmapRef ref = references.get(path);
     if(ref != null) {
@@ -188,5 +198,98 @@ protected final Bitmap loadBitmap(String path)
 public abstract void freeResources();
 
 }
+
+/**
+ * Classes who want to load bitmaps in background must implement this interface,
+ * so that they can be called.
+ * */
+public interface BackgroundLoadListener
+{
+    public void bitmapLoadedInManager(Bitmap bitmap, String path, AbstractBitmapManager manager);
+}
+
+/**
+ * Returns a bitmap given a path, loading it in background if needed. In this case, no listener will be called.
+ * If the Bitmap is already available, it is immediately returned.
+ * @param path The bitmap's path, used as a key to retrieve it.
+ * @param listener The listener class who will be called once the bitmap is loaded
+ * @return the requested Bitmap, if it's already loaded
+ * */
+
+public synchronized Bitmap getInBackground(String path, BackgroundLoadListener listener)
+{
+    BitmapRef ref = references.get(path);
+    if(ref != null) {
+        if(ref.isLoaded()) {
+            return ref.getBitmap();
+        } else {
+            
+            HashSet<BackgroundLoadListener> listeners = backgroundListeners.get(path);
+            if(listeners == null) {
+                listeners = new HashSet<BackgroundLoadListener>();
+                backgroundListeners.put(path, listeners);
+                
+                AsyncLoadTask task = new AsyncLoadTask(path);
+                backgroundLoadTasks.add(task);
+            }
+            listeners.add(listener);
+            processLoadTaskQueue();
+            
+            return null;
+        }
+    } else {
+        Logger.error(getClass(), "Trying to retrieve bitmap without reference: "+path);
+        return null;
+    } 
+}
+
+private synchronized void processLoadTaskQueue()
+{
+    while(backgroundLoadTasks.size()>0 && runningLoadTasks.size()<MAX_LOAD_THREADS) {
+        AsyncLoadTask task = backgroundLoadTasks.get(0);
+        backgroundLoadTasks.remove(0);
+        runningLoadTasks.add(task);
+        task.execute();
+    }
+}
+
+private synchronized void callListeners(AsyncLoadTask task, Bitmap bitmap)
+{
+    HashSet<BackgroundLoadListener> listeners = backgroundListeners.get(task.path);
+    for(BackgroundLoadListener l : listeners) {
+        l.bitmapLoadedInManager(bitmap, task.path, AbstractBitmapManager.this);
+    }
+    
+    backgroundListeners.remove(task.path);
+    runningLoadTasks.remove(task);
+    
+    processLoadTaskQueue();
+}
+
+/**
+ * AsyncTask used to load Bitmaps in background
+ * */
+private final class AsyncLoadTask
+extends AsyncTask<Void, Void, Bitmap>
+{
+    final String path;
+    
+    public AsyncLoadTask(String path)
+    {
+        this.path = path;
+    }
+    
+    @Override
+    protected Bitmap doInBackground(Void... params)
+    {
+        return AbstractBitmapManager.this.get(path);
+    }
+    
+    protected void onPostExecute(Bitmap bitmap)
+    {
+        callListeners(this, bitmap);
+    }
+}
+
 
 }
