@@ -253,6 +253,35 @@ public static InputStream GetInputStreamCombinedLocation(int p_location, String 
 }
 
 /**
+ * Returns the integer id for a given drawable name.
+ * @param name The image name, without path separators
+ * @param context The context used to search the file
+ * @return The id for the requested resource, 0 if not found
+ * */
+public static int GetResourceIdentifierForDrawable(String name, Context context)
+{
+    final Resources resources = context.getResources();
+    int id = resources.getIdentifier( LastPathComponent(name) , "drawable", context.getPackageName());
+    return id;
+}
+
+/**
+ * Returns an InputStream for a resource with the given name
+ * @param name The image name, without path separators
+ * @param context The context used to search the file
+ * @return an InputStream to the drawable file
+ * @throws Resources.NotFoundException if the file does not exist.
+ * */
+private static InputStream GetInputStreamForDrawable(String name, Context context)
+        throws Resources.NotFoundException
+{
+    int identifier = GetResourceIdentifierForDrawable(name, context);
+    final Resources resources = context.getResources();
+    return resources.openRawResource(identifier);
+}
+
+
+/**
  * Get an InputStream given a location and a file. The location can be a logic combination of the
  * default ones. The file is searched from the outside to the outside, this means the following
  * order: external -> private -> assets -> resources (under res/drawable)
@@ -270,9 +299,13 @@ public static InputStream GetInputStreamForDrawable(int location, String path, C
         return is;
     } catch (IOException e) {
         if((location & LOCATION_RESOURCES) != 0) {
-            final Resources resources = context.getResources();
-            int id = resources.getIdentifier( LastPathComponent(path) , "drawable", context.getPackageName());
-            return resources.openRawResource(id);
+            return GetInputStreamForDrawable(LastPathComponent(path), context);
+        } else {
+            throw e;
+        }
+    } catch (IllegalArgumentException e) {
+        if((location & LOCATION_RESOURCES) != 0) {
+            return GetInputStreamForDrawable(LastPathComponent(path), context);
         } else {
             throw e;
         }

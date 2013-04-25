@@ -16,12 +16,15 @@
     </declare-styleable>
     
     <attr name="font" format="string"/>
+    <attr name="html_text" format="string"/>
 
     <declare-styleable name="org.gskbyte.view.FontableTextView">
         <attr name="font" />
+        <attr name="html_text"/>
     </declare-styleable>
     <declare-styleable name="org.gskbyte.view.FontableButton">
         <attr name="font" />
+        <attr name="html_text"/>
     </declare-styleable>
     <declare-styleable name="org.gskbyte.view.FontableEditText">
         <attr name="font" />

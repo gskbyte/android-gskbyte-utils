@@ -14,16 +14,27 @@ public FontableTextView(Context context)
 public FontableTextView(Context context, AttributeSet attrs)
 {
     super(context, attrs);
-    FontUtil.setCustomFont(this,context,attrs,
-            R.styleable.org_gskbyte_view_FontableTextView,
-            R.styleable.org_gskbyte_view_FontableTextView_font);
+    initAttributes(context, attrs);
 }
 
 public FontableTextView(Context context, AttributeSet attrs, int defStyle)
 {
     super(context, attrs, defStyle);
-    FontUtil.setCustomFont(this,context,attrs,
+    initAttributes(context, attrs);
+}
+
+private void initAttributes(Context context, AttributeSet attrs)
+{
+    FontUtil.setCustomFont(this, context, attrs,
+            R.styleable.org_gskbyte_view_FontableTextView,
+            R.styleable.org_gskbyte_view_FontableTextView_font);
+    TextViewUtil.setHtmlTextFromAttributes(this, attrs,
             R.styleable.org_gskbyte_view_FontableTextView,
             R.styleable.org_gskbyte_view_FontableTextView_font);
 }
+public void setHtmlText(String html)
+{
+    TextViewUtil.setHtmlText(this, html);
+}
+
 }
