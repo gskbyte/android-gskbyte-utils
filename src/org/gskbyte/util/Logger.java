@@ -10,8 +10,6 @@
  ******************************************************************************/
 package org.gskbyte.util;
 
-import android.util.SparseArray;
-
 /**
  * Logger class that simplifies the usage of {@link android.util.Log}.
  * 
@@ -22,9 +20,6 @@ public final class Logger
 {    
 public static boolean LOG_INFO    = true;
 public static boolean LOG_DEBUG   = true;
-
-private static int CurrentTimeId = 0;
-private static final SparseArray<Long> TimeMeasurements = new SparseArray<Long>();
 
 /**
  * Log an info message, if LOG_INFO is enabled.
@@ -103,51 +98,37 @@ public static void except(Class<?> clazz, Exception e)
 { except(clazz.getSimpleName(), e); }
 
 /**
- * Utility method to start a time measurement. Returns an integer identifier
- * which needs to be used in a call to logTimeMeasurement().
+ * Utility method to start a time measurement. Returns a long value with the current time millis.
+ * This can be used later in logTimeMeasurement()
  * @return the integer id used to log the time
  * */
-public static synchronized int startTimeMeasurement()
-{
-    if(LOG_INFO) {
-        final int timeId = ++CurrentTimeId;
-        TimeMeasurements.put(timeId, System.currentTimeMillis());
-        return timeId;
-    } else {
-        return -1;
-    }
-}
+public static synchronized long startTimeMeasurement()
+{ return System.currentTimeMillis(); }
 
 /**
- * Given the integer id provided by startTimeMeasurement, logs the time passed between both calls.
+ * Given the a long millis value (for example, given by startTimeMeasurement), logs the time passed between now and the given time.
  * Logs are printed using debug level, so they depend on LOG_DEBUG's value
- * @param timeId The time id provided previously by startTimeMeasurement()
+ * @param startMillis The time when the measurement started
  * @param tag The log tag.
- * @param message The base message to print with the format #message -> #time ms
+ * @param messagePrefix The base message to print with the format #message -> #time ms
  * */
-public static synchronized void logTimeMeasurement(int timeId, String tag, String message)
+public static synchronized void logTimeMeasurement(long startMillis, String tag, String messagePrefix)
 {
     if(!LOG_DEBUG)
         return;
     
-    Long start = TimeMeasurements.get(timeId);
-    if(start != null) {
-        long time = System.currentTimeMillis()-start;
-        TimeMeasurements.remove(timeId);
-        android.util.Log.d(tag, message + " -> " + time + " ms");
-    } else {
-        android.util.Log.d(tag, "Invalid time measurement id: " + timeId);
-    }
+    final long time = System.currentTimeMillis()-startMillis;
+    android.util.Log.d(tag, messagePrefix + " -> " + time + " ms");
 }
 
 /**
- * Given the integer id provided by startTimeMeasurement, logs the time passed between both calls.
+ * Given the a long millis value (for example, given by startTimeMeasurement), logs the time passed between now and the given time.
  * Logs are printed using debug level, so they depend on LOG_DEBUG's value
  * @param timeId The time id provided previously by startTimeMeasurement()
  * @param clazz The caller's class, whose simpleName will be used as tag.
- * @param message The base message to print with the format #message -> #time ms
+ * @param messagePrefix The base message to print with the format #message -> #time ms
  * */
-public static synchronized void endTimeMeasure(int timeId, Class<?> clazz, String message)
-{ logTimeMeasurement(timeId, clazz.getSimpleName(), message); }
+public static synchronized void logTimeMeasure(int timeId, Class<?> clazz, String messagePrefix)
+{ logTimeMeasurement(timeId, clazz.getSimpleName(), messagePrefix); }
 
 }
