@@ -130,7 +130,7 @@ public static synchronized long logTimeMeasurement(long startMillis, String tag,
  * @param messagePrefix The base message to print with the format #message -> #time ms
  * @return the computed time difference, in milliseconds
  * */
-public static synchronized long logTimeMeasure(int timeId, Class<?> clazz, String messagePrefix)
-{ return logTimeMeasurement(timeId, clazz.getSimpleName(), messagePrefix); }
+public static synchronized long logTimeMeasure(long startMillis, Class<?> clazz, String messagePrefix)
+{ return logTimeMeasurement(startMillis, clazz.getSimpleName(), messagePrefix); }
 
 }
