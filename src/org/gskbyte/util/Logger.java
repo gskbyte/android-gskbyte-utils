@@ -111,14 +111,15 @@ public static synchronized long startTimeMeasurement()
  * @param startMillis The time when the measurement started
  * @param tag The log tag.
  * @param messagePrefix The base message to print with the format #message -> #time ms
+ * @return the computed time difference, in milliseconds
  * */
-public static synchronized void logTimeMeasurement(long startMillis, String tag, String messagePrefix)
+public static synchronized long logTimeMeasurement(long startMillis, String tag, String messagePrefix)
 {
-    if(!LOG_DEBUG)
-        return;
-    
-    final long time = System.currentTimeMillis()-startMillis;
-    android.util.Log.d(tag, messagePrefix + " -> " + time + " ms");
+    final long differenceMillis = System.currentTimeMillis()-startMillis;
+    if(!LOG_DEBUG) {
+        android.util.Log.d(tag, messagePrefix + " -> " + differenceMillis + " ms");
+    }
+    return differenceMillis;
 }
 
 /**
@@ -127,8 +128,9 @@ public static synchronized void logTimeMeasurement(long startMillis, String tag,
  * @param timeId The time id provided previously by startTimeMeasurement()
  * @param clazz The caller's class, whose simpleName will be used as tag.
  * @param messagePrefix The base message to print with the format #message -> #time ms
+ * @return the computed time difference, in milliseconds
  * */
-public static synchronized void logTimeMeasure(int timeId, Class<?> clazz, String messagePrefix)
-{ logTimeMeasurement(timeId, clazz.getSimpleName(), messagePrefix); }
+public static synchronized long logTimeMeasure(int timeId, Class<?> clazz, String messagePrefix)
+{ return logTimeMeasurement(timeId, clazz.getSimpleName(), messagePrefix); }
 
 }
