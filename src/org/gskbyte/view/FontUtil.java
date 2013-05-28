@@ -45,22 +45,27 @@ public static boolean setCustomFont(TextView tv, Context ctx, String asset)
     return true;
 }
 
-private static final Hashtable<String, SoftReference<Typeface>> fontCache = new Hashtable<String, SoftReference<Typeface>>();
+private static final Hashtable<String, SoftReference<Typeface>> FontCache = new Hashtable<String, SoftReference<Typeface>>();
 
 public static Typeface getFont(Context c, String name) {
-    synchronized (fontCache) {
-        if (fontCache.get(name) != null) {
-            SoftReference<Typeface> ref = fontCache.get(name);
+    synchronized (FontCache) {
+        if (FontCache.get(name) != null) {
+            SoftReference<Typeface> ref = FontCache.get(name);
             if (ref.get() != null) {
                 return ref.get();
             }
         }
+        
+        String filename = name;
+        if(!filename.endsWith(".ttf") && !name.endsWith(".otf")) {
+            filename += ".ttf";
+        }
 
         Typeface typeface = Typeface.createFromAsset(
                 c.getAssets(),
-                "fonts/" + name
+                "fonts/" + filename
         );
-        fontCache.put(name, new SoftReference<Typeface>(typeface));
+        FontCache.put(name, new SoftReference<Typeface>(typeface));
 
         return typeface;
     }

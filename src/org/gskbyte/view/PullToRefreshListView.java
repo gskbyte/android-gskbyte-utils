@@ -22,6 +22,9 @@ import android.widget.AbsListView.OnScrollListener;
 
 /**
  * A generic, customizable Android ListView implementation that has 'Pull to Refresh' functionality.
+ * 
+ * Extended and improved stuff implemented by José Alcalá Correa, original implementation by Erik Walletinsen.
+ * 
  * <p/>
  * This ListView can be used in place of the normal Android android.widget.ListView class.
  * <p/>
