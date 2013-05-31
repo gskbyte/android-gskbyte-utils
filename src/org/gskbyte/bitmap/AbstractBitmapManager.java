@@ -65,15 +65,34 @@ public AbstractBitmapManager(Context context, int numLoadThreads)
     this.numLoadThreads = Math.max(numLoadThreads, 1);
 }
 
-
 /**
  * Shortcut method to add a reference to a bitmap located under the specified location.
+ * Sets the key to be the file path.
  * @param location Integer value specifying location (@see IOUtils)
  * @param path The file's path.
  * */
 public void addPath(int location, String path)
 {
-    references.put(path, initializeReference(location, path));
+    addPath(location, path, path);
+}
+
+/**
+ * Adds a reference to a bitmap located under the specified location, with the given alias
+ * @param location Integer value specifying location (@see IOUtils)
+ * @param path The file's path.
+ * @param alias An alias for the given file
+ * */
+public void addPath(int location, String filepath, String alias)
+{
+    BitmapRef ref = references.get(alias);
+    if(ref == null) {
+        ref = references.get(filepath);
+        if(ref == null) {
+            ref = initializeReference(location, filepath);   
+            references.put(filepath, ref);         
+        }
+        references.put(alias, ref);
+    }
 }
 
 /**
@@ -122,39 +141,39 @@ public boolean isBitmapLoaded(String path)
  * @param The bitmap's path
  * @returns true if a file for the given path exists
  * */
-public boolean existsBitmapFile(String path)
+public boolean existsBitmapFile(String key)
 {
-    BitmapRef ref = references.get(path);
+    BitmapRef ref = references.get(key);
     if(ref != null) {
         return ref.existsFile();
     } else {
-        Logger.error(getClass(), "Trying to retrieve bitmap file existence without reference: "+path);
+        Logger.error(getClass(), "Trying to retrieve bitmap file existence without reference: "+key);
         return false;
     }
 }
 
 /**
  * Returns a bitmap given a path.
- * @param path The bitmap's path, used as a key to retrieve it.
+ * @param key The bitmap's path or alias, used as a key to retrieve it.
  * */
-public synchronized Bitmap get(String path)
+public synchronized Bitmap get(String key)
 {
-    BitmapRef ref = references.get(path);
+    BitmapRef ref = references.get(key);
     if(ref != null) {
         return ref.getBitmap();
     } else {
-        Logger.error(getClass(), "Trying to retrieve bitmap without reference: "+path);
+        Logger.error(getClass(), "Trying to retrieve bitmap without reference: "+key);
         return null;
     }
 }
 
 /**
  * Frees the memory occupied by a given bitmap, if loaded.
- * @param path The path for the given Bitmap
+ * @param key The path for the given Bitmap
  * */
-public void freeBitmap(String path)
+public void freeBitmap(String key)
 {
-    BitmapRef ref = references.get(path);
+    BitmapRef ref = references.get(key);
     if(ref != null)
         ref.freeResources();
 }

@@ -28,10 +28,10 @@ import android.graphics.Bitmap;
 public class ReferencedBitmaps
 {
 
-protected final Set<String> paths = new HashSet<String>();
+protected final Set<String> keys = new HashSet<String>();
 
 @Getter
-protected final AbstractBitmapManager manager;
+protected final AbstractBitmapManager bitmapManager;
 
 @Getter
 protected final int locationForBitmaps;
@@ -43,8 +43,18 @@ protected final int locationForBitmaps;
  * */
 public ReferencedBitmaps(AbstractBitmapManager manager, int locationForBitmaps)
 {
-    this.manager = manager;
+    this.bitmapManager = manager;
     this.locationForBitmaps = locationForBitmaps;
+}
+
+/**
+ * Returns the underlying bitmap manager.
+ * @deprecated Use getBitmapManager instead.
+ * */
+@Deprecated
+public AbstractBitmapManager getManager()
+{
+    return bitmapManager;
 }
 
 /**
@@ -53,17 +63,38 @@ public ReferencedBitmaps(AbstractBitmapManager manager, int locationForBitmaps)
  * */
 public void addPath(String path)
 {
-    manager.addPath(locationForBitmaps, path);
-    paths.add(path);
+    bitmapManager.addPath(locationForBitmaps, path);
+    keys.add(path);
 }
 
 /**
+ * Adds a path to a bitmap, depending on the initial default location.
+ * @param path A path to a bitmap.
+ * @param alias An extra alias to a bitmap.
+ * */
+public void addPath(String path, String alias)
+{
+    bitmapManager.addPath(locationForBitmaps, path, alias);
+    keys.add(path);
+    keys.add(alias);
+}
+
+/**
+ * @Deprecated Use containsKey, its name is more adequated
  * Indicates if this contains the given path.
  * @return true if there is a bitmap reference for the given path
  * */
+@Deprecated
 public boolean containsPath(String path)
+{ return containsKey(path); }
+
+/**
+ * Indicates if this references the given key.
+ * @return true if there is a bitmap reference for the given key
+ * */
+public boolean containsKey(String key)
 {
-    return paths.contains(path);
+    return keys.contains(key);
 }
 
 /**
@@ -71,26 +102,40 @@ public boolean containsPath(String path)
  * @param The bitmap's path
  * @returns true if a Bitmap for the given path is loaded into memory
  * */
-public boolean isBitmapLoaded(String path)
+public boolean isBitmapLoaded(String key)
 {
-    return manager.isBitmapLoaded(path);
+    return bitmapManager.isBitmapLoaded(key);
 }
 
 /**
- * Returns true if the given Bitmap's file is present in the file system. Asks the underlying manager.
+ * Returns true if the given Bitmap file is present in the file system. Asks the underlying manager.
  * @param The bitmap's path
  * @returns true if a file for the given path exists
  * */
-public boolean existsBitmapFile(String path)
+public boolean existsBitmapFile(String key)
 {
-    return manager.existsBitmapFile(path);
+    return bitmapManager.existsBitmapFile(key);
+}
+
+/**
+ * Checks the presence of all bitmaps in the file system 
+ * @returns true if all contained Bitmaps are present in the file system. Asks the underlying manager.
+ * */
+public boolean existAllBitmaps()
+{
+    for(String key : keys) {
+        if(!bitmapManager.existsBitmapFile(key))
+            return false;
+    }
+    
+    return true;
 }
 
 /**
  * Returns the number of references.
  * */
 public int size()
-{ return paths.size(); }
+{ return keys.size(); }
 
 /**
  * Returns the number of existing bitmap files from the referenced by this.
@@ -99,8 +144,8 @@ public int size()
 public int countExistingBitmapFiles()
 {
     int counter = 0;
-    for(String path : paths) {
-        if(manager.existsBitmapFile(path)) {
+    for(String k : keys) {
+        if(bitmapManager.existsBitmapFile(k)) {
             ++counter;
         }
     }
@@ -109,21 +154,32 @@ public int countExistingBitmapFiles()
 
 /**
  * Returns a bitmap given its path.
- * @param path The path to the bitmap, which depends on the default location.
+ * @param key The key for the bitmap,
  * */
-public Bitmap get(String path)
-{ return manager.get(path); }
+public Bitmap get(String key)
+{ return bitmapManager.get(key); }
+
+/**
+ * @Deprecated Use getFirstExistingKey()
+ * Returns the path for the first existing path.
+ * @return The path for the fist existing bitmap file
+ * */
+@Deprecated
+protected String getFirstExistingFilePath()
+{
+    return getFirstExistingKey();
+}
 
 /**
  * Returns the path for the first existing path.
  * @return The path for the fist existing bitmap file
  * */
-protected String getFirstExistingFilePath()
+protected String getFirstExistingKey()
 {
-    for(String path : paths) {
-        boolean exists = existsBitmapFile(path);
+    for(String key : keys) {
+        boolean exists = existsBitmapFile(key);
         if(exists)
-            return path;
+            return key;
     }
     
     return null;
@@ -143,7 +199,7 @@ public void clear(boolean releaseBitmaps)
 {
     if(releaseBitmaps)
         freeResources();
-    paths.clear();
+    keys.clear();
 }
 
 /**
@@ -151,8 +207,8 @@ public void clear(boolean releaseBitmaps)
  * */
 public void freeResources()
 {
-    for(String s : paths) {
-        manager.freeBitmap(s);
+    for(String s : keys) {
+        bitmapManager.freeBitmap(s);
     }
 }
 

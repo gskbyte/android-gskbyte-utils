@@ -116,9 +116,7 @@ public static synchronized long startTimeMeasurement()
 public static synchronized long logTimeMeasurement(long startMillis, String tag, String messagePrefix)
 {
     final long differenceMillis = System.currentTimeMillis()-startMillis;
-    if(!LOG_DEBUG) {
-        android.util.Log.d(tag, messagePrefix + " -> " + differenceMillis + " ms");
-    }
+    debug(tag, messagePrefix + " -> " + differenceMillis + " ms");
     return differenceMillis;
 }
 

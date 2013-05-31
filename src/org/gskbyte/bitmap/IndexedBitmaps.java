@@ -29,7 +29,7 @@ extends ReferencedBitmaps
 {
 
 @Getter
-protected final List<String> pathList = new ArrayList<String>();
+protected final List<String> keyList = new ArrayList<String>();
 
 /**
  * Constructor.
@@ -48,7 +48,21 @@ public IndexedBitmaps(AbstractBitmapManager manager, int locationForBitmaps)
 public void addPath(String path)
 {
     super.addPath(path);
-    pathList.add(path);
+    keyList.add(path);
+}
+
+/**
+ * Adds a path to a bitmap, depending on the initial default location, and adds
+ * its path to the end of the list.
+ * @param path A path to a bitmap.
+ * @param alias An alias for the given bitmap file
+ * */
+@Override
+public void addPath(String path, String alias)
+{
+    super.addPath(path, alias);
+    keyList.add(path);
+    keyList.add(alias);
 }
 
 /**
@@ -64,11 +78,20 @@ public void addPaths(List<String> path)
 }
 
 /**
+ * @deprecated Use getKeyAt()
  * Returns a path given the index in which it was added.
  * @param index The path's index.
  * */
+@Deprecated
 public String getPathAt(int index)
-{ return pathList.get(index); }
+{ return keyList.get(index); }
+
+/**
+ * Returns a path given the index in which it was added.
+ * @param index The key's index.
+ * */
+public String getKeyAt(int index)
+{ return keyList.get(index); }
 
 /**
  * Returns a Bitmap given the index in which its path it was added.
@@ -76,8 +99,8 @@ public String getPathAt(int index)
  * */
 public Bitmap getAt(int index)
 {
-    String path = pathList.get(index);
-    return manager.get(path);
+    String path = keyList.get(index);
+    return bitmapManager.get(path);
 }
 
 /**
@@ -87,7 +110,7 @@ public Bitmap getAt(int index)
  * */
 public boolean isBitmapLoadedAt(int index)
 {
-    return manager.isBitmapLoaded( pathList.get(index) );
+    return bitmapManager.isBitmapLoaded( keyList.get(index) );
 }
 
 /**
@@ -96,17 +119,24 @@ public boolean isBitmapLoadedAt(int index)
  * @returns true if a file for the given path index exists
  * */
 public boolean existsBitmapFileAt(int index)
-{
-    return manager.existsBitmapFile( pathList.get(index) );
-}
+{ return bitmapManager.existsBitmapFile( keyList.get(index) ); }
 
+/**
+ * @deprecated
+ * Returns the path for the first existing path. The paths are iterated in insertion order.
+ * @return The path for the fist existing bitmap file
+ * */
+@Deprecated
+@Override
+public String getFirstExistingFilePath()
+{ return getFirstExistingKey(); }
 
 /**
  * Returns the path for the first existing path. The paths are iterated in insertion order.
  * @return The path for the fist existing bitmap file
  * */
 @Override
-public String getFirstExistingFilePath()
+public String getFirstExistingKey()
 {
     for(int i=0; i<size(); ++i) {
         boolean exists = existsBitmapFileAt(i);
@@ -119,10 +149,19 @@ public String getFirstExistingFilePath()
 }
 
 /**
+ * @deprecated Use getRandomExistingKey()
  * Returns the file path for a random bitmap.
  * @return A file path for an existing bitmap file
  * */
+@Deprecated
 public String getRandomExistingFilePath()
+{ return getRandomExistingKey(); }
+
+/**
+ * Returns the file path for a random bitmap.
+ * @return A file path for an existing bitmap file
+ * */
+public String getRandomExistingKey()
 {
     final int numBitmaps = size();
     if(numBitmaps > 1) {
@@ -137,7 +176,7 @@ public String getRandomExistingFilePath()
         }
         return null;
     } else {
-        return getFirstExistingFilePath();
+        return getFirstExistingKey();
     }
 }
 
@@ -151,7 +190,7 @@ public String getRandomExistingFilePath()
 public void clear(boolean releaseBitmaps)
 {
     super.clear(releaseBitmaps);
-    paths.clear();
+    keyList.clear();
 }
 
 }
