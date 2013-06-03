@@ -60,23 +60,27 @@ public AbstractBitmapManager getManager()
 /**
  * Adds a path to a bitmap, depending on the initial default location.
  * @param path A path to a bitmap.
+ * @param alias An extra alias to a bitmap. Must have length() > 0.
  * */
-public void addPath(String path)
+public void addPath(String path, String ... aliases)
 {
-    bitmapManager.addPath(locationForBitmaps, path);
+    bitmapManager.addPath(locationForBitmaps, path, aliases);
     keys.add(path);
+    for(String alias : aliases)
+        keys.add(alias);
 }
 
 /**
- * Adds a path to a bitmap, depending on the initial default location.
+ * Adds an alias to an already referenced bitmap, depending on the initial default location.
  * @param path A path to a bitmap.
- * @param alias An extra alias to a bitmap.
+ * @param alias An extra alias to a bitmap. Must have length() > 0.
  * */
-public void addPath(String path, String alias)
+public void addAliases(String path, String ... aliases)
 {
-    bitmapManager.addPath(locationForBitmaps, path, alias);
+    bitmapManager.addAliases(path, aliases);
     keys.add(path);
-    keys.add(alias);
+    for(String alias : aliases)
+        keys.add(alias);
 }
 
 /**

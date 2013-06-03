@@ -98,7 +98,7 @@ public static String InputStreamToString( InputStream is ) throws IOException
  * written
  * @return true if we can write to the external storage
  * */
-public static boolean ISExternalStorageMounted()
+public static boolean IsExternalStorageMounted()
 {
     return android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
 }
@@ -136,6 +136,32 @@ public static boolean ExistsFile(int location, String path, Context context)
     
     throw new IllegalArgumentException("Invalid location was supplied: "+StringForLocation(location));
 }
+
+/**
+ * Get an absolute path for the given file and location. Especially useful for WebViews & Co.
+ * @param location A single location for the file. Can not be a combination of locations.
+ * @param rel_path The relative path for the file.
+ * @param context The context used to open the file.
+ * @throws IOException if the file does not exist.
+ * @throws IllegalArgumentException If the location is a combination of locations
+ * */
+public static String GetAbsolutePathForFilename(int location, String rel_path, Context context)
+        throws IOException
+{
+    switch(location) {
+    case LOCATION_RESOURCES:
+        return "file:///android_res/"+rel_path;
+    case LOCATION_ASSETS:
+        return "file:///android_asset/"+rel_path;
+    case LOCATION_PRIVATE:
+        return "file://"+context.getFilesDir().getAbsolutePath() + "/" + rel_path;
+    case LOCATION_EXTERNAL:
+        File externalDir = Environment.getExternalStorageDirectory();
+        return "file://"+externalDir + "/" + rel_path;
+    }
+    throw new IllegalArgumentException("Invalid origin location: "+StringForLocation(location));
+}
+
 
 /**
  * Deletes a file on writable space.
@@ -459,9 +485,32 @@ public final static String LastPathComponent(String path)
 {
     final int index = path.lastIndexOf("/");
     if(index>=0/* && index<path.length()*/) {
-        return path.substring(index+1, path.length());
+        if(index == path.length()-1)
+            return "";
+        else
+            return path.substring(index+1, path.length());
     } else {
         return path;
+    }
+}
+
+/**
+ * Returns a extension for the filename.
+ * @param path A path from where to retrieve the extension.
+ * @return A String containing the extension, "" if it has no extension, or null if it's a folder
+ * */
+public final static String Extension(String path)
+{
+    String lastComponent = LastPathComponent(path);
+    if(lastComponent.length() > 0) {
+        int point = lastComponent.lastIndexOf('.');
+        if(point > 0) {
+            return lastComponent.substring(point+1, lastComponent.length());
+        } else {
+            return "";
+        }
+    } else {
+        return null;
     }
 }
 

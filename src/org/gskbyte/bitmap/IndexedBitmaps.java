@@ -43,26 +43,27 @@ public IndexedBitmaps(AbstractBitmapManager manager, int locationForBitmaps)
  * Adds a path to a bitmap, depending on the initial default location, and adds
  * its path to the end of the list.
  * @param path A path to a bitmap.
+ * @param aliases Aliases for the given bitmap file. All must have length() > 0.
  * */
 @Override
-public void addPath(String path)
+public void addPath(String path, String ... aliases)
 {
-    super.addPath(path);
+    super.addPath(path, aliases);
     keyList.add(path);
+    for(String alias : aliases)
+        keyList.add(alias);
 }
 
 /**
- * Adds a path to a bitmap, depending on the initial default location, and adds
- * its path to the end of the list.
+ * Adds an alias to an already referenced bitmap, depending on the initial default location.
  * @param path A path to a bitmap.
- * @param alias An alias for the given bitmap file
+ * @param alias An extra alias to a bitmap. Must have length() > 0.
  * */
-@Override
-public void addPath(String path, String alias)
+public void addAliases(String path, String ... aliases)
 {
-    super.addPath(path, alias);
-    keyList.add(path);
-    keyList.add(alias);
+    super.addAliases(path, aliases);
+    for(String alias : aliases)
+        keyList.add(alias);
 }
 
 /**

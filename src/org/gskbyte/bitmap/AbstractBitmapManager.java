@@ -66,32 +66,43 @@ public AbstractBitmapManager(Context context, int numLoadThreads)
 }
 
 /**
- * Shortcut method to add a reference to a bitmap located under the specified location.
- * Sets the key to be the file path.
- * @param location Integer value specifying location (@see IOUtils)
- * @param path The file's path.
- * */
-public void addPath(int location, String path)
-{
-    addPath(location, path, path);
-}
-
-/**
  * Adds a reference to a bitmap located under the specified location, with the given alias
  * @param location Integer value specifying location (@see IOUtils)
  * @param path The file's path.
- * @param alias An alias for the given file
+ * @param aliases Aliases for the given file.  All must have length() > 0.
+ * @return true If the reference has just been created
  * */
-public void addPath(int location, String filepath, String alias)
+public boolean addPath(int location, String filepath, String ... aliases)
 {
-    BitmapRef ref = references.get(alias);
+    boolean isNewRef = false;
+    BitmapRef ref = references.get(filepath);
     if(ref == null) {
-        ref = references.get(filepath);
-        if(ref == null) {
-            ref = initializeReference(location, filepath);   
-            references.put(filepath, ref);         
+        ref = initializeReference(location, filepath);   
+        references.put(filepath, ref);   
+        isNewRef = true;
+    }
+    
+    if(aliases.length>0)
+        addAliases(filepath, aliases);
+    
+    return isNewRef;
+}
+
+/**
+ * Adds aliases for an existing mapped filepath.
+ * @param filepath The file path for which to define aliases
+ * @param aliases Alisases to define
+ * @throws IllegalArgumentException if the given filepath was not mapped
+ * */
+public void addAliases(String filepath, String ... aliases)
+{
+    BitmapRef ref = references.get(filepath);
+    if(ref != null) {
+        for(String alias : aliases) {
+            references.put(alias,  ref);
         }
-        references.put(alias, ref);
+    } else {
+        throw new IllegalArgumentException("Filepath not mapped: " + filepath);
     }
 }
 
@@ -131,7 +142,7 @@ public boolean isBitmapLoaded(String path)
     if(ref != null) {
         return ref.isLoaded();
     } else {
-        Logger.error(getClass(), "Trying to retrieve bitmap presence without reference: "+path);
+        Logger.error(getClass(), "Trying to retrieve presence for not referenced bitmap: "+path);
         return false;
     }
 }
@@ -147,7 +158,7 @@ public boolean existsBitmapFile(String key)
     if(ref != null) {
         return ref.existsFile();
     } else {
-        Logger.error(getClass(), "Trying to retrieve bitmap file existence without reference: "+key);
+        Logger.error(getClass(), "Trying to retrieve existence for not referenced bitmap: "+key);
         return false;
     }
 }
@@ -162,7 +173,24 @@ public synchronized Bitmap get(String key)
     if(ref != null) {
         return ref.getBitmap();
     } else {
-        Logger.error(getClass(), "Trying to retrieve bitmap without reference: "+key);
+        Logger.error(getClass(), "Trying to retrieve not referenced bitmap: "+key);
+        return null;
+    }
+}
+
+/**
+ * Returns a bitmap's absolute path for a given key.
+ * @param key The bitmap's path or alias, used as a key to retrieve it.
+ * @return The path for the given key if found, null if not.
+ * @throws IOException if an error occurs while getting the absolute path 
+ * */
+public String getAbsolutePathForKey(String key) throws IOException 
+{
+    BitmapRef ref = references.get(key);
+    if(ref != null) {
+        return IOUtils.GetAbsolutePathForFilename(ref.location, ref.path, context);
+    } else {
+        Logger.error(getClass(), "Trying to retrieve not referenced bitmap path: "+key);
         return null;
     }
 }
