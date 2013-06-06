@@ -30,6 +30,8 @@ public class ReferencedBitmaps
 
 protected final Set<String> keys = new HashSet<String>();
 
+protected int uniqueCounter = 0;
+
 @Getter
 protected final AbstractBitmapManager bitmapManager;
 
@@ -65,6 +67,8 @@ public AbstractBitmapManager getManager()
 public void addPath(String path, String ... aliases)
 {
     bitmapManager.addPath(locationForBitmaps, path, aliases);
+    if(!keys.contains(path))
+        ++uniqueCounter;
     keys.add(path);
     for(String alias : aliases)
         keys.add(alias);
@@ -97,9 +101,7 @@ public boolean containsPath(String path)
  * @return true if there is a bitmap reference for the given key
  * */
 public boolean containsKey(String key)
-{
-    return keys.contains(key);
-}
+{ return keys.contains(key); }
 
 /**
  * Returns true if the given Bitmap is present in memory. Asks the underlying manager.
@@ -107,9 +109,7 @@ public boolean containsKey(String key)
  * @returns true if a Bitmap for the given path is loaded into memory
  * */
 public boolean isBitmapLoaded(String key)
-{
-    return bitmapManager.isBitmapLoaded(key);
-}
+{ return bitmapManager.isBitmapLoaded(key); }
 
 /**
  * Returns true if the given Bitmap file is present in the file system. Asks the underlying manager.
@@ -117,9 +117,7 @@ public boolean isBitmapLoaded(String key)
  * @returns true if a file for the given path exists
  * */
 public boolean existsBitmapFile(String key)
-{
-    return bitmapManager.existsBitmapFile(key);
-}
+{ return bitmapManager.existsBitmapFile(key); }
 
 /**
  * Checks the presence of all bitmaps in the file system 
@@ -139,7 +137,7 @@ public boolean existAllBitmaps()
  * Returns the number of references.
  * */
 public int size()
-{ return keys.size(); }
+{ return uniqueCounter; }
 
 /**
  * Returns the number of existing bitmap files from the referenced by this.

@@ -33,9 +33,9 @@ import android.os.AsyncTask;
 public abstract class AbstractBitmapManager
 {
 
-
 protected final Context context;
 protected final Map<String, BitmapRef> references = new HashMap<String, BitmapRef>();
+protected int uniqueCounter;
 
 /* Used for background work */
 private final Map<String, HashSet<BackgroundLoadListener>> backgroundListeners = new HashMap<String, HashSet<BackgroundLoadListener>>();
@@ -63,6 +63,7 @@ public AbstractBitmapManager(Context context, int numLoadThreads)
 {
     this.context = context;
     this.numLoadThreads = Math.max(numLoadThreads, 1);
+    this.uniqueCounter = 0;
 }
 
 /**
@@ -77,9 +78,10 @@ public boolean addPath(int location, String filepath, String ... aliases)
     boolean isNewRef = false;
     BitmapRef ref = references.get(filepath);
     if(ref == null) {
-        ref = initializeReference(location, filepath);   
+        ref = initializeReference(location, filepath);
         references.put(filepath, ref);   
         isNewRef = true;
+        ++uniqueCounter;
     }
     
     if(aliases.length>0)
@@ -121,10 +123,10 @@ public void clear()
 { references.clear(); }
 
 /**
- * Returns the number of references stored in the manager.
+ * Returns the number of different unique references stored in the manager.
  * */
 public int size()
-{ return references.size(); }
+{ return uniqueCounter; }
 
 /**
  * Returns the number of loaded bitmaps

@@ -50,20 +50,6 @@ public void addPath(String path, String ... aliases)
 {
     super.addPath(path, aliases);
     keyList.add(path);
-    for(String alias : aliases)
-        keyList.add(alias);
-}
-
-/**
- * Adds an alias to an already referenced bitmap, depending on the initial default location.
- * @param path A path to a bitmap.
- * @param alias An extra alias to a bitmap. Must have length() > 0.
- * */
-public void addAliases(String path, String ... aliases)
-{
-    super.addAliases(path, aliases);
-    for(String alias : aliases)
-        keyList.add(alias);
 }
 
 /**

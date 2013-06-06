@@ -15,6 +15,11 @@ package org.gskbyte.util;
  * 
  * Allows to configure globally if messages with info and debug levels will be
  * printed.
+ * 
+ * I know that some of this class' methods do not follow my convention of starting static methods
+ * with Uppercase, but it's just to make it more similar to android.util.Log.
+ * 
+ * Both versions are provided.
  * */
 public final class Logger
 {    
@@ -128,7 +133,7 @@ public static synchronized long logTimeMeasurement(long startMillis, String tag,
  * @param messagePrefix The base message to print with the format #message -> #time ms
  * @return the computed time difference, in milliseconds
  * */
-public static synchronized long logTimeMeasure(long startMillis, Class<?> clazz, String messagePrefix)
+public static synchronized long logTimeMeasurement(long startMillis, Class<?> clazz, String messagePrefix)
 { return logTimeMeasurement(startMillis, clazz.getSimpleName(), messagePrefix); }
 
 }
