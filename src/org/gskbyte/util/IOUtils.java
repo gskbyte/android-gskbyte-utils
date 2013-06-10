@@ -164,11 +164,12 @@ public static String GetAbsolutePathForFilename(int location, String rel_path, C
 
 
 /**
- * Deletes a file on writable space.
+ * Deletes a file on writable space. Does not delete directories if they are not empty.
  * @param location Location, can be only LOCATION_PRIVATE and LOCATION_EXTERNAL
  * @param path The path of the file.
  * @param context The context needed to access files.
  * @throws IllegalArgumentException If the location is invalid
+ * @return true if the file was successfully deleted
  * */
 public static boolean DeleteFile(int location, String path, Context context)
 {
@@ -187,6 +188,31 @@ public static boolean DeleteFile(int location, String path, Context context)
     
 	//Logger.info("IOUtils", "Deleting file: "+path + "(sucess: "+success+")");
 	return success;
+}
+
+/**
+ * Deletes a file on writable space, including the files included in it if it's a directory.
+ * @param location Location, can be only LOCATION_PRIVATE and LOCATION_EXTERNAL. Actually, it does make only sense it to be LOCATION_EXTERNAL, as LOCATION_PRIVATE doesn't allow subdirectories.
+ * @param path The path of the file.
+ * @param context The context needed to access files.
+ * @throws IllegalArgumentException If the location is invalid
+ * @return true if all files were successfully deleted
+ * */
+public static boolean DeleteFileRecursive(int location, String path, Context context)
+{
+    boolean totalSuccess = true;
+    if(location == LOCATION_EXTERNAL) {
+        final File f = new File(Environment.getExternalStorageDirectory(), path);
+        if(f.isDirectory()) {
+            String [] children = f.list();
+            for(String child : children) {
+                String childPath = path + "/" + child;
+                totalSuccess &= DeleteFileRecursive(location, childPath, context);
+            }
+        }
+    }
+    
+    return totalSuccess & DeleteFile(location, path, context);
 }
 
 /**
@@ -251,7 +277,7 @@ public static InputStream GetInputStream(int location, String path, Context cont
 /**
  * Get an InputStream given a location and a file. The location can be a logic combination of the
  * default ones. The file is searched from the outside to the outside, this means the following
- * order: external -> private -> assets. Resources is not explored
+ * order: external -> private -> assets. Resources is not explored.
  * @param location A single location for the file. Can be a combination of locations.
  * @param path The path for the file.
  * @param context The context used to open the file.
@@ -448,8 +474,7 @@ public static void CopyFile(int location, String originPath, String destinationP
  * @throws IOException if the origin file can not be read or the destination file can not be created.
  * @throws IllegalArgumentException If the location is other than LOCATION_PRIVATE or LOCATION_EXTERNAL.
  * */
-public static void MoveFile(int location, String originPath,
-        String destinationPath, Context context)
+public static void MoveFile(int location, String originPath, String destinationPath, Context context)
     throws IOException
 {
     File inputFile = null, outputFile = null;
