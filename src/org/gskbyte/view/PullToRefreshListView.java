@@ -8,10 +8,15 @@ import android.view.animation.*;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.*;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import org.gskbyte.R;
+import org.gskbyte.util.Logger;
 
 /**
  * A generic, customizable Android ListView implementation that has 'Pull to Refresh' functionality.
@@ -30,6 +35,7 @@ import org.gskbyte.R;
  * https://github.com/erikwt/PullToRefresh-ListView
  *
  * @author Erik Wallentinsen <dev+ptr@erikw.eu>
+ * @author Jose Alcal‡ Correa <gskbyte@gmail.com> (small improvements)
  * @version 1.0.0
  */
 public class PullToRefreshListView
@@ -70,7 +76,7 @@ private String  pullToRefreshText;
 private String  releaseToRefreshText;
 private String  refreshingText;
 private String  lastUpdatedText;
-private SimpleDateFormat lastUpdatedDateFormat = new SimpleDateFormat("dd/MM HH:mm");
+private DateFormat lastUpdatedDateFormat = new SimpleDateFormat("dd.MM HH:mm");
 
 private float                   previousY;
 private int                     headerPadding;
@@ -82,46 +88,31 @@ private RotateAnimation         flipAnimation, reverseFlipAnimation;
 private ImageView               image;
 private ProgressBar             spinner;
 private TextView                text, lastUpdatedTextView;
+@Setter
 private OnItemClickListener     onItemClickListener;
+@Setter
 private OnItemLongClickListener onItemLongClickListener;
+@Setter
 private OnRefreshListener       onRefreshListener;
+@Getter
+private boolean                 pullEnabled;
 
-public PullToRefreshListView(Context context, AttributeSet attrs){
+public PullToRefreshListView(Context context, AttributeSet attrs)
+{
     super(context, attrs);
     init();
 }
 
-public PullToRefreshListView(Context context, AttributeSet attrs, int defStyle){
+public PullToRefreshListView(Context context, AttributeSet attrs, int defStyle)
+{
     super(context, attrs, defStyle);
     init();
 }
-
-@Override
-public void setOnItemClickListener(OnItemClickListener onItemClickListener){
-    this.onItemClickListener = onItemClickListener;
-}
-
-@Override
-public void setOnItemLongClickListener(OnItemLongClickListener onItemLongClickListener){
-    this.onItemLongClickListener = onItemLongClickListener;
-}
-
-/**
- * Activate an OnRefreshListener to get notified on 'pull to refresh'
- * events.
- *
- * @param onRefreshListener The OnRefreshListener to get notified
- */
-public void setOnRefreshListener(OnRefreshListener onRefreshListener){
-    this.onRefreshListener = onRefreshListener;
-}
-
 /**
  * @return If the list is in 'Refreshing' state
  */
-public boolean isRefreshing(){
-    return state == State.REFRESHING;
-}
+public boolean isRefreshing()
+{ return state == State.REFRESHING; }
 
 /**
  * Default is false. When lockScrollWhileRefreshing is set to true, the list
@@ -129,9 +120,8 @@ public boolean isRefreshing(){
  *
  * @param lockScrollWhileRefreshing
  */
-public void setLockScrollWhileRefreshing(boolean lockScrollWhileRefreshing){
-    this.lockScrollWhileRefreshing = lockScrollWhileRefreshing;
-}
+public void setLockScrollWhileRefreshing(boolean lockScrollWhileRefreshing)
+{ this.lockScrollWhileRefreshing = lockScrollWhileRefreshing; }
 
 /**
  * Default is false. Show the last-updated date/time in the 'Pull ro Refresh'
@@ -139,7 +129,8 @@ public void setLockScrollWhileRefreshing(boolean lockScrollWhileRefreshing){
  *
  * @param showLastUpdatedText
  */
-public void setShowLastUpdatedText(boolean showLastUpdatedText){
+public void setShowLastUpdatedText(boolean showLastUpdatedText)
+{
     this.showLastUpdatedText = showLastUpdatedText;
     if(!showLastUpdatedText) lastUpdatedTextView.setVisibility(View.GONE);
 }
@@ -151,16 +142,16 @@ public void setShowLastUpdatedText(boolean showLastUpdatedText){
  *
  * @param lastUpdatedDateFormat
  */
-public void setLastUpdatedDateFormat(SimpleDateFormat lastUpdatedDateFormat){
-    this.lastUpdatedDateFormat = lastUpdatedDateFormat;
-}
+public void setLastUpdatedDateFormat(SimpleDateFormat lastUpdatedDateFormat)
+{ this.lastUpdatedDateFormat = lastUpdatedDateFormat; }
 
 /**
  * Explicitly set the state to refreshing. This
  * is useful when you want to show the spinner and 'Refreshing' text when
  * the refresh was not triggered by 'pull to refresh', for example on start.
  */
-public void setRefreshing(){
+public void setRefreshing()
+{
     state = State.REFRESHING;
     scrollTo(0, 0);
     setUiRefreshing();
@@ -171,7 +162,8 @@ public void setRefreshing(){
  * Set the state back to 'pull to refresh'. Call this method when refreshing
  * the data is finished.
  */
-public void onRefreshComplete(){
+public void onRefreshComplete()
+{
     state = State.PULL_TO_REFRESH;
     resetHeader();
     lastUpdated = System.currentTimeMillis();
@@ -182,7 +174,8 @@ public void onRefreshComplete(){
  *
  * @param pullToRefreshText Text
  */
-public void setTextPullToRefresh(String pullToRefreshText){
+public void setTextPullToRefresh(String pullToRefreshText)
+{
     this.pullToRefreshText = pullToRefreshText;
     if(state == State.PULL_TO_REFRESH){
         text.setText(pullToRefreshText);
@@ -194,7 +187,8 @@ public void setTextPullToRefresh(String pullToRefreshText){
  *
  * @param releaseToRefreshText Text
  */
-public void setTextReleaseToRefresh(String releaseToRefreshText){
+public void setTextReleaseToRefresh(String releaseToRefreshText)
+{
     this.releaseToRefreshText = releaseToRefreshText;
     if(state == State.RELEASE_TO_REFRESH){
         text.setText(releaseToRefreshText);
@@ -206,7 +200,8 @@ public void setTextReleaseToRefresh(String releaseToRefreshText){
  *
  * @param refreshingText Text
  */
-public void setTextRefreshing(String refreshingText){
+public void setTextRefreshing(String refreshingText)
+{
     this.refreshingText = refreshingText;
     if(state == State.REFRESHING){
         text.setText(refreshingText);
@@ -246,12 +241,15 @@ private void init(){
 
     ViewTreeObserver vto = header.getViewTreeObserver();
     vto.addOnGlobalLayoutListener(new PTROnGlobalLayoutListener());
+    
+    pullEnabled = true;
 
     super.setOnItemClickListener(new PTROnItemClickListener());
     super.setOnItemLongClickListener(new PTROnItemLongClickListener());
 }
 
-private void setHeaderPadding(int padding){
+private void setHeaderPadding(int padding)
+{
     headerPadding = padding;
 
     MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) header.getLayoutParams();
@@ -259,8 +257,13 @@ private void setHeaderPadding(int padding){
     header.setLayoutParams(mlp);
 }
 
+// Set to false to go emulate a normal ListView
+public void setPullEnabled(boolean pullEnabled)
+{ this.pullEnabled = pullEnabled; }
+
 @Override
-public boolean onTouchEvent(MotionEvent event){
+public boolean onTouchEvent(MotionEvent event)
+{
     if(lockScrollWhileRefreshing
             && (state == State.REFRESHING || getAnimation() != null && !getAnimation().hasEnded())){
         return true;
@@ -290,12 +293,11 @@ public boolean onTouchEvent(MotionEvent event){
             break;
 
         case MotionEvent.ACTION_MOVE:
-            if(previousY != -1){
+            if(previousY != -1 && pullEnabled){
                 float y = event.getY();
                 float diff = y - previousY;
                 if(diff > 0) diff /= PULL_RESISTANCE;
                 previousY = y;
-
                 int newHeaderPadding = Math.max(Math.round(headerPadding + diff), -header.getHeight());
 
                 if(newHeaderPadding != headerPadding && state != State.REFRESHING){
