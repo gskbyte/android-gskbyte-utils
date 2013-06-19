@@ -48,9 +48,9 @@ public LRUBitmapManager(Context context, int numLoadThreads, float memoryRate)
     this.bitmapCache = new LRUBitmapCache<String>(memoryRate);
 }
 
-protected BitmapRef initializeReference(int location, String path)
+protected BitmapRef initializeReference(int location, int sampleSize, String path)
 {
-    return new LRUBitmapRef(location, path);
+    return new LRUBitmapRef(location, sampleSize, path);
 }
 
 
@@ -90,9 +90,9 @@ final class LRUBitmapRef
 extends AbstractBitmapManager.BitmapRef
 {
 
-public LRUBitmapRef(int location, String path)
+public LRUBitmapRef(int location, int sampleSize, String path)
 {
-    super(location, path);
+    super(location, sampleSize, path);
 }
 
 @Override

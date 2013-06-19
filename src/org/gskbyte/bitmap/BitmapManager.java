@@ -38,9 +38,9 @@ public BitmapManager(Context context, int numLoadThreads)
 }
 
 @Override
-protected BitmapRef initializeReference(int location, String path)
+protected BitmapRef initializeReference(int location, int sampleSize, String path)
 {
-    return new BitmapReference(location, path);
+    return new BitmapReference(location, sampleSize, path);
 }
 
 
@@ -75,9 +75,9 @@ extends AbstractBitmapManager.BitmapRef
 
 Bitmap bitmap;
 
-public BitmapReference(int location, String path)
+public BitmapReference(int location, int sampleSize, String path)
 {
-    super(location, path);
+    super(location, sampleSize, path);
 }
 
 @Override

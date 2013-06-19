@@ -74,11 +74,22 @@ public AbstractBitmapManager(Context context, int numLoadThreads)
  * @return true If the reference has just been created
  * */
 public boolean addPath(int location, String filepath, String ... aliases)
+{ return addPath(location, 1, filepath, aliases); }
+
+/**
+ * Adds a reference to a bitmap located under the specified location, with the given alias
+ * @param location Integer value specifying location (@see IOUtils)
+ * @param sampleSize A sample size to downscale the Bitmap
+ * @param path The file's path.
+ * @param aliases Aliases for the given file.  All must have length() > 0.
+ * @return true If the reference has just been created
+ * */
+public boolean addPath(int location, int sampleSize, String filepath, String ... aliases)
 {
     boolean isNewRef = false;
     BitmapRef ref = references.get(filepath);
     if(ref == null) {
-        ref = initializeReference(location, filepath);
+        ref = initializeReference(location, sampleSize, filepath);
         references.put(filepath, ref);   
         isNewRef = true;
         ++uniqueCounter;
@@ -114,7 +125,7 @@ public void addAliases(String filepath, String ... aliases)
  * @param path The path for the bitmap, given a location
  * @return A BitmapRef object to be used to look for the Bitmap 
  * */
-protected abstract BitmapRef initializeReference(int location, String path);
+protected abstract BitmapRef initializeReference(int location, int sampleSize, String path);
 
 /**
  * Clears all references to bitmaps and frees memory.
@@ -212,7 +223,6 @@ public void freeBitmap(String key)
  * */
 public abstract void releaseAllBitmaps();
 
-
 /**
  * BitmapReference is the internal class used by the BitmapManager to store information
  * about the managed Bitmaps.
@@ -228,11 +238,13 @@ protected abstract class BitmapRef
 
 final int location;
 final String path;
+final int sampleSize; // used to downscale bitmaps, @see BitmapFactory.Options
 
-public BitmapRef(int location, String path)
+public BitmapRef(int location, int sampleSize, String path)
 {
     this.location = location;
     this.path = path;
+    this.sampleSize = sampleSize;
 }
 
 public abstract Bitmap getBitmap();
@@ -248,7 +260,14 @@ protected final Bitmap loadBitmap(String path)
     InputStream is;
     try {
         is = IOUtils.GetInputStreamForDrawable(location, path, context);
-        return BitmapFactory.decodeStream(is);
+        if(sampleSize > 1) {
+            return BitmapFactory.decodeStream(is);
+        } else {
+            // It would be good to find a more efficient way to set options while avoiding this allocation
+            BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inSampleSize = sampleSize;
+            return BitmapFactory.decodeStream(is, null, opts);
+        }
     } catch (NotFoundException e) {
         // should we say anything?
     } catch (IOException e) {
