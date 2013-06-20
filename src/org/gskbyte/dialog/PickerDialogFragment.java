@@ -11,6 +11,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.RelativeLayout;
@@ -32,25 +33,28 @@ public interface OnButtonPressedListener
 }
 
 protected static final String KEY_TITLE = "title";
+protected static final String KEY_ICON_RES = "iconRes";
 protected static final String KEY_OPTIONS = "options";
 protected static final String KEY_SELECTED_OPTIONS = "selected";
 
 protected String title;
+protected int iconRes;
 protected String [] options;
 protected boolean [] selectedOptions;
 protected boolean allOptionsSelected;
 
-private PickerTitle dialogTitleView;
-private AlertDialog dialog;
+protected PickerTitle dialogTitleView;
+protected AlertDialog dialog;
 
 private WeakReference<OnButtonPressedListener> buttonListenerRef = new WeakReference<OnButtonPressedListener>(null);
 
-public static PickerDialogFragment newInstance(String title, String [] options, boolean [] selectedOptions)
+public static PickerDialogFragment newInstance(String title, int iconRes, String [] options, boolean [] selectedOptions)
 {
     PickerDialogFragment f = new PickerDialogFragment();
     
     Bundle args = new Bundle();
     args.putString(KEY_TITLE, title);
+    args.putInt(KEY_ICON_RES, iconRes);
     args.putStringArray(KEY_OPTIONS, options);
     args.putBooleanArray(KEY_SELECTED_OPTIONS, selectedOptions);
     f.setArguments(args);
@@ -78,6 +82,7 @@ public void onCreate(Bundle savedInstanceState)
     
     // could this be done on onCreateDialog()?
     Bundle args = getArguments();
+    iconRes = args.getInt(KEY_ICON_RES, 0);
     title = args.getString(KEY_TITLE);
     options = args.getStringArray(KEY_OPTIONS);
     selectedOptions = args.getBooleanArray(KEY_SELECTED_OPTIONS);
@@ -90,6 +95,7 @@ public Dialog onCreateDialog(Bundle savedInstanceState)
     alertDialogBuilder.setMultiChoiceItems(options, selectedOptions, this);
     
     dialogTitleView = new PickerTitle(getActivity(), null);
+    dialogTitleView.setIconResource(iconRes);
     dialogTitleView.setTitle( title );
     dialogTitleView.allElements.setOnCheckedChangeListener(this);
     
@@ -139,16 +145,20 @@ protected void updateCheckStatus()
             break;
         }
     }
+    updateAllCheckedCheckBox(allOptionsSelected);
+}
+
+protected void updateAllCheckedCheckBox(boolean mark)
+{
+    dialogTitleView.allElements.setOnCheckedChangeListener(null);
+    dialogTitleView.setChecked(mark);
+    dialogTitleView.allElements.setOnCheckedChangeListener(this);
 }
 
 public void onClick(DialogInterface dialog, int which, boolean isChecked)
 {
     selectedOptions[which] = isChecked;
     updateCheckStatus();
-    
-    dialogTitleView.allElements.setOnCheckedChangeListener(null);
-    dialogTitleView.setChecked(allOptionsSelected);
-    dialogTitleView.allElements.setOnCheckedChangeListener(this);
 }
 
 @Override
@@ -162,9 +172,11 @@ public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
     updateCheckStatus();
 }
 
+@SuppressWarnings("unused")
 private static class PickerTitle
 extends RelativeLayout
 {
+    private ImageView icon;
     private TextView title;
     private CheckBox allElements;
     
@@ -172,8 +184,11 @@ extends RelativeLayout
     {
         super(context, attrs);
         LayoutInflater.from(context).inflate(R.layout.view_data_picker_title, this);
+        icon = (ImageView) findViewById(R.id.icon);
         title = (TextView) findViewById(R.id.title);
         allElements = (CheckBox) findViewById(R.id.all_elements);
+        
+        setIconResource(0);
     }
     
     public void setTitle(CharSequence text)
@@ -184,6 +199,16 @@ extends RelativeLayout
     
     public boolean isChecked(boolean checked)
     { return allElements.isChecked(); }
+    
+    public void setIconResource(int resId)
+    {
+        if(resId != 0) {
+            icon.setVisibility(VISIBLE); icon.setImageResource(resId);
+        } else {
+            icon.setVisibility(GONE); 
+        }
+    }
+    
 }
 
 }

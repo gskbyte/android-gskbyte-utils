@@ -35,7 +35,7 @@ import org.gskbyte.util.Logger;
  * https://github.com/erikwt/PullToRefresh-ListView
  *
  * @author Erik Wallentinsen <dev+ptr@erikw.eu>
- * @author Jose Alcal‡ Correa <gskbyte@gmail.com> (small improvements)
+ * @author Jose Alcalï¿½ Correa <gskbyte@gmail.com> (small improvements)
  * @version 1.0.0
  */
 public class PullToRefreshListView
@@ -253,7 +253,7 @@ private void setHeaderPadding(int padding)
     headerPadding = padding;
 
     MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) header.getLayoutParams();
-    mlp.setMargins(0, Math.round(padding), 0, 0);
+    mlp.setMargins(0, padding, 0, 0);
     header.setLayoutParams(mlp);
 }
 

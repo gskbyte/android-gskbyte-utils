@@ -212,7 +212,7 @@ public static boolean DeleteFileRecursive(int location, String path, Context con
         }
     }
     
-    return totalSuccess & DeleteFile(location, path, context);
+    return totalSuccess && DeleteFile(location, path, context);
 }
 
 /**

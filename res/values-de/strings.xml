@@ -14,4 +14,14 @@
     <string name="pull_to_refresh_release_label">Loslassen, um zu aktualisieren&#8230;</string>
     <string name="pull_to_refresh_refreshing_label">Lade&#8230;</string>
     <string name="pull_to_refresh_tap_label">Drücken, um zu aktualisieren&#8230;</string>
+    
+    
+    <string name="intent_phone_choose">Anrufen</string>
+    <string name="intent_phone_error">Mit diesem Gerät können Sie leider nicht anrufen.</string>
+    
+    <string name="intent_email_error">Keine E-Mail app oder Account gefunden.</string>
+    <string name="intent_email_choose">Bitte wählen Sie eine E-Mail Applikation</string>
+    
+    <string name="intent_map_error">Keine Karten app gefunden.</string>
+    <string name="intent_map_choose">Bitte wählen Sie eine Karten Applikation</string>
 </resources>

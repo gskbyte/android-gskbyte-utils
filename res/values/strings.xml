@@ -16,4 +16,13 @@
     <string name="pull_to_refresh_tap_label">Tap to refresh&#8230;</string>
     
     
+    <string name="intent_phone_choose">Please choose an application to call with</string>
+    <string name="intent_phone_error">This device does not support calls</string>
+    
+    <string name="intent_email_choose">Please choose an e-mail application</string>
+    <string name="intent_email_error">No e-mail clients found</string>
+    
+    <string name="intent_map_choose">Please choose a maps application</string>
+    <string name="intent_map_error">No maps applications found</string>
+    
 </resources>
