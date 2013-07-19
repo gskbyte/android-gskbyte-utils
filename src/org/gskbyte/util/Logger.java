@@ -91,7 +91,7 @@ public static void error(Class<?> clazz, String message)
  * @param tag The log tag.
  * @param e The exception whose message will be printed.
  * */
-public static void except(String tag, Exception e)
+public static void except(String tag, Throwable e)
 { android.util.Log.e(tag, ""+e.getMessage()); }
 
 /**
@@ -99,7 +99,7 @@ public static void except(String tag, Exception e)
  * @param clazz The caller's class, whose simpleName will be used as tag.
  * @param e The exception whose message will be printed.
  * */
-public static void except(Class<?> clazz, Exception e)
+public static void except(Class<?> clazz, Throwable e)
 { except(clazz.getSimpleName(), e); }
 
 /**

@@ -33,6 +33,7 @@ public interface OnButtonPressedListener
 }
 
 protected static final String KEY_TITLE = "title";
+protected static final String KEY_TITLE_RES = "titleRes";
 protected static final String KEY_ICON_RES = "iconRes";
 protected static final String KEY_OPTIONS = "options";
 protected static final String KEY_SELECTED_OPTIONS = "selected";
@@ -83,7 +84,14 @@ public void onCreate(Bundle savedInstanceState)
     // could this be done on onCreateDialog()?
     Bundle args = getArguments();
     iconRes = args.getInt(KEY_ICON_RES, 0);
-    title = args.getString(KEY_TITLE);
+    
+    int iconRes = args.getInt(KEY_TITLE_RES);
+    if(iconRes != 0) {
+        title = getString(iconRes);
+    } else {
+        title = args.getString(KEY_TITLE);
+    }
+    
     options = args.getStringArray(KEY_OPTIONS);
     selectedOptions = args.getBooleanArray(KEY_SELECTED_OPTIONS);
 }
