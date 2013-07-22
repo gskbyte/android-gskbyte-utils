@@ -29,4 +29,8 @@
     <declare-styleable name="org.gskbyte.view.FontableEditText">
         <attr name="font" />
     </declare-styleable>
+    
+    <declare-styleable name="org.gskbyte.view.AutoHeightImageView">
+        <attr name="maxHeightProportion" format="float"></attr>
+    </declare-styleable>
 </resources>

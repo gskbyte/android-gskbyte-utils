@@ -8,8 +8,6 @@ import android.widget.TextView;
 
 public class FontableTextView extends TextView
 {
-public FontableTextView(Context context) 
-{ super(context); }
 
 public FontableTextView(Context context, AttributeSet attrs)
 {
