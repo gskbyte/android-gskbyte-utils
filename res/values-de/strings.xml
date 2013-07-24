@@ -24,4 +24,6 @@
     
     <string name="intent_map_error">Keine Karten app gefunden.</string>
     <string name="intent_map_choose">Bitte wählen Sie eine Karten Applikation</string>
+    
+    <string name="event_list_datetime">%1$s Uhr</string>
 </resources>

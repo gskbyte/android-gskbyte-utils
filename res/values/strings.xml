@@ -25,4 +25,5 @@
     <string name="intent_map_choose">Please choose a maps application</string>
     <string name="intent_map_error">No maps applications found</string>
     
+    <string name="event_list_datetime">%1$s</string>
 </resources>

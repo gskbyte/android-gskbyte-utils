@@ -31,6 +31,7 @@
         android:layout_centerVertical="true"
         
         android:text="Dialog title"
-        android:textAppearance="@android:style/TextAppearance.DialogWindowTitle"/>
+        android:textAppearance="@android:style/TextAppearance.DialogWindowTitle"
+        android:textStyle="bold"/>
 
 </RelativeLayout>
