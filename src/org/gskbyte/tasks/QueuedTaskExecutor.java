@@ -1,6 +1,7 @@
 package org.gskbyte.tasks;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utility class to run groups of threads (represented by tasks) in an ordered basis.
@@ -24,9 +25,9 @@ public interface Listener
      * - A thread in a step didn't finish with success and the following steps requires the current to have success
      * in all threads.
      * 
-     * @param central The TaskCentral calling this method. You can call information methods to get info about the execution.
+     * @param executor The TaskCentral calling this method. You can call information methods to get info about the execution.
      * */
-    public void queuedTaskExecutorFinished(QueuedTaskExecutor central);
+    public void queuedTaskExecutorFinished(QueuedTaskExecutor executor);
 }
 
 public enum Status
@@ -37,6 +38,7 @@ public enum Status
 }
 
 protected final ArrayList<TaskStep> steps = new ArrayList<TaskStep>();
+protected final List<Exception> capturedExceptions = new ArrayList<Exception>();
 
 protected int executedSteps = 0;
 protected Listener listener = null;
@@ -46,7 +48,7 @@ protected Status status = Status.PENDING;
 public boolean run(Listener listener)
 {
     if(status != Status.PENDING)
-    
+        throw new IllegalStateException("This " + getClass().getSimpleName() + " is running or already finished. It can be run only once.");
     this.listener = listener;
     if(steps.size() > 0) {
         steps.get(0).executeTasks();
@@ -77,6 +79,36 @@ public synchronized boolean didExecuteAllStepsWithSuccess()
 { return executedSteps == steps.size() && totalSuccessOnLastExecutedStep; }
 
 /**
+ * @return all captured exceptions in case of not success. Not having success doesn't neccesary mean that there are
+ * exceptions.
+ * */
+public synchronized List<Exception> getCapturedExceptions()
+{ return capturedExceptions;}
+
+/**
+ * @return the first captured exception, if any, or null if no exceptions are captured.
+ * */
+public synchronized Exception getFirstCapturedException()
+{
+    if(capturedExceptions.size()>0)
+        return capturedExceptions.get( 0 );
+    else
+        return null;
+}
+
+/**
+ * @return the last captured exception, if any, or null if no exceptions are captured.
+ * */
+public synchronized Exception getLastCapturedException()
+{
+    if(capturedExceptions.size()>0)
+        return capturedExceptions.get( capturedExceptions.size()-1 );
+    else
+        return null;
+}
+
+
+/**
  * 
  * */
 public synchronized void addStep(Task ... tasks)
@@ -88,12 +120,15 @@ public synchronized void addStep(Task ... tasks)
     steps.add(step);
 }
 
-protected synchronized void stepFinished(int index, boolean totalSuccess)
+protected synchronized void stepFinished(int index, boolean totalSuccess, List<Exception> capturedExceptionsInStep)
 {
     if(index != executedSteps)
         throw new IllegalStateException("Oh fuck fuck fuck!!!");
     ++executedSteps;
     totalSuccessOnLastExecutedStep = totalSuccess;
+    
+    if(capturedExceptionsInStep != null)
+        this.capturedExceptions.addAll(capturedExceptionsInStep);
     
     if(index == steps.size()-1) { // last step?
         notifyListener();

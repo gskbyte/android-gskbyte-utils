@@ -9,6 +9,7 @@ extends AsyncTask<Void, Void, Boolean>
 /** @hide This instance variables are touched by TaskCentralStep */
 /* package */ TaskStep step; 
 /* package */ int indexInStep;
+/* package */ Exception exception;
 
 @Override
 protected Boolean doInBackground(Void... params)
@@ -17,15 +18,20 @@ protected Boolean doInBackground(Void... params)
         throw new IllegalStateException("StepTask can't be run outside a " + QueuedTaskExecutor.class.getSimpleName());
     }
     
-    return runInBackground();
+    try {
+        return runInBackground();
+    } catch(Exception e) {
+        
+        return false;
+    }
 }
 
-protected abstract boolean runInBackground();
+protected abstract boolean runInBackground() throws Exception;
 
 @Override
 protected void onPostExecute(Boolean result)
 {
-    step.taskFinishedWithResult(indexInStep, result);
+    step.taskFinishedWithResult(indexInStep, result, exception);
 }
 
 }

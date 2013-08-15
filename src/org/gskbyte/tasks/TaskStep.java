@@ -1,5 +1,8 @@
 package org.gskbyte.tasks;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.os.AsyncTask;
 
 final class TaskStep
@@ -12,6 +15,7 @@ private final boolean[] taskResults;
 private int finishedTasks = 0;
 private boolean totalSuccess = true;
 private boolean executed = false;
+private List<Exception> capturedExceptions = null;
 
 TaskStep(QueuedTaskExecutor taskCentral, int indexInTaskCentral, Task[] tasks)
 {
@@ -27,14 +31,20 @@ TaskStep(QueuedTaskExecutor taskCentral, int indexInTaskCentral, Task[] tasks)
     this.taskResults = new boolean[tasks.length];
 }
 
-void taskFinishedWithResult(int taskIndex, boolean result)
+void taskFinishedWithResult(int taskIndex, boolean result, Exception exception)
 {
     taskResults[taskIndex] = result;
     ++finishedTasks;
     totalSuccess = totalSuccess && result;
     
+    if(exception != null) {
+        if(capturedExceptions == null)
+            capturedExceptions = new ArrayList<Exception>();
+        capturedExceptions.add(exception);
+    }
+    
     if(finishedTasks == taskResults.length) { // all my threads have finished        
-        taskCentral.stepFinished(indexInTaskCentral, totalSuccess);
+        taskCentral.stepFinished(indexInTaskCentral, totalSuccess, capturedExceptions);
     }
 }
 
