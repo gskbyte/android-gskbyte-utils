@@ -11,6 +11,24 @@ import android.widget.Toast;
 public class FrequentIntents
 {
 
+public static Intent GetOpenURLIntent(String url)
+{
+    Intent intent = new Intent(Intent.ACTION_VIEW);
+    intent.setData(Uri.parse(url));
+    return intent;
+}
+
+public static void OpenURLIntent(Context context, String url)
+{
+    Intent intent = GetOpenURLIntent(url);
+    try {
+        Intent chooser = Intent.createChooser(intent, context.getString(R.string.intent_open_choose));
+        context.startActivity(chooser);
+    } catch (ActivityNotFoundException ex) {
+        Toast.makeText(context, R.string.intent_open_error, Toast.LENGTH_SHORT).show();
+    }
+}
+
 public static Intent GetCallPhoneIntent(String number)
 {
     Intent callIntent = new Intent(Intent.ACTION_DIAL);
@@ -54,15 +72,35 @@ public static void SendEmail(Context context, String address, String subject, Ch
 }
 
 
-public static Intent GetMapCoordinatesIntent(double latitude, double longitude)
+public static Intent GetMapCoordinatesIntent(double latitude, double longitude, String markerTitle)
 {
-    String uri = "geo:"+ latitude + "," + longitude;
+    String uri = "geo:"+ latitude + "," + longitude + "?q="+ latitude +","+ longitude; 
+    if(markerTitle != null && markerTitle.length()>0) {
+        uri += "("+markerTitle+")";
+    }
     return new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
 }
 
-public static void ShowMapCoordinates(Context context, double latitude, double longitude)
+public static void ShowMapCoordinates(Context context, double latitude, double longitude, String markerTitle)
 {
-    Intent intent = GetMapCoordinatesIntent(latitude, longitude);
+    Intent intent = GetMapCoordinatesIntent(latitude, longitude, markerTitle);
+    try {
+        Intent chooser = Intent.createChooser(intent, context.getString(R.string.intent_map_choose));
+        context.startActivity(chooser);
+    } catch (ActivityNotFoundException ex) {
+        Toast.makeText(context, R.string.intent_map_error, Toast.LENGTH_SHORT).show();
+    }
+}
+
+public static Intent GetMapRouteIntent(double latitudeFrom, double longitudeFrom, double latitudeTo, double longitudeTo)
+{
+    Uri uri = Uri.parse("http://maps.google.com/maps?saddr="+latitudeFrom+","+longitudeFrom+"&daddr="+latitudeTo+","+longitudeTo+"");
+    return new Intent(Intent.ACTION_VIEW, uri);
+}
+
+public static void ShowMapRoute(Context context, double latitudeFrom, double longitudeFrom, double latitudeTo, double longitudeTo)
+{
+    Intent intent = GetMapRouteIntent(latitudeFrom, longitudeFrom, latitudeTo, longitudeTo);
     try {
         Intent chooser = Intent.createChooser(intent, context.getString(R.string.intent_map_choose));
         context.startActivity(chooser);

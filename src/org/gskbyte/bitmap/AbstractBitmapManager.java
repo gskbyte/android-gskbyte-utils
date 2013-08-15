@@ -203,7 +203,7 @@ public String getAbsolutePathForKey(String key) throws IOException
     if(ref != null) {
         return IOUtils.GetAbsolutePathForFilename(ref.location, ref.path, context);
     } else {
-        Logger.error(getClass(), "Trying to retrieve not referenced bitmap path: "+key);
+        Logger.error(getClass(), "Trying to retrieve not referenced bitmap: "+key);
         return null;
     }
 }

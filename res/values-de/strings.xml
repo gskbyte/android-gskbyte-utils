@@ -15,6 +15,8 @@
     <string name="pull_to_refresh_refreshing_label">Lade&#8230;</string>
     <string name="pull_to_refresh_tap_label">Drücken, um zu aktualisieren&#8230;</string>
     
+    <string name="intent_open_choose">Bitte wählen Sie eine App</string>
+    <string name="intent_open_error">Keine geeignete App gefunden</string>
     
     <string name="intent_phone_choose">Anrufen</string>
     <string name="intent_phone_error">Mit diesem Gerät können Sie leider nicht anrufen.</string>

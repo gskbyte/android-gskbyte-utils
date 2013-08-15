@@ -15,6 +15,8 @@
     <string name="pull_to_refresh_refreshing_label">Loading&#8230;</string>
     <string name="pull_to_refresh_tap_label">Tap to refresh&#8230;</string>
     
+    <string name="intent_open_choose">Please choose an application</string>
+    <string name="intent_open_error">Can\'t find an appropriate application</string>
     
     <string name="intent_phone_choose">Please choose an application to call with</string>
     <string name="intent_phone_error">This device does not support calls</string>

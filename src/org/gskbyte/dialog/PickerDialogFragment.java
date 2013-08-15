@@ -172,6 +172,11 @@ public void onClick(DialogInterface dialog, int which, boolean isChecked)
 @Override
 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
 {
+    if(!isChecked) {
+        buttonView.setChecked(true);
+        return;
+    }
+    
     ListView listView = dialog.getListView();
     for(int i=0; i<selectedOptions.length; ++i) {
         listView.setItemChecked(i, isChecked);
@@ -184,9 +189,9 @@ public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
 private static class PickerTitle
 extends RelativeLayout
 {
-    private ImageView icon;
-    private TextView title;
-    private CheckBox allElements;
+    ImageView icon;
+    TextView title;
+    CheckBox allElements;
     
     public PickerTitle(Context context, AttributeSet attrs)
     {

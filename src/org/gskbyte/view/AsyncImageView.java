@@ -29,8 +29,8 @@ implements AbstractBitmapManager.BackgroundLoadListener
 {
 
 @Getter
-private final ImageView imageView;
-private final ProgressBar progressBar;
+private ImageView imageView;
+private ProgressBar progressBar;
 
 @Getter
 private volatile boolean loading;
@@ -39,16 +39,17 @@ private volatile String path;
 public AsyncImageView(Context context, AttributeSet attrs, int defStyle)
 {
     super(context, attrs, defStyle);
-    LayoutInflater.from(context).inflate(R.layout.async_imageview, this, true);
-    imageView = (ImageView) findViewById(R.id.asyncimageview_image);
-    progressBar = (ProgressBar) findViewById(R.id.asyncimageview_progress_bar);
-    
-    setLoading(true);
+    commonInit(context);
 }
 
 public AsyncImageView(Context context, AttributeSet attrs)
 {
     super(context, attrs);
+    commonInit(context);
+}
+
+private void commonInit(Context context)
+{
     LayoutInflater.from(context).inflate(R.layout.async_imageview, this, true);
     imageView = (ImageView) findViewById(R.id.asyncimageview_image);
     progressBar = (ProgressBar) findViewById(R.id.asyncimageview_progress_bar);
@@ -59,8 +60,10 @@ public AsyncImageView(Context context, AttributeSet attrs)
 public synchronized void setLoading(boolean loading)
 {
     this.loading = loading;
-    imageView.setVisibility(loading ? GONE : VISIBLE);
-    progressBar.setVisibility(loading ? VISIBLE : GONE);
+    if( !isInEditMode() ) {
+        imageView.setVisibility(loading ? GONE : VISIBLE);
+        progressBar.setVisibility(loading ? VISIBLE : GONE);
+    }
 }
 
 public Drawable getDrawable()
