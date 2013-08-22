@@ -17,7 +17,8 @@
     
     <attr name="font" format="string"/>
     <attr name="html_text" format="string"/>
-
+    <attr name="filterColor" format="color"/>
+    
     <declare-styleable name="org.gskbyte.view.FontableTextView">
         <attr name="font" />
         <attr name="html_text"/>
@@ -31,7 +32,19 @@
     </declare-styleable>
     
     <declare-styleable name="org.gskbyte.view.AutoHeightImageView">
-        <attr name="minHeightProportion" format="float"></attr>
-        <attr name="maxHeightProportion" format="float"></attr>
+        <attr name="minHeightProportion" format="float"/>
+        <attr name="maxHeightProportion" format="float"/>
     </declare-styleable>
+    
+    <declare-styleable name="org.gskbyte.view.AutoBackgroundButton">
+        <attr name="filterColor"/>
+        <attr name="applyFilterToDrawables" format="boolean"/>
+        <attr name="applyFilterToText" format="boolean"/>
+    </declare-styleable>
+    
+    <declare-styleable name="org.gskbyte.view.AutoBackgroundImageButton">
+        <attr name="filterColor"/>
+        <attr name="applyFilterToImage" format="boolean"/>
+    </declare-styleable>
+    
 </resources>

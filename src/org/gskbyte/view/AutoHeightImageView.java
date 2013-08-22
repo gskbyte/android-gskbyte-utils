@@ -1,7 +1,6 @@
 package org.gskbyte.view;
 
 import org.gskbyte.R;
-import org.gskbyte.util.Logger;
 
 import android.content.Context;
 import android.content.res.TypedArray;
