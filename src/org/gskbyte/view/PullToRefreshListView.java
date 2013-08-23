@@ -35,7 +35,7 @@ import org.gskbyte.util.Logger;
  * https://github.com/erikwt/PullToRefresh-ListView
  *
  * @author Erik Wallentinsen <dev+ptr@erikw.eu>
- * @author Jose Alcal� Correa <gskbyte@gmail.com> (small improvements)
+ * @author Jose Alcalá Correa <gskbyte@gmail.com> (small improvements)
  * @version 1.0.0
  */
 public class PullToRefreshListView

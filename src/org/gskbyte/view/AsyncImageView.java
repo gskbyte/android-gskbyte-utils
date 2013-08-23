@@ -93,6 +93,19 @@ public synchronized void setImageBitmap(AbstractBitmapManager manager, String pa
     }
 }
 
+public void setImageBitmap(Bitmap b)
+{
+    setLoading(false);
+    imageView.setImageBitmap(b);
+}
+
+public void setImageResource(int res)
+{
+    setLoading(false);
+    imageView.setImageResource(res);
+}
+
+
 @Override
 public synchronized void bitmapLoadedInManager(Bitmap bitmap, String loadedPath, AbstractBitmapManager manager)
 {

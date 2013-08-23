@@ -53,6 +53,13 @@ public void addPath(String path, String ... aliases)
 }
 
 /**
+ * 
+ * */
+@Override
+public int size()
+{ return keyList.size(); }
+
+/**
  * Adds a list of paths to a bitmap, depending on the initial default location, and adds
  * their path to the end of the list.
  * @param paths A list of paths to bitmaps
