@@ -53,6 +53,7 @@ protected void initAttributes(Context context, AttributeSet attrs)
     TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.org_gskbyte_view_AutoBackgroundButton);
     this.filterColor = a.getColor(R.styleable.org_gskbyte_view_AutoBackgroundButton_filterColor, AutoBackgroundButtonDrawable.DEFAULT_COLOR_FILTER);
     filterColorLoaded = true;
+    setBackgroundDrawable( getBackground() );
     
     boolean applyDrawables = a.getBoolean(R.styleable.org_gskbyte_view_AutoBackgroundButton_applyFilterToDrawables, false);
     setApplyFilterToDrawables(applyDrawables);
