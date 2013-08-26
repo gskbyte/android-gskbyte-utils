@@ -46,5 +46,9 @@
         <attr name="filterColor"/>
         <attr name="applyFilterToImage" format="boolean"/>
     </declare-styleable>
-    
+     
+    <declare-styleable name="org.gskbyte.view.StepSeekBar">
+        <attr name="secondaryThumb" format="integer"/>
+    </declare-styleable>
+   
 </resources>

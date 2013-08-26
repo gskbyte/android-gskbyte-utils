@@ -65,6 +65,7 @@ Included components
 - FontableButton, -EditText and -TextView: text components that easily allow using fonts located in the assets folder.
     - FontUtil: class with static methods used as a helper by the previous listed components.
 - PullToRefreshListView: pullable ListView originally created by Erik Wallentinsen (https://github.com/erikwt/PullToRefresh-ListView) with some small enhancements.
+- StepSeekBar: a seekbar that displays secondary thumb points in the available positions.
 - TextViewUtil: some static methods to set formatted text into TextViews.
 - ViewUtils: some utility methods to deal with View subclasses.
 

@@ -89,11 +89,7 @@ public void setBackgroundDrawable(Drawable d)
 @Override
 public void setImageResource(int resId)
 {
-    if(applyFilterToImage && filterColorLoaded) {
-        setImageDrawable( getResources().getDrawable(resId) );
-    } else {
-        super.setImageResource(resId);
-    }
+    setImageDrawable( filteredDrawable(getResources().getDrawable(resId), applyFilterToImage));
 }
 
 // TODO Implement a faster thing
@@ -101,9 +97,7 @@ public void setImageResource(int resId)
 public void setImageURI(Uri uri)
 {
     super.setImageURI(uri);
-    if(applyFilterToImage && filterColorLoaded) {
-        setImageDrawable( getDrawable() );
-    }
+    setImageDrawable( filteredDrawable(getDrawable(), applyFilterToImage) );
 }
 
 @Override

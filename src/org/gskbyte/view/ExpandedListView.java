@@ -24,14 +24,25 @@ extends ListView
 {
 
 public ExpandedListView(Context context, AttributeSet attrs)
-{ super(context, attrs); }
+{
+    super(context, attrs);
+    init();
+}
 
 public ExpandedListView(Context context, AttributeSet attrs,
         int defStyle)
 {
     super(context, attrs, defStyle);
+    init();
 }
 
+protected void init()
+{
+    setVerticalFadingEdgeEnabled (false);
+    setHorizontalFadingEdgeEnabled (false);
+    setVerticalScrollBarEnabled(false);
+    setHorizontalScrollBarEnabled(false);
+}
 
 private boolean adapterJustSet = true;
 @Override
