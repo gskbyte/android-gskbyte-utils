@@ -13,6 +13,8 @@ package org.gskbyte.bitmap;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.gskbyte.bitmap.AbstractBitmapManager.ScaleMode;
+
 import lombok.Getter;
 
 import android.graphics.Bitmap;
@@ -160,6 +162,17 @@ public int countExistingBitmapFiles()
  * */
 public Bitmap get(String key)
 { return bitmapManager.get(key); }
+
+
+/**
+ * Returns a bitmap given its path.
+ * @param key The key for the bitmap
+ * @param scaleMode
+ * @param maxWidth
+ * @param maxHeight
+ * */
+public Bitmap get(String key, ScaleMode scaleMode, int maxWidth, int maxHeight)
+{ return bitmapManager.get(key, scaleMode, maxWidth, maxHeight); }
 
 /**
  * @Deprecated Use getFirstExistingKey()

@@ -48,9 +48,9 @@ public LRUBitmapManager(Context context, int numLoadThreads, float memoryRate)
     this.bitmapCache = new LRUBitmapCache<String>(memoryRate);
 }
 
-protected BitmapRef initializeReference(int location, int sampleSize, String path)
+protected BitmapRef initializeReference(int location, String path)
 {
-    return new LRUBitmapRef(location, sampleSize, path);
+    return new LRUBitmapRef(location, path);
 }
 
 
@@ -90,9 +90,9 @@ final class LRUBitmapRef
 extends AbstractBitmapManager.BitmapRef
 {
 
-public LRUBitmapRef(int location, int sampleSize, String path)
+public LRUBitmapRef(int location, String path)
 {
-    super(location, sampleSize, path);
+    super(location, path);
 }
 
 @Override
@@ -102,11 +102,11 @@ public boolean isLoaded()
 }
 
 @Override
-public Bitmap getBitmap()
+public Bitmap getBitmap(ScaleMode scaleMode, int maxWidth, int maxHeight)
 {
     Bitmap bitmap = bitmapCache.get(path);
     if(bitmap == null) {
-        bitmap = loadBitmap(path);
+        bitmap = loadBitmap(scaleMode, maxWidth, maxHeight);
         if(bitmap != null) {
             bitmapCache.put(path, bitmap);
         } else {

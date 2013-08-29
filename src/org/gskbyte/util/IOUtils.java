@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.gskbyte.util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -85,13 +86,38 @@ public static String StringForLocation(int location)
  * Reads an inputStream into a String. Be careful with this using slow streams,
  * such as remote connections.
  * @param is The InputStream to read from
- * @return String A string with the contents of the InputStream.
+ * @return A String with the contents of the InputStream.
  * */
-public static String InputStreamToString( InputStream is ) throws IOException
+public static String InputStreamToString( InputStream is )
+        throws IOException
 {
     Scanner s = new Scanner(is).useDelimiter("\\A");
     return s.hasNext() ? s.next() : "";
 }
+
+/**
+ * Reads an inputStream into a byte[]. Be careful with this using slow streams,
+ * such as remote connections.
+ * @param is The InputStream to read from
+ * @return A byte[] with the contents of the InputStream.
+ * */
+public static byte [] InputStreamToByteArray(InputStream is)
+        throws IOException
+{
+    final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+    int nRead;
+    byte[] data = new byte[16384]; // 16 KB buffer
+
+    while ((nRead = is.read(data, 0, data.length)) != -1) {
+        buffer.write(data, 0, nRead);
+    }
+
+    buffer.flush();
+
+    return buffer.toByteArray();
+}
+
 
 /**
  * Returns true if the external storage (wether if it's emulated or not) can be

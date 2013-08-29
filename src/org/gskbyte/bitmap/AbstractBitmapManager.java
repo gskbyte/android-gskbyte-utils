@@ -42,8 +42,21 @@ private final Map<String, HashSet<BackgroundLoadListener>> backgroundListeners =
 private final ArrayList<AsyncLoadTask> backgroundLoadTasks = new ArrayList<AsyncLoadTask>();
 private final ArrayList<AsyncLoadTask> runningLoadTasks = new ArrayList<AsyncLoadTask>();
 
+public enum ScaleMode
+{
+    None,
+    Fast, // Only BitmapFactory.inSampleSize is used
+    Full  // Fast scale mode is applied, as well as further resizing if needed
+}
+
 @Getter
 private final int numLoadThreads;
+
+@Getter
+private ScaleMode automaticScaleMode = ScaleMode.None;
+@Getter
+private int maxBitmapWidth, maxBitmapHeight;
+
 
 /**
  * Default constructor. Will establish one load thread
@@ -67,6 +80,32 @@ public AbstractBitmapManager(Context context, int numLoadThreads)
 }
 
 /**
+ * Enables automatic bitmap scale.
+ * Bitmap scaling is disabled by default because it can cause bitmap loading to be much slower. Use it carefully!
+ * 
+ * @param maxWidth maximum width for loaded bitmaps
+ * @param maxHeight maximum height for loaded bitmaps
+ * */
+public void setAutomaticScale(ScaleMode scaleMode, int maxWidth, int maxHeight)
+{
+    if(scaleMode!=ScaleMode.None && (maxWidth < 1 || maxHeight < 1)) {
+        throw new IllegalArgumentException("maxWidth and maxHeight must be > 0");
+    }
+
+    automaticScaleMode = scaleMode;
+    maxBitmapWidth = maxWidth;
+    maxBitmapHeight = maxHeight;
+}
+
+/**
+ * Disables automatic bitmap scaling.
+ * */
+public void disableScaleBigBitmaps()
+{
+    automaticScaleMode = ScaleMode.None;
+}
+
+/**
  * Adds a reference to a bitmap located under the specified location, with the given alias
  * @param location Integer value specifying location (@see IOUtils)
  * @param path The file's path.
@@ -74,22 +113,11 @@ public AbstractBitmapManager(Context context, int numLoadThreads)
  * @return true If the reference has just been created
  * */
 public boolean addPath(int location, String filepath, String ... aliases)
-{ return addPath(location, 1, filepath, aliases); }
-
-/**
- * Adds a reference to a bitmap located under the specified location, with the given alias
- * @param location Integer value specifying location (@see IOUtils)
- * @param sampleSize A sample size to downscale the Bitmap
- * @param path The file's path.
- * @param aliases Aliases for the given file.  All must have length() > 0.
- * @return true If the reference has just been created
- * */
-public boolean addPath(int location, int sampleSize, String filepath, String ... aliases)
 {
     boolean isNewRef = false;
     BitmapRef ref = references.get(filepath);
     if(ref == null) {
-        ref = initializeReference(location, sampleSize, filepath);
+        ref = initializeReference(location, filepath);
         references.put(filepath, ref);   
         isNewRef = true;
         ++uniqueCounter;
@@ -125,7 +153,7 @@ public void addAliases(String filepath, String ... aliases)
  * @param path The path for the bitmap, given a location
  * @return A BitmapRef object to be used to look for the Bitmap 
  * */
-protected abstract BitmapRef initializeReference(int location, int sampleSize, String path);
+protected abstract BitmapRef initializeReference(int location, String path);
 
 /**
  * Clears all references to bitmaps and frees memory.
@@ -184,7 +212,31 @@ public synchronized Bitmap get(String key)
 {
     BitmapRef ref = references.get(key);
     if(ref != null) {
-        return ref.getBitmap();
+        return ref.getBitmap(automaticScaleMode, maxBitmapWidth, maxBitmapHeight);
+    } else {
+        Logger.error(getClass(), "Trying to retrieve not referenced bitmap: "+key);
+        return null;
+    }
+}
+
+/**
+ * Returns a bitmap given a path and fitting the given size.
+ * @param key The bitmap's path or alias, used as a key to retrieve it.
+ * 
+ * @param scaleMode The scale mode to be used
+ * @param maxWidth The bitmap's maxWidth, if not loaded
+ * @param maxHeight The bitmap's maxHeight, if not loaded
+ * */
+
+public synchronized Bitmap get(String key, ScaleMode scaleMode, int maxWidth, int maxHeight)
+{
+    if(maxWidth <= 0 || maxHeight <= 0) {
+        throw new IllegalArgumentException("maxWidth and maxHeight must be >0");
+    }
+    
+    BitmapRef ref = references.get(key);
+    if(ref != null) {
+        return ref.getBitmap(scaleMode, maxWidth, maxHeight);
     } else {
         Logger.error(getClass(), "Trying to retrieve not referenced bitmap: "+key);
         return null;
@@ -238,16 +290,15 @@ protected abstract class BitmapRef
 
 final int location;
 final String path;
-final int sampleSize; // used to downscale bitmaps, @see BitmapFactory.Options
+float scale;
 
-public BitmapRef(int location, int sampleSize, String path)
+public BitmapRef(int location, String path)
 {
     this.location = location;
     this.path = path;
-    this.sampleSize = sampleSize;
 }
 
-public abstract Bitmap getBitmap();
+public abstract Bitmap getBitmap(ScaleMode scaleMode, int maxWidth, int maxHeight);
 public abstract boolean isLoaded();
 
 public boolean existsFile()
@@ -255,24 +306,50 @@ public boolean existsFile()
     return IOUtils.ExistsFile(location, path, context);
 }
 
-protected final Bitmap loadBitmap(String path)
+protected final Bitmap loadBitmap(ScaleMode scaleMode, int maxWidth, int maxHeight)
 {
     InputStream is;
     try {
         is = IOUtils.GetInputStreamForDrawable(location, path, context);
-        if(sampleSize > 1) {
+        
+        if(scaleMode == ScaleMode.None) {
             return BitmapFactory.decodeStream(is);
         } else {
-            // It would be good to find a more efficient way to set options while avoiding this allocation
-            BitmapFactory.Options opts = new BitmapFactory.Options();
-            opts.inSampleSize = sampleSize;
-            return BitmapFactory.decodeStream(is, null, opts);
+            // Detect sample size
+            final BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(is, null, opts);
+
+            float wfactor = (float)opts.outWidth / maxWidth;
+            float hfactor = (float)opts.outHeight / maxHeight;
+            final float minfactor = Math.min(wfactor, hfactor);
+            scale = 1/minfactor;
+            
+            opts.inJustDecodeBounds = false;
+            opts.inSampleSize = Math.max(1, (int)minfactor);
+            
+            is = IOUtils.GetInputStreamForDrawable(location, path, context);
+            Bitmap b = BitmapFactory.decodeStream(is, null, opts);
+            if(scaleMode == ScaleMode.Full) {
+                // recompute factors if inSample has been used
+                wfactor = (float)opts.outWidth / maxWidth;
+                hfactor = (float)opts.outHeight / maxHeight;
+                scale = Math.min(1, Math.min(1/wfactor, 1/hfactor) );
+                if(scale<1) {
+                    Logger.error(getClass(), "sizes: " + opts.outWidth + "," + opts.outHeight + " (" + maxWidth +","+maxHeight + ") -> " + minfactor + ", " + scale);
+                    b = Bitmap.createScaledBitmap(b, (int)(opts.outWidth*scale), (int)(opts.outHeight*scale), false);
+                }
+            }
+            return b;
         }
     } catch (NotFoundException e) {
         // should we say anything?
     } catch (IOException e) {
         // should we say anything?
-    }
+    }  catch (java.lang.OutOfMemoryError e) {
+        // should we say anything?
+        Logger.error(getClass(), "OutOfMemoryError: " + e.getMessage() + " - path: " + path);
+    } 
     return null;
 }
 
@@ -305,7 +382,7 @@ public synchronized Bitmap getInBackground(String path, BackgroundLoadListener l
     BitmapRef ref = references.get(path);
     if(ref != null) {
         if(ref.isLoaded()) {
-            return ref.getBitmap();
+            return ref.getBitmap(automaticScaleMode, maxBitmapWidth, maxBitmapHeight);
         } else {
             
             HashSet<BackgroundLoadListener> listeners = backgroundListeners.get(path);

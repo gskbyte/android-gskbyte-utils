@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.gskbyte.bitmap.AbstractBitmapManager.ScaleMode;
+
 import lombok.Getter;
 
 import android.graphics.Bitmap;
@@ -95,6 +97,16 @@ public Bitmap getAt(int index)
 {
     String path = keyList.get(index);
     return bitmapManager.get(path);
+}
+
+/**
+ * Returns a Bitmap given the index in which its path it was added.
+ * @param index The bitmap's path index.
+ * */
+public Bitmap getAt(int index, ScaleMode scaleMode, int maxWidth, int maxHeight)
+{
+    String path = keyList.get(index);
+    return bitmapManager.get(path, scaleMode, maxWidth, maxHeight);
 }
 
 /**
