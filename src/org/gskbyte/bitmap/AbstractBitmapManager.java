@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.os.AsyncTask;
 
 /**
@@ -177,14 +178,30 @@ public abstract int countLoadedBitmaps();
  * @param The bitmap's path
  * @returns true if a Bitmap for the given path is loaded into memory
  * */
-public boolean isBitmapLoaded(String path)
+public boolean isBitmapLoaded(String key)
 {
-    BitmapRef ref = references.get(path);
+    BitmapRef ref = references.get(key);
     if(ref != null) {
         return ref.isLoaded();
     } else {
-        Logger.error(getClass(), "Trying to retrieve presence for not referenced bitmap: "+path);
+        Logger.error(getClass(), "Trying to retrieve presence for not referenced bitmap: "+key);
         return false;
+    }
+}
+
+/**
+ * Returns the size for a bitmap. If it's not loaded into memory, reads only the size
+ * @param The bitmap's path
+ * @returns true if a Bitmap for the given path is loaded into memory
+ * */
+public Point getBitmapSize(String key)
+{
+    BitmapRef ref = references.get(key);
+    if(ref != null) {
+        return ref.getBitmapSize();
+    } else {
+        Logger.error(getClass(), "Trying to retrieve presence for not referenced bitmap: "+key);
+        return null;
     }
 }
 
@@ -291,6 +308,7 @@ protected abstract class BitmapRef
 final int location;
 final String path;
 float scale;
+final Point size = new Point();
 
 public BitmapRef(int location, String path)
 {
@@ -306,29 +324,49 @@ public boolean existsFile()
     return IOUtils.ExistsFile(location, path, context);
 }
 
-protected final Bitmap loadBitmap(ScaleMode scaleMode, int maxWidth, int maxHeight)
+protected final Point getBitmapSize()
 {
-    InputStream is;
-    try {
-        is = IOUtils.GetInputStreamForDrawable(location, path, context);
-        
-        if(scaleMode == ScaleMode.None) {
-            return BitmapFactory.decodeStream(is);
-        } else {
-            // Detect sample size
+    if(size.x==0) {
+        try {
+            InputStream is = IOUtils.GetInputStreamForDrawable(location, path, context);
             final BitmapFactory.Options opts = new BitmapFactory.Options();
             opts.inJustDecodeBounds = true;
             BitmapFactory.decodeStream(is, null, opts);
+            size.x = opts.outWidth;
+            size.y = opts.outHeight;
+        } catch (NotFoundException e) {
+            Logger.except(getClass(), e);
+        } catch (IOException e) {
+            Logger.except(getClass(), e);
+        }
+    }
+    
+    return size;
+}
 
-            float wfactor = (float)opts.outWidth / maxWidth;
-            float hfactor = (float)opts.outHeight / maxHeight;
+protected final Bitmap loadBitmap(ScaleMode scaleMode, int maxWidth, int maxHeight)
+{
+    try {
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        
+        if(scaleMode == ScaleMode.None) {
+            InputStream is = IOUtils.GetInputStreamForDrawable(location, path, context);
+            Bitmap b = BitmapFactory.decodeStream(is);
+            size.x = b.getWidth();
+            size.y = b.getHeight();
+            return b;
+        } else {
+            getBitmapSize();
+            
+            // Detect sample size
+            float wfactor = (float)size.x / maxWidth;
+            float hfactor = (float)size.y / maxHeight;
             final float minfactor = Math.min(wfactor, hfactor);
             scale = 1/minfactor;
             
-            opts.inJustDecodeBounds = false;
             opts.inSampleSize = Math.max(1, (int)minfactor);
             
-            is = IOUtils.GetInputStreamForDrawable(location, path, context);
+            InputStream is = IOUtils.GetInputStreamForDrawable(location, path, context);
             Bitmap b = BitmapFactory.decodeStream(is, null, opts);
             if(scaleMode == ScaleMode.Full) {
                 // recompute factors if inSample has been used
@@ -336,7 +374,7 @@ protected final Bitmap loadBitmap(ScaleMode scaleMode, int maxWidth, int maxHeig
                 hfactor = (float)opts.outHeight / maxHeight;
                 scale = Math.min(1, Math.min(1/wfactor, 1/hfactor) );
                 if(scale<1) {
-                    Logger.error(getClass(), "sizes: " + opts.outWidth + "," + opts.outHeight + " (" + maxWidth +","+maxHeight + ") -> " + minfactor + ", " + scale);
+                    Logger.error(getClass(), "sizes: " + size.x + "," + size.y + " (" + maxWidth +","+maxHeight + ") -> " + minfactor + ", " + scale);
                     b = Bitmap.createScaledBitmap(b, (int)(opts.outWidth*scale), (int)(opts.outHeight*scale), false);
                 }
             }
@@ -348,7 +386,6 @@ protected final Bitmap loadBitmap(ScaleMode scaleMode, int maxWidth, int maxHeig
         // should we say anything?
     }  catch (java.lang.OutOfMemoryError e) {
         // should we say anything?
-        Logger.error(getClass(), "OutOfMemoryError: " + e.getMessage() + " - path: " + path);
     } 
     return null;
 }

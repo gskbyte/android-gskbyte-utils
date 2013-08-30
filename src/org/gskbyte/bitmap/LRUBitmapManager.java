@@ -2,6 +2,7 @@ package org.gskbyte.bitmap;
 
 import org.gskbyte.util.Logger;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 
@@ -17,8 +18,9 @@ public class LRUBitmapManager
 extends AbstractBitmapManager
 {
 
-private final LRUBitmapCache<String> bitmapCache;
+public static final float DEFAULT_MEMORY_RATE = 0.25f;
 
+private final LRUBitmapCache<String> bitmapCache;
 
 /**
  * Constructor. Uses a memory rate of 25%, which is a good value when this
@@ -27,7 +29,7 @@ private final LRUBitmapCache<String> bitmapCache;
  * */
 public LRUBitmapManager(Context context)
 {
-    this(context, 0.25f);
+    this(context, DEFAULT_MEMORY_RATE);
 }
 
 /**
@@ -39,13 +41,23 @@ public LRUBitmapManager(Context context)
 public LRUBitmapManager(Context context, float memoryRate)
 {
     super(context);
-    this.bitmapCache = new LRUBitmapCache<String>(memoryRate);
+    final int maxSize = MaxMemorySizeForRate(context, memoryRate);
+    this.bitmapCache = new LRUBitmapCache<String>(maxSize);
 }
 
 public LRUBitmapManager(Context context, int numLoadThreads, float memoryRate)
 {
     super(context, numLoadThreads);
-    this.bitmapCache = new LRUBitmapCache<String>(memoryRate);
+    final int maxSize = MaxMemorySizeForRate(context, memoryRate);
+    this.bitmapCache = new LRUBitmapCache<String>(maxSize);
+}
+
+public static final int MaxMemorySizeForRate(Context context, float memoryRate)
+{
+    ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+    final int totalMemory = activityManager.getMemoryClass();
+    final int memoryAfterRate = (int) (totalMemory * 1024 * 1024 * memoryRate);
+    return memoryAfterRate;
 }
 
 protected BitmapRef initializeReference(int location, String path)

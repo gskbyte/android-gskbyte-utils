@@ -24,11 +24,14 @@ public LRUBitmapCache(int maxSize)
 { super(maxSize); this.maxSize = maxSize; }
 
 /**
+ * @deprecated Don't use this, as it calculates memory from Runtime and not from ActivityManager. This is wrong.
+ * 
  * Constructs an LRU cache with the given max memory rate, respect to
  * the maximum available memory for the application. Good values are around 20%,
  * if this is the only LRU cache present in the application.
  * @param memoryRate The maximum memory rate to use
  * */
+@Deprecated
 public LRUBitmapCache(float memoryRate)
 { this( (int) (Runtime.getRuntime().maxMemory() * memoryRate)); }
 
