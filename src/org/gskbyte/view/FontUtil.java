@@ -1,7 +1,7 @@
 package org.gskbyte.view;
 
-import java.lang.ref.SoftReference;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.gskbyte.util.Logger;
 
@@ -45,27 +45,21 @@ public static boolean setCustomFont(TextView tv, Context ctx, String asset)
     return true;
 }
 
-private static final Hashtable<String, SoftReference<Typeface>> FontCache = new Hashtable<String, SoftReference<Typeface>>();
+private static final Map<String, Typeface> FontCache = new HashMap<String, Typeface>();
 
-public static Typeface getFont(Context c, String name) {
+public static Typeface getFont(Context c, String name)
+{
     synchronized (FontCache) {
-        if (FontCache.get(name) != null) {
-            SoftReference<Typeface> ref = FontCache.get(name);
-            if (ref.get() != null) {
-                return ref.get();
+        Typeface typeface = FontCache.get(name);
+        if (typeface == null) {
+            String filename = name;
+            if(!filename.endsWith(".ttf") && !name.endsWith(".otf")) {
+                filename += ".ttf";
             }
-        }
-        
-        String filename = name;
-        if(!filename.endsWith(".ttf") && !name.endsWith(".otf")) {
-            filename += ".ttf";
-        }
 
-        Typeface typeface = Typeface.createFromAsset(
-                c.getAssets(),
-                "fonts/" + filename
-        );
-        FontCache.put(name, new SoftReference<Typeface>(typeface));
+            typeface = Typeface.createFromAsset( c.getAssets(), "fonts/" + filename);
+            FontCache.put(name, typeface);
+        }
 
         return typeface;
     }
