@@ -2,7 +2,6 @@ package org.gskbyte.view;
 
 import java.lang.ref.WeakReference;
 import org.gskbyte.R;
-import org.gskbyte.util.Logger;
 import lombok.Getter;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -34,7 +33,7 @@ extends SeekBar
 implements SeekBar.OnSeekBarChangeListener
 {
 
-public static final int DEFAULT_SMOOTH_FACTOR = 64;
+public static final int DEFAULT_SMOOTH_FACTOR = 128;
 
 private Drawable primaryThumb; // needed for API<16 (JELLY_BEAN), because getThumb() is not implemented
 
@@ -241,8 +240,6 @@ public void setProgress(int progress)
 @Override
 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
 {
-    Logger.error(getClass(), progress + "/" + super.getMax() + " (" + smoothedValue(progress)+") " + fromUser + " ");
-    
     if(getOnSeekBarChangeListener() != null)
         getOnSeekBarChangeListener().onProgressChanged(seekBar, smoothedValue(progress), fromUser);
 }
