@@ -9,6 +9,9 @@ import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+/**
+ * Some utility methods to cover Android API flaws or deprecations
+ * */
 public class ViewUtils
 {
 

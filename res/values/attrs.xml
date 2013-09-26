@@ -49,6 +49,8 @@
      
     <declare-styleable name="org.gskbyte.view.StepSeekBar">
         <attr name="secondaryThumb" format="integer"/>
+        <attr name="smoothFactor" format="integer"/>
+        <attr name="smoothed" format="boolean"/>
     </declare-styleable>
    
 </resources>

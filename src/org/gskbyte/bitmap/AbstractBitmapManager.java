@@ -174,8 +174,17 @@ public int size()
 public abstract int countLoadedBitmaps();
 
 /**
+ * Returns true if the reference is defined
+ * @param key The bitmap's key or path
+ * */
+public boolean containsKey(String key)
+{
+    return references.containsKey(key);
+}
+
+/**
  * Returns true if the given Bitmap is present in memory
- * @param The bitmap's path
+ * @param key The bitmap's key or path
  * @returns true if a Bitmap for the given path is loaded into memory
  * */
 public boolean isBitmapLoaded(String key)
@@ -200,7 +209,7 @@ public Point getBitmapSize(String key)
     if(ref != null) {
         return ref.getBitmapSize();
     } else {
-        Logger.error(getClass(), "Trying to retrieve presence for not referenced bitmap: "+key);
+        Logger.error(getClass(), "Trying to retrieve size for not referenced bitmap: "+key);
         return null;
     }
 }
@@ -216,7 +225,7 @@ public boolean existsBitmapFile(String key)
     if(ref != null) {
         return ref.existsFile();
     } else {
-        Logger.error(getClass(), "Trying to retrieve existence for not referenced bitmap: "+key);
+        //Logger.error(getClass(), "Trying to retrieve existence for not referenced bitmap: "+key);
         return false;
     }
 }
@@ -231,7 +240,7 @@ public synchronized Bitmap get(String key)
     if(ref != null) {
         return ref.getBitmap(automaticScaleMode, maxBitmapWidth, maxBitmapHeight);
     } else {
-        Logger.error(getClass(), "Trying to retrieve not referenced bitmap: "+key);
+        Logger.error(getClass(), "Trying to get(key) not referenced bitmap: "+key);
         return null;
     }
 }
@@ -255,7 +264,7 @@ public synchronized Bitmap get(String key, ScaleMode scaleMode, int maxWidth, in
     if(ref != null) {
         return ref.getBitmap(scaleMode, maxWidth, maxHeight);
     } else {
-        Logger.error(getClass(), "Trying to retrieve not referenced bitmap: "+key);
+        Logger.error(getClass(), "Trying to get(key, maxWidth, maxHeight) not referenced bitmap: "+key);
         return null;
     }
 }
@@ -272,7 +281,7 @@ public String getAbsolutePathForKey(String key) throws IOException
     if(ref != null) {
         return IOUtils.GetAbsolutePathForFilename(ref.location, ref.path, context);
     } else {
-        Logger.error(getClass(), "Trying to retrieve not referenced bitmap: "+key);
+        Logger.error(getClass(), "Trying to getAbsolutePath() for not referenced bitmap: "+key);
         return null;
     }
 }
@@ -354,6 +363,7 @@ protected final Bitmap loadBitmap(ScaleMode scaleMode, int maxWidth, int maxHeig
             Bitmap b = BitmapFactory.decodeStream(is);
             size.x = b.getWidth();
             size.y = b.getHeight();
+            scale = 1;
             return b;
         } else {
             getBitmapSize();
@@ -436,7 +446,7 @@ public synchronized Bitmap getInBackground(String path, BackgroundLoadListener l
             return null;
         }
     } else {
-        Logger.error(getClass(), "Trying to retrieve bitmap without reference: "+path);
+        Logger.error(getClass(), "Trying to retrieve bitmap in background without reference: "+path);
         return null;
     } 
 }
