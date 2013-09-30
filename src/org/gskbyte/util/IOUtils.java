@@ -83,16 +83,28 @@ public static String StringForLocation(int location)
 }
 
 /**
- * Reads an inputStream into a String. Be careful with this using slow streams,
- * such as remote connections.
+ * Reads an inputStream into a String, encoded as UTF-8.
  * @param is The InputStream to read from
  * @return A String with the contents of the InputStream.
  * */
 public static String InputStreamToString( InputStream is )
-        throws IOException
+    throws IOException
 {
     Scanner s = new Scanner(is).useDelimiter("\\A");
     return s.hasNext() ? s.next() : "";
+}
+
+/**
+ * Reads an inputStream into a String given a encoding.
+ * @param is The InputStream to read from
+ * @param encoding The encoding of the original text, to be converted to UTF-8. For example, "UTF-8" or "windows-1252"
+ * @return A String with the contents of the InputStream.
+ * */
+public static String InputStreamToString( InputStream is, String encoding )
+    throws IOException
+{
+    byte [] dataArray = IOUtils.InputStreamToByteArray(is);
+    return new String(dataArray, encoding);
 }
 
 /**
@@ -102,7 +114,7 @@ public static String InputStreamToString( InputStream is )
  * @return A byte[] with the contents of the InputStream.
  * */
 public static byte [] InputStreamToByteArray(InputStream is)
-        throws IOException
+    throws IOException
 {
     final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 

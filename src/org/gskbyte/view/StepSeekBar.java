@@ -101,6 +101,7 @@ public void setMax(int max)
 public void setThumb(Drawable d)
 {
     super.setThumb(d);
+    primaryThumb = d;
 }
 
 @SuppressLint("NewApi")
@@ -116,7 +117,7 @@ public Drawable getThumb()
 
 private void setDefaultSecondaryThumb()
 {
-    Bitmap b = bitmapFromDrawable( getThumb() ); // getThumb() is only supported since Jelly Bean
+    Bitmap b = bitmapFromDrawable( getThumb() );
     if(b != null) {
         Drawable d = new BitmapDrawable(getResources(), b);
         
@@ -124,6 +125,8 @@ private void setDefaultSecondaryThumb()
         cm.setSaturation(0);
         ColorMatrixColorFilter filter = new ColorMatrixColorFilter(cm);
         d.setColorFilter( filter );
+        
+        secondaryThumb = d;
     }
 }
 
@@ -146,6 +149,10 @@ protected void initAttributes(Context context, AttributeSet attrs)
     setSmoothFactor( a.getInteger(R.styleable.org_gskbyte_view_StepSeekBar_smoothFactor, defaultSmoothFactor) );
     
     a.recycle();
+    
+    if( isInEditMode() ) {
+        setMax(4);
+    }
 }
 
 protected static Bitmap bitmapFromDrawable(Drawable d)
@@ -188,6 +195,7 @@ public void setSecondaryThumb(Drawable d)
 protected synchronized void onDraw(Canvas canvas)
 {
     super.onDraw(canvas);
+    
     if (secondaryThumb != null) {
         final int max = getSmoothedMax();
         
@@ -205,10 +213,12 @@ protected synchronized void onDraw(Canvas canvas)
         
         // thumb needs to be repainted over the secondary thumbs
         // @see AbsSeekBar#onDraw()
-        canvas.save();
-        canvas.translate(getPaddingLeft() - getThumbOffset(), getPaddingTop());
-        getThumb().draw(canvas);
-        canvas.restore();
+        if(getThumb() != null) {
+            canvas.save();
+            canvas.translate(getPaddingLeft() - getThumbOffset(), getPaddingTop());
+            getThumb().draw(canvas);
+            canvas.restore();
+        }
     }
 }
 
