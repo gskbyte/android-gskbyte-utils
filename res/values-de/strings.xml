@@ -28,4 +28,6 @@
     <string name="intent_map_choose">Bitte wählen Sie eine Karten Applikation</string>
     
     <string name="event_list_datetime">%1$s Uhr</string>
+    
+    <string name="load_dialog_loading">Daten werden geladen&#8230;</string>
 </resources>

@@ -17,8 +17,6 @@ import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.gskbyte.util.Logger;
-
 /**
  * Abstract base class for classes who can have listeners (implementation of the
  * delegate design pattern). The methods included in this class are thread safe.

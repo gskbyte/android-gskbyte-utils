@@ -17,6 +17,9 @@ import org.gskbyte.util.Logger;
 
 import lombok.Getter;
 import lombok.Setter;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.SparseArray;
 
 import org.gskbyte.download.Download.State;
@@ -65,6 +68,19 @@ implements Download.Listener
         } catch (Exception e) {
             Logger.except(getClass(), e);
         }
+    }
+    
+    /**
+     * Requires permission android.permission.ACCESS_NETWORK_STATE
+     * */
+    public static boolean IsConnectionActive(Context context)
+    {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnected()) {
+            return true;
+        }
+        return false;
     }
     
     public Download queueRequest(Download.Request r)

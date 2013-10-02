@@ -28,4 +28,6 @@
     <string name="intent_map_error">No maps applications found</string>
     
     <string name="event_list_datetime">%1$s</string>
+    
+    <string name="load_dialog_loading">Loading data&#8230;</string>
 </resources>
