@@ -3,6 +3,7 @@ package org.gskbyte.dialog;
 import org.gskbyte.R;
 
 import lombok.Getter;
+import lombok.Setter;
 import android.app.Dialog;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -34,6 +35,9 @@ protected float displayedRate;
 protected boolean showsRate;
 
 protected Drawable customBackground;
+
+@Getter @Setter
+protected String customTitle;
 
 protected ViewGroup rootView;
 protected TextView title, progressText;
@@ -80,7 +84,7 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
     
     rootView = (ViewGroup) v.findViewById(R.id.root);
     
-    title = (TextView) v.findViewById(R.id.title);
+    title = (TextView) v.findViewById(R.id.loading_title);
     progressText = (TextView) v.findViewById(R.id.progressText);
     horizontalProgressBar = (ProgressBar) v.findViewById(R.id.determinateProgressBar);
     
@@ -148,6 +152,10 @@ protected void updateView()
 {
     if(progressText == null) // getView() is still null in onCreateView
         return;
+    
+    if(customTitle != null) {
+        title.setText(customTitle);
+    }
     
     updateDialog( getDialog() );
     

@@ -13,6 +13,8 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     
+    <string name="openlinkdialog_title">Open website?</string>
+    
     <string name="pull_to_refresh_pull_label">Pull to refresh&#8230;</string>
     <string name="pull_to_refresh_release_label">Release to refresh&#8230;</string>
     <string name="pull_to_refresh_refreshing_label">Loading&#8230;</string>

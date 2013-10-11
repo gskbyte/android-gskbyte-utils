@@ -13,7 +13,7 @@
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
     
-    <string name="openlinkdialog_title">Open website?</string>
+    <string name="openlinkdialog_title">Webseite öffnen?</string>
     
     <string name="pull_to_refresh_pull_label">Ziehen, um zu aktualisieren&#8230;</string>
     <string name="pull_to_refresh_release_label">Loslassen, um zu aktualisieren&#8230;</string>

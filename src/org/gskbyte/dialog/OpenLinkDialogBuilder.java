@@ -20,6 +20,9 @@ private final Context context;
 @Getter @Setter
 protected boolean displayLink = true;
 
+@Getter @Setter
+protected String description = "";
+
 public OpenLinkDialogBuilder(Context context)
 {
     this.context = context;
@@ -40,8 +43,15 @@ public AlertDialog create(String url)
 {
     internalBuilder.setCancelable(true);
     internalBuilder.setTitle(R.string.openlinkdialog_title);
+    
+    String message = description;
     if(displayLink) {
-        internalBuilder.setMessage(url);
+        if(message.length() > 0) {
+            message += "\n\n(" + url + ")";
+        } else {
+            message += url;
+        }
+        internalBuilder.setMessage(message);
     }
     
     internalBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
