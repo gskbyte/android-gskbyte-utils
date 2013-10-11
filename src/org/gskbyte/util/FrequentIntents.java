@@ -18,7 +18,7 @@ public static Intent GetOpenURLIntent(String url)
     return intent;
 }
 
-public static void OpenURLIntent(Context context, String url)
+public static void OpenURL(Context context, String url)
 {
     Intent intent = GetOpenURLIntent(url);
     try {

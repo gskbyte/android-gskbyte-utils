@@ -1,14 +1,14 @@
 package org.gskbyte.view;
 
 import lombok.Getter;
-
 import org.gskbyte.R;
 import org.gskbyte.drawable.AutoBackgroundButtonDrawable;
-
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.Button;
 
@@ -134,6 +134,7 @@ public void setCompoundDrawables(Drawable left, Drawable top, Drawable right, Dr
     
 }
 
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 @Override
 public void setCompoundDrawablesRelative(Drawable left, Drawable top, Drawable right, Drawable bottom)
 {

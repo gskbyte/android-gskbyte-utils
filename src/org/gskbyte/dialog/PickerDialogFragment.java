@@ -124,7 +124,7 @@ public Dialog onCreateDialog(Bundle savedInstanceState)
         }
     });
     
-    updateCheckStatus();
+    updateCheckStatus(true);
     dialog = alertDialogBuilder.create();
     return dialog;
 }
@@ -144,16 +144,32 @@ protected void onCancelButtonPressed()
         listener.onPickerDialogFragmentCanceled(this);
 }
 
-protected void updateCheckStatus()
+protected boolean updateCheckStatus(boolean modifyChecksInList)
 {
+    boolean allSelected = true;
+    boolean allDeselected = true;
+    
     allOptionsSelected = true;
+    
     for(boolean b : selectedOptions) {
-        if(!b) {
-            allOptionsSelected = false;
+        if(b) {
+            allDeselected = false;
+        } else {
+            allSelected = false;
+        }
+        if(!allDeselected && !allSelected)
             break;
+    }
+    
+    allOptionsSelected = (allSelected || allDeselected);
+    updateAllCheckedCheckBox(allOptionsSelected);
+    if(modifyChecksInList && allOptionsSelected) {
+        for(int i=0; i<selectedOptions.length; ++i) {
+            selectedOptions[i] = allOptionsSelected;
         }
     }
-    updateAllCheckedCheckBox(allOptionsSelected);
+    
+    return allOptionsSelected;
 }
 
 protected void updateAllCheckedCheckBox(boolean mark)
@@ -166,7 +182,7 @@ protected void updateAllCheckedCheckBox(boolean mark)
 public void onClick(DialogInterface dialog, int which, boolean isChecked)
 {
     selectedOptions[which] = isChecked;
-    updateCheckStatus();
+    updateCheckStatus(false);
 }
 
 @Override
@@ -182,7 +198,7 @@ public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
         listView.setItemChecked(i, isChecked);
         selectedOptions[i] = isChecked;
     }
-    updateCheckStatus();
+    updateCheckStatus(false);
 }
 
 @SuppressWarnings("unused")
