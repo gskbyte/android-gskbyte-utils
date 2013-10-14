@@ -39,7 +39,7 @@ public void setTitle(int stringRes)
     internalBuilder.setTitle(stringRes);
 }
 
-public AlertDialog create(String url)
+public AlertDialog create(final String url)
 {
     internalBuilder.setCancelable(true);
     internalBuilder.setTitle(R.string.openlinkdialog_title);
@@ -58,7 +58,7 @@ public AlertDialog create(String url)
         @Override
         public void onClick(DialogInterface dialog, int which)
         {
-            FrequentIntents.OpenURL(context, "http://www.medac.de/medac_international/relaunch/index.php");
+            FrequentIntents.OpenURL(context, url);
         }
     });
     internalBuilder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
