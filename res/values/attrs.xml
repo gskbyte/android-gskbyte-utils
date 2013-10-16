@@ -19,11 +19,15 @@
     <attr name="html_text" format="string"/>
     <attr name="filterColor" format="color"/>
     
-    <declare-styleable name="org.gskbyte.view.FontableTextView">
+    <declare-styleable name="org.gskbyte.view.FontableButton">
         <attr name="font" />
         <attr name="html_text"/>
     </declare-styleable>
-    <declare-styleable name="org.gskbyte.view.FontableButton">
+    <declare-styleable name="org.gskbyte.view.FontableCheckBox">
+        <attr name="font" />
+        <attr name="html_text"/>
+    </declare-styleable>
+    <declare-styleable name="org.gskbyte.view.FontableTextView">
         <attr name="font" />
         <attr name="html_text"/>
     </declare-styleable>
