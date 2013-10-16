@@ -95,20 +95,26 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
 
 public void setGravity(int g)
 {
-    windowGravity = g;
-    updateView();
+    if(g != windowGravity) {
+        windowGravity = g;
+        updateView();
+    }
 }
 
 public void setDimsBackground(boolean d)
 {
-    dimsBackground = d;
-    updateView();
+    if(d != dimsBackground) {
+        dimsBackground = d;
+        updateView();
+    }
 }
 
 public void setBackground(Drawable d)
 {
-    customBackground = d;
-    updateView();
+    if(d != customBackground) {
+        customBackground = d;
+        updateView();
+    }
 }
 
 public Drawable getBackground()
@@ -124,8 +130,10 @@ public void setProgressRate(float rate)
 
 public void setShowsRate(boolean b)
 {
-    showsRate = b;
-    updateView();
+    if(showsRate != b) {
+        showsRate = b;
+        updateView();
+    }
 }
 
 protected void updateDialog(Dialog d)
@@ -138,7 +146,9 @@ protected void updateDialog(Dialog d)
     // TODO implement the positive case, when you have time!!!!
     if(!dimsBackground)
         w.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-    d.getWindow().setBackgroundDrawable(customBackground);
+    
+    if(customBackground != null)
+        d.getWindow().setBackgroundDrawable(customBackground);
     
     WindowManager.LayoutParams wlp = w.getAttributes();
 
