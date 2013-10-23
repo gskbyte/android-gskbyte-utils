@@ -13,6 +13,9 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     
+    <string name="openfilehandler_title_param">Please install an app to open this kind of file: %1$s</string>
+    <string name="openfilehandler_title_pdf">Please install a PDF reader to view this file</string>
+    
     <string name="openlinkdialog_title">Open website?</string>
     
     <string name="pull_to_refresh_pull_label">Pull to refresh&#8230;</string>

@@ -19,9 +19,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Environment;
 
@@ -425,6 +428,124 @@ public static InputStream GetInputStreamForDrawable(int location, String path, C
 }
 
 /**
+ * Returns all file names for the given location. The names returned by this method can be directly used by other methods in this class,
+ * such as GetFile() or GetInputStream().
+ * @param location A single location for the file. Can be a combination of locations.
+ * @param baseDirectory The base directory where to search, if applicable.
+ * @param includeFolders wether to include folder files or not
+ * @param recursive wether to enter folders and list them right after the parent's path (if includeFolders==true)
+ * @param context The context used to open the file.
+ * */
+public static List<String> ListFileNames(int location, String baseDirectory, boolean includeFolders, boolean recursive, Context context)
+    throws IOException
+{
+    switch (location) {
+    case LOCATION_RESOURCES:
+        throw new IOException("Listing file names from the application resources is not supported");
+    case LOCATION_PRIVATE:
+        if(baseDirectory.length()>0)
+            throw new IOException("The private directory can't contain subfolders");
+        File [] files = context.getFilesDir().listFiles();
+        ArrayList<String> names = new ArrayList<String>();
+        for(File f : files) {
+            names.add(f.getName());
+        }
+        return names;
+    case LOCATION_ASSETS:
+        return ListFilenamesInAssets("", includeFolders, recursive, context);
+    case LOCATION_EXTERNAL:
+        return ListFilenamesInExternalStorage("", includeFolders, recursive, context);
+    }
+    throw new IOException("Unsupported location: " + location);
+}
+
+/**
+ * Returns all file names in the assets of the app. The names returned by this method can be directly used by other methods in this class,
+ * such as GetFile() or GetInputStream().
+ * @param baseDirectory The base directory where to search, if applicable.
+ * @param includeFolders wether to include folder files or not
+ * @param recursive wether to enter folders and list them right after the parent's path (if includeFolders==true)
+ * @param context The context used to open the file.
+ * */
+public static List<String> ListFilenamesInAssets(String subfolder, boolean includeFolders, boolean recursive, Context context)
+        throws IOException
+{
+    AssetManager manager = context.getAssets();
+    ArrayList<String> list = new ArrayList<String>();
+    
+    if(subfolder == null)
+        subfolder = "";
+    
+    AppendFilesForAssetsSubfolder(manager, subfolder, list, includeFolders, recursive);
+    
+    return list;
+}
+
+
+/** private method used by ListFilenamesInAssets() */
+private static void AppendFilesForAssetsSubfolder(AssetManager manager, String subfolder, List<String> existingList, boolean includeFolders, boolean recursive)
+        throws IOException
+{
+    final String [] files = manager.list(subfolder);
+    if(subfolder.length() > 0)
+        subfolder += File.pathSeparator;
+    for(String s : files) {
+        String innerPath = subfolder+s;
+        String [] sublist = manager.list(innerPath);
+        if(sublist != null && sublist.length>0) { 
+            if(includeFolders)
+                existingList.add(innerPath);
+            if(recursive)
+                AppendFilesForAssetsSubfolder(manager, innerPath, existingList, includeFolders, recursive);
+        } else {
+            existingList.add(innerPath);
+        }
+    }
+}
+
+/**
+ * Returns all file names in the SD Card, if available. The names returned by this method can be directly used by other methods in this class,
+ * such as GetFile() or GetInputStream().
+ * @param baseDirectory The base directory where to search, if applicable.
+ * @param includeFolders wether to include folder files or not
+ * @param recursive wether to enter folders and list them right after the parent's path (if includeFolders==true)
+ * @param context The context used to open the file.
+ * */
+public static List<String> ListFilenamesInExternalStorage(String subfolder, boolean includeFolders, boolean recursive, Context context)
+        throws IOException
+{
+    ArrayList<String> list = new ArrayList<String>();
+
+    if(subfolder == null)
+        subfolder = "";
+    
+    File root = new File(Environment.getExternalStorageDirectory(), subfolder);
+    
+    AppendFilesForExternalSubfolder(root, list, includeFolders, recursive);
+    
+    return list;
+}
+
+/** private method used by ListFilenamesInExternalStorage() */
+private static void AppendFilesForExternalSubfolder(File root, List<String> existingList, boolean includeFolders, boolean recursive)
+{
+    if(root.isDirectory()) {
+        String [] filenameList = root.list();
+        for(String filename : filenameList) {
+            File f = new File(root, filename);
+            if( f.isDirectory() ) {
+                if(includeFolders)
+                    existingList.add( f.getAbsolutePath() );
+                if(recursive)
+                    AppendFilesForExternalSubfolder(f, existingList, includeFolders, recursive);
+            } else {
+                existingList.add( f.getAbsolutePath() );
+            }
+        }
+    }
+}
+
+/**
  * Returns true if GetInputStream returns a FileInputStream (implementation of InputStream).
  * LOCATION_RESOURCES and LOCATION_ASSETS return false
  * LOCATION_PRIVATE and LOCATION_EXTERNAL return true
@@ -648,7 +769,7 @@ public final static String DirectoryPath(String path)
     if(index>=0/* && index<path.length()*/) {
         return path.substring(0, index);
     } else {
-        return path;
+        return "";
     }
 }
 
