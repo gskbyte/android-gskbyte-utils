@@ -17,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.util.Scanner;
 
@@ -288,6 +289,27 @@ public static void CopyFileStream(FileInputStream fis, FileOutputStream fos)
 }
 
 /**
+ * Copies the contents of an InputStream to an OutputStream. Useful when the origin of the InputStream is unknown.
+ * This method is supposed to be less efficient than CopyFileStream(), use it when possible!
+ * @param is The InputStream to read from.
+ * @param os The FileOutputStream to write to.
+ * @throws IOException If the operation fails.
+ * */
+public static void CopyStream(InputStream is, OutputStream os)
+        throws IOException
+{
+    byte[] buffer = new byte[8192];
+    int len = is.read(buffer);
+    while (len != -1) {
+        os.write(buffer, 0, len);
+        len = is.read(buffer);
+        if (Thread.interrupted()) {
+            throw new IOException("Thread was stopped while copying");
+        }
+    }
+}
+
+/**
  * Get an InputStream given a location and a file.
  * @param location A single location for the file. Can not be LOCATION_RESOURCES nor a combination of locations.
  * @param path The path for the file.
@@ -403,6 +425,24 @@ public static InputStream GetInputStreamForDrawable(int location, String path, C
 }
 
 /**
+ * Returns true if GetInputStream returns a FileInputStream (implementation of InputStream).
+ * LOCATION_RESOURCES and LOCATION_ASSETS return false
+ * LOCATION_PRIVATE and LOCATION_EXTERNAL return true
+ * @param location A single location for the file.
+ * @return true if we get a FileInputStream when invoking GetInputStream for the given location
+ * */
+public static boolean LocationOperatesOnFileStream(int location)
+{
+    switch(location) {
+    case LOCATION_PRIVATE:
+    case LOCATION_EXTERNAL:
+        return true;
+    default:
+        return false;
+    }
+}
+
+/**
  * Get an InputStream given a location and a file.
  * @param location A single location for the file. Can only be LOCATION_PRIVATE or LOCATION_EXTERNAL
  * @param path The path for the file.
@@ -413,12 +453,11 @@ public static InputStream GetInputStreamForDrawable(int location, String path, C
 public static FileInputStream GetFileInputStream(int location, String path, Context context)
         throws IOException
 {
-    switch(location) {
-    case LOCATION_PRIVATE:
-    case LOCATION_EXTERNAL:
+    if( LocationOperatesOnFileStream(location) ) {
         return (FileInputStream) GetInputStream(location, path, context);
+    } else {
+        throw new IllegalArgumentException("Invalid origin location: "+StringForLocation(location));
     }
-    throw new IllegalArgumentException("Invalid origin location: "+StringForLocation(location));
 }
 
 /**
@@ -468,6 +507,23 @@ public static void CopyFileFromResources(int resourceId, int destinationLocation
 }
 
 /**
+ * Copies a file from assets given its path to the app's private folder or the external storage.
+ * @param originPath The file name under the assets folder.
+ * @param destinationLocation A single location for the file. Can only be LOCATION_PRIVATE or LOCATION_EXTERNAL.
+ * @param destinationPath The path for the output file.
+ * @param context The context used to open the file.
+ * @throws IOException if the file can not be created.
+ * @throws IllegalArgumentException If the destination location is not LOCATION_PRIVATE or LOCATION_EXTERNAL.
+ * */
+public static void CopyFileFromAssets(String originPath, int destinationLocation, String destinationPath, Context context)
+                throws IOException
+{
+    InputStream is = GetInputStream(LOCATION_ASSETS, originPath, context);
+    FileOutputStream fos = GetFileOutputStream(destinationLocation, destinationPath, context);
+    CopyStream(is, fos);
+}
+
+/**
  * Copies a file to the app's private folder or the external storage.
  * @param originLocation The origin location. Can not only be LOCATION_PRIVATE or LOCATION_EXTERNAL.
  * @param originPath The path for the origin file.
@@ -481,9 +537,13 @@ public static void CopyFile(int originLocation, String originPath,
     int destinationLocation, String destinationPath, Context context)
     throws IOException
 {
-    FileInputStream fis = GetFileInputStream(originLocation, originPath, context);
+    InputStream is = GetInputStream(originLocation, originPath, context);
     FileOutputStream fos = GetFileOutputStream(destinationLocation, destinationPath, context);
-    CopyFileStream(fis, fos);
+    if( LocationOperatesOnFileStream(originLocation) ) {
+        CopyFileStream((FileInputStream) is, fos); // this should be faster
+    } else {
+        CopyStream(is, fos);
+    }
 }
 
 /**
