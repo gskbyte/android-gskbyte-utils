@@ -110,6 +110,14 @@ private void showUnknownMimeContentTypeDialog()
     builder.setCancelable(true);
     builder.setTitle( dialogTitle );
     builder.setMessage(R.string.openfilehandler_noapp_message);
+    builder.setNegativeButton(R.string.no, new OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which)
+        {
+            dialog.dismiss();
+        }
+    });
+
     builder.setPositiveButton(R.string.openfilehandler_noapp_search, new OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which)
@@ -125,6 +133,9 @@ private void showUnknownMimeContentTypeDialog()
             context.startActivity(intent);
         }
     });
+    
+    AlertDialog alert = builder.create();
+    alert.show();
 }
 
 private boolean copyFileToExternalStorageAndOpenIt(int location, String filepath)
