@@ -17,6 +17,8 @@
     
     <string name="openfilehandler_title_param">Bitte installieren Sie eine App, um diese Datei zu öffnen: %1$s</string>
     <string name="openfilehandler_title_pdf">Bitte installieren Sie einen PDF Leser</string>
+    <string name="openfilehandler_noapp_message">Möchten Sie Apps in Google Play suchen?</string>
+    <string name="openfilehandler_noapp_search">Suchen</string>
     
     <string name="pull_to_refresh_pull_label">Ziehen, um zu aktualisieren&#8230;</string>
     <string name="pull_to_refresh_release_label">Loslassen, um zu aktualisieren&#8230;</string>

@@ -15,8 +15,11 @@
     
     <string name="openfilehandler_title_param">Please install an app to open this kind of file: %1$s</string>
     <string name="openfilehandler_title_pdf">Please install a PDF reader to view this file</string>
+    <string name="openfilehandler_noapp_message">Would you like to search for apps in Google Play?</string>
+    <string name="openfilehandler_noapp_search">Search</string>
     
     <string name="openlinkdialog_title">Open website?</string>
+    
     
     <string name="pull_to_refresh_pull_label">Pull to refresh&#8230;</string>
     <string name="pull_to_refresh_release_label">Release to refresh&#8230;</string>

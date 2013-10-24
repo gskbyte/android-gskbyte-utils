@@ -22,7 +22,7 @@ public class OpenFileHandler
 {
 
 private final Context context;
-private final String fileDataType;
+private final String mimeContentType;
 private final String [] appNames, appPackages;
 
 @Getter @Setter
@@ -31,28 +31,38 @@ protected String dialogTitle;
 @Getter @Setter
 protected int dialogIconResource;
 
-public OpenFileHandler(Context context, String fileDataType, String [] appNames, String [] appPackages)
+public OpenFileHandler(Context context, String mimeContentType, String [] appNames, String [] appPackages)
 {
     this.context = context;
-    this.fileDataType = fileDataType;
-    if(appNames.length == 0 || appNames.length != appPackages.length)
+    this.mimeContentType = mimeContentType;
+    if(appNames.length != appPackages.length)
         throw new IllegalArgumentException("You have to provide as many appPackages as appNames");
     
     this.appNames = appNames;
     this.appPackages = appPackages;
     
-    this.dialogTitle = context.getString(R.string.openfilehandler_title_param, fileDataType);
+    this.dialogTitle = context.getString(R.string.openfilehandler_title_param, mimeContentType);
 }
 
 public boolean openFile(int location, String filename)
+    throws IOException
 {
-    if (isExternalAppAvailable()) {
+    if(isExternalAppAvailable()) {
         return copyFileToExternalStorageAndOpenIt(location, filename);
     } else {
-        showDialog();
+        if(canSuggestAppForMimeContentType()) {
+            showSuggestionDialog();
+        } else {
+            showUnknownMimeContentTypeDialog();
+        }
         return false;
     }
 }
+
+/**
+ * */
+public boolean canSuggestAppForMimeContentType()
+{ return appNames.length>0; }
 
 /**
  * Returns true if at least one application to open this kind of files is available
@@ -61,39 +71,22 @@ public boolean isExternalAppAvailable()
 {
     PackageManager packageManager = context.getPackageManager();
     Intent testIntent = new Intent(Intent.ACTION_VIEW);
-    testIntent.setType(fileDataType);
+    testIntent.setType(mimeContentType);
     List<ResolveInfo> list = packageManager.queryIntentActivities(testIntent, PackageManager.MATCH_DEFAULT_ONLY);
     return list.size() > 0;
 }
 
 /**
- * Static handlers for common file types
- * */
-private final static String [] PDFAppNames = {"Adobe Reader", "PDF Reader"};
-private final static String [] PDFAppPackages = {"com.adobe.reader", "com.foobnix.pdf.reader"};
-
-/**
- * Returns an OpenFileHandler for PDF files
- * */
-public static final OpenFileHandler PDF(Context context)
-{
-    OpenFileHandler pdf = new OpenFileHandler(context, "application/pdf", PDFAppNames, PDFAppPackages);
-    pdf.setDialogTitle( context.getString(R.string.openfilehandler_title_pdf) );
-    return pdf;
-}
-
-/**
  * Private internal methods
  * */
-private void showDialog()
+private void showSuggestionDialog()
 {
     AlertDialog.Builder builder = new AlertDialog.Builder(context);
     builder.setCancelable(true);
+    builder.setTitle( dialogTitle );
     
     final ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.select_dialog_singlechoice, appNames);
-    
     builder.setAdapter(adapter, new OnClickListener() {
-        
         @Override
         public void onClick(DialogInterface dialog, int which)
         {
@@ -106,22 +99,41 @@ private void showDialog()
         }
     });
     
-    builder.setTitle( dialogTitle );
+    
     AlertDialog alert = builder.create();
     alert.show();
 }
 
+private void showUnknownMimeContentTypeDialog()
+{
+    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+    builder.setCancelable(true);
+    builder.setTitle( dialogTitle );
+    builder.setMessage(R.string.openfilehandler_noapp_message);
+    builder.setPositiveButton(R.string.openfilehandler_noapp_search, new OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which)
+        {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            
+            String [] mimeParts = mimeContentType.split("/");
+            String fileExtension = mimeParts[mimeParts.length-1];
+            
+            intent.setData(Uri.parse("market://search?q="+fileExtension+"&c=apps"));
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            context.startActivity(intent);
+        }
+    });
+}
+
 private boolean copyFileToExternalStorageAndOpenIt(int location, String filepath)
+        throws IOException
 {
     String destinationFilename = "." + IOUtils.LastPathComponent(filepath);
     if(location != IOUtils.LOCATION_EXTERNAL) {
-        try {
-            IOUtils.DeleteFileRecursive(IOUtils.LOCATION_EXTERNAL, destinationFilename, context);
-            IOUtils.CopyFile(location, filepath, IOUtils.LOCATION_EXTERNAL, destinationFilename, context);
-        } catch (IOException e) {
-            Logger.except(getClass(), e, "Can't copy file to external storage");
-            return false;
-        }
+        IOUtils.DeleteFileRecursive(IOUtils.LOCATION_EXTERNAL, destinationFilename, context);
+        IOUtils.CopyFile(location, filepath, IOUtils.LOCATION_EXTERNAL, destinationFilename, context);
     }
     
     File file = IOUtils.GetFile(IOUtils.LOCATION_EXTERNAL, destinationFilename, context);
@@ -129,7 +141,7 @@ private boolean copyFileToExternalStorageAndOpenIt(int location, String filepath
     Intent intent = new Intent();
     intent.setAction(Intent.ACTION_VIEW);
     Uri uri = Uri.fromFile(file);
-    intent.setDataAndType(uri, fileDataType);
+    intent.setDataAndType(uri, mimeContentType);
     context.startActivity(intent);
     return true;
 }
