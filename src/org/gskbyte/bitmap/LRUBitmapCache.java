@@ -1,7 +1,9 @@
 package org.gskbyte.bitmap;
 
 import lombok.Getter;
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.support.v4.util.LruCache;
 
 /**
@@ -45,17 +47,19 @@ protected int sizeOf(KeyClass key, Bitmap value)
 /**
  * Returns number of bytes per pixel given a bitmap config.
  * */
-// Computation is done "by hand" becase .getByteCount() is available only from API 12
 public final static int BytesPerPixel(Bitmap.Config config)
 {
     switch(config) {
-    case ALPHA_8: return 1;
-    case ARGB_4444: return 2;
-    case ARGB_8888: return 4;
-    case RGB_565: return 2;
+    case ALPHA_8:
+        return 1;
+    case ARGB_8888:
+        return 4;
+    
+    default:
+    case ARGB_4444:
+    case RGB_565:
+        return 2;
     }
-    // should not happen
-    return 2;
 }
 
 /**
@@ -63,8 +67,15 @@ public final static int BytesPerPixel(Bitmap.Config config)
  * @param bitmap The bitmap for which to calculate its size.
  * @return Its size, in bytes.
  * */
+@SuppressLint("NewApi")
 public static int BitmapMemorySize(Bitmap bitmap)
-{ return bitmap.getWidth() * bitmap.getHeight() * BytesPerPixel(bitmap.getConfig()); }
+{
+    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+        return bitmap.getByteCount();
+    } else {
+        return bitmap.getWidth() * bitmap.getHeight() * BytesPerPixel(bitmap.getConfig());
+    }
+}
 
 /**
  * Returns the memory required for a bitmap configuration

@@ -55,9 +55,10 @@ public LRUBitmapManager(Context context, int numLoadThreads, float memoryRate)
 public static final int MaxMemorySizeForRate(Context context, float memoryRate)
 {
     ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-    final int totalMemory = activityManager.getMemoryClass();
-    final int memoryAfterRate = (int) (totalMemory * 1024 * 1024 * memoryRate);
-    return memoryAfterRate;
+    final int totalMemoryInMegabytes = activityManager.getMemoryClass();
+    final int maxMemoryInMegabytes = (int)(totalMemoryInMegabytes * memoryRate);
+    final int maxMemoryInBytes = (int) (maxMemoryInMegabytes * 1024 * 1024);
+    return maxMemoryInBytes;
 }
 
 protected BitmapRef initializeReference(int location, String path)
@@ -93,6 +94,34 @@ public int countLoadedBitmaps()
 public void releaseAllBitmaps()
 {
     bitmapCache.evictAll();
+}
+
+/**
+ * Frees memory from old bitmaps, given the rate of memory that we want to free up (0 = nothing, 1 = all bitmaps)
+ * @param freeUpRate The amount of memory to free up
+ * */
+public void releaseOldBitmaps(float freeUpRate)
+{
+    final int initialSize = bitmapCache.size();
+    
+    int maxSize = -1; // Removes all, equivalent to releaseAll
+    if(freeUpRate < 0)
+        return;
+    if(freeUpRate < 1) {
+        int cacheMaxSize = bitmapCache.getMaxSize();
+        maxSize = (int)((1-freeUpRate)*cacheMaxSize);
+    }
+    
+    bitmapCache.trimToSize(maxSize);
+    final int finalSize = bitmapCache.size();
+    final int sizeDif = initialSize - finalSize;
+    if(sizeDif != 0) {
+        Logger.info( getClass(), String.format("Freed memory: %.2f MB before, %.2f MB after (%.2f MB saved)",
+                (initialSize/(1024*1024f)),
+                (finalSize/(1024*1024f)),
+                (sizeDif/(1024*1024f))
+                ) );
+    }
 }
 
 /**
