@@ -275,7 +275,7 @@ public synchronized Bitmap get(String key, ScaleMode scaleMode, int maxWidth, in
  * @return The path for the given key if found, null if not.
  * @throws IOException if an error occurs while getting the absolute path 
  * */
-public String getAbsolutePathForKey(String key) throws IOException 
+public String getAbsolutePathForKey(String key) 
 {
     BitmapRef ref = references.get(key);
     if(ref != null) {

@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.CheckBox;
@@ -17,12 +18,10 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockDialogFragment;
-
 import org.gskbyte.R;
 
 public class PickerDialogFragment
-extends SherlockDialogFragment
+extends DialogFragment
 implements DialogInterface.OnMultiChoiceClickListener, OnCheckedChangeListener
 {
 

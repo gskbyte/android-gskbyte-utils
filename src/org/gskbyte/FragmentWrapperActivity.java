@@ -6,8 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-
-import com.actionbarsherlock.app.SherlockFragmentActivity;
+import android.support.v4.app.FragmentActivity;
 
 /**
  * A very simple activity whose content is just a Fragment. Useful to develop just fragments to implement stuff and avoid the
@@ -15,7 +14,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
  * */
 
 public class FragmentWrapperActivity
-extends SherlockFragmentActivity
+extends FragmentActivity
 {
 
 private static final String FRAGMENT_CLASS_NAME = "fragmentClass";

@@ -4,16 +4,15 @@ import java.util.List;
 
 import org.gskbyte.ui.ListAdapter;
 
-import com.actionbarsherlock.app.SherlockFragment;
-
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.util.SparseArray;
 
 public class MainMenuAdapter
 extends ListAdapter<MenuEntry, EntryView>
 {
 
-protected final SparseArray<SherlockFragment> fragments = new SparseArray<SherlockFragment>();
+protected final SparseArray<Fragment> fragments = new SparseArray<Fragment>();
 
 public MainMenuAdapter(Context context, List<MenuEntry> models)
 {

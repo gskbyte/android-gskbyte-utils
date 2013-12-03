@@ -188,7 +188,6 @@ public static boolean ExistsFile(int location, String path, Context context)
  * @throws IllegalArgumentException If the location is a combination of locations
  * */
 public static String GetAbsolutePathForFilename(int location, String rel_path, Context context)
-        throws IOException
 {
     switch(location) {
     case LOCATION_RESOURCES:
