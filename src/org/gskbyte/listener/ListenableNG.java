@@ -14,8 +14,9 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.List;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * Abstract base class for classes who can have listeners (implementation of the
@@ -34,7 +35,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * }
  * 
  * */
-public abstract class Listenable<ListenerClass>
+public abstract class ListenableNG<ListenerClass>
 implements IListenable<ListenerClass>
 {
 
@@ -45,7 +46,37 @@ implements IListenable<ListenerClass>
  * A {@link CopyOnWriteArraySet} would be faster for adding and removing
  * elements, but not for iterating and it's a much more executed action.
  * */
-protected final CopyOnWriteArrayList< WeakReference<ListenerClass> > listeners = new CopyOnWriteArrayList< WeakReference<ListenerClass> >();
+private final ArrayList< WeakReference<ListenerClass> > mutableListeners = new ArrayList< WeakReference<ListenerClass> >();
+private ImmutableList< WeakReference<ListenerClass> > immutableListeners = null;
+
+public List< WeakReference<ListenerClass> > getListeners()
+{
+    if(immutableListeners == null) {
+        immutableListeners = ImmutableList.copyOf(mutableListeners);
+    }
+    return immutableListeners;
+}
+
+private void invalidateImmutableListeners()
+{
+    for(WeakReference<ListenerClass> lref : getListeners()) {
+        ListenerClass l = lref.get();
+        if(l == null) {
+            mutableListeners.remove(lref);
+        }
+    }
+    
+    immutableListeners = null;
+}
+
+public boolean containsListener(ListenerClass listener)
+{
+    for(WeakReference<ListenerClass> l : mutableListeners) {
+        if(l.get() == listener)
+            return true;
+    }
+    return false;
+}
 
 /**
  * Adds a listener, if it's not already added. Before doing it, this method
@@ -55,28 +86,13 @@ protected final CopyOnWriteArrayList< WeakReference<ListenerClass> > listeners =
  * */
 public synchronized boolean addListener(ListenerClass listener)
 {
-    cleanupListeners();
-    for(WeakReference<ListenerClass> l : listeners) {
-        if(l.get() == listener)
-            return false;
+    if( ! containsListener(listener) ) {
+        mutableListeners.add( new WeakReference<ListenerClass>(listener) );
+        invalidateImmutableListeners();
+        return true;
+    } else {
+        return false;
     }
-    listeners.add( new WeakReference<ListenerClass>(listener) );
-    return true;
-}
-
-/**
- * Removes listener references that point to null (because the pointer object
- * has been removed by the garbage collector)
- * */
-private final ArrayList<WeakReference<ListenerClass>> toRemove = new ArrayList<WeakReference<ListenerClass>>();
-protected synchronized void cleanupListeners()
-{
-	for(WeakReference<ListenerClass> lref : listeners) {
-		ListenerClass l = lref.get();
-		if(l == null) toRemove.add(lref);
-	}
-	listeners.removeAll(toRemove);
-	toRemove.clear();
 }
 
 /**
@@ -86,25 +102,29 @@ protected synchronized void cleanupListeners()
  * */
 public synchronized boolean removeListener(ListenerClass listener)
 {
-    boolean removed = false;
-	for(WeakReference<ListenerClass> lref : listeners) {
-		ListenerClass l = lref.get();
-		if(l == null) {
-			toRemove.add(lref);
-		} else if(l == listener) {
-			removed = true;
-			toRemove.add(lref);
-		}
-	}
-	listeners.removeAll(toRemove);
-	toRemove.clear();
-    return removed;
+    int indexToRemove = -1;
+    for(int i=0; i<mutableListeners.size() && indexToRemove<0; ++i) {
+        if(mutableListeners.get(i).get() == listener) {
+            indexToRemove = i;
+        }
+    }
+    
+    if(indexToRemove >= 0) {
+        mutableListeners.remove(indexToRemove);
+        invalidateImmutableListeners();
+        return true;
+    } else {
+        return false;
+    }
 }
 
 /** Removes all listeners */
 public synchronized void removeAllListeners()
-{ listeners.clear(); }
-
+{
+    mutableListeners.clear();
+    invalidateImmutableListeners();
+}
+/*
 public synchronized void invokeMethodOnListeners(Method m, Object ... args)
         throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
 {
@@ -141,7 +161,7 @@ public synchronized void invokeMethodOnListeners(String methodName, Object arg0,
         }
     }
 }
-
+*/
 
 
 }
