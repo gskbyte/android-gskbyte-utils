@@ -47,7 +47,6 @@ implements Download.Listener
     @Getter @Setter private int numThreads = DEFAULT_NUM_THREADS;
     @Getter @Setter private float rateNotificationInterval = DEFAULT_NOTIFICATION_INTERVAL;
     
-    @Getter         private int totalCount, finishedCount, failedCount;
     @Getter         private float downloadRate;
     @Getter         private Download.State state;
     
@@ -122,14 +121,17 @@ implements Download.Listener
     public boolean hasFinishedDownloads()
     { return finished.size() == 0; }
     
-    public int totalCount()
+    public int getTotalCount()
     { return queued.size() + finished.size() + failed.size() + downloading.size(); }
     
-    public int queuedCount()
+    public int getQueuedCount()
     { return queued.size(); }
     
-    public int finishedCount()
+    public int getFinishedCount()
     { return finished.size(); }
+    
+    public int getFailedCount()
+    { return failed.size(); }
     
     public Download downloadForUrl(URL remoteUrl)
     {
@@ -144,9 +146,9 @@ implements Download.Listener
     
     protected float computeRate()
     {
-        int total = totalCount();
-        int finishedCount = finishedCount();
-        int queuedCount = queuedCount();
+        final int total = getTotalCount();
+        final int finishedCount = getFinishedCount();
+        final int queuedCount = getQueuedCount();
         if(finishedCount == total) {
             return 1.0f;
         } else if(queuedCount == total) {

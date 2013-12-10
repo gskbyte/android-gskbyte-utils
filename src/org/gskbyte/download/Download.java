@@ -236,7 +236,7 @@ protected abstract class DownloadTask extends AsyncTask<Void, Float, Integer>
 
         connection.setDoInput(true);
         connection.setConnectTimeout(15000);
-        connection.setReadTimeout(50000);
+        connection.setReadTimeout(30000);
         
         if(postParameters.length()>0) {
             connection.setDoOutput(true);

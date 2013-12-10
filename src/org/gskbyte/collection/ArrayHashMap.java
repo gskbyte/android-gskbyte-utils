@@ -2,10 +2,12 @@ package org.gskbyte.collection;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,6 +37,13 @@ public ArrayHashMap(int capacity, float loadFactor)
 {
     super(capacity, loadFactor);
     keyList = new ArrayList<K>(capacity);
+}
+
+public ArrayHashMap(Map<K,V> map)
+{
+    super(map.size());
+    keyList = new ArrayList<K>(map.size());
+    constructorPutAll(map);
 }
 
 // TODO add other constructors
@@ -87,6 +96,10 @@ public Set< Map.Entry<K, V> > entrySet()
 public Set<K> keySet()
 { return new LinkedHashSet<K>(keyList); }
 
+// to provide faster support tu subclasses
+protected List<K> unmodifiableKeyList()
+{ return Collections.unmodifiableList(keyList); }
+
 public List<K> keyList()
 { return ImmutableList.copyOf(keyList); }
 
@@ -104,7 +117,7 @@ public List<V> valuesList()
 }
 
 // false if already existing, does nothing
-public boolean append(K key, V value)
+public boolean add(K key, V value)
 {
     if( ! containsKey(key) ) {
         keyList.add(key);
@@ -112,6 +125,24 @@ public boolean append(K key, V value)
         return true;
     } else {
         return false;
+    }
+}
+
+// true if added OR changed, false if element found and stays in same position
+public boolean add(int index, K key, V value)
+{
+    if( containsKey(key) ) {
+        int existingIndex = keyList.indexOf(key);
+        if(existingIndex != index) {
+            keyList.set(existingIndex, keyList.set(index, keyList.get(existingIndex)));
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        keyList.add(index, key);
+        super.put(key, value);
+        return true;
     }
 }
 
@@ -151,6 +182,19 @@ public Object clone()
 }
 
 @Override
+public boolean equals(Object object)
+{
+    if(super.equals(object)) {
+        if(object instanceof ArrayHashMap) {
+            ArrayHashMap<?, ?> a = (ArrayHashMap<?, ?>)object;
+            return keyList.equals( a.keyList );
+        }
+    }
+    
+    return false;
+}
+
+@Override
 public V remove(Object key)
 {
     V removed = super.remove(key);
@@ -160,8 +204,6 @@ public V remove(Object key)
     return removed;
 }
 
-// works only if keyForValue() implemented, otherwise throws exception
-
 public V removeAt(int location)
 {
     K key = keyList.remove(location);
@@ -169,21 +211,52 @@ public V removeAt(int location)
     return value;
 }
 
+
+// commented out because it should return a VIEW of this map, not a copy!
+/*
+public ArrayHashMap<K, V> subArrayHashMap(int fromIndex, int toIndex)
+{
+    ArrayHashMap<K, V> ret = new ArrayHashMap<K, V>(toIndex-fromIndex);
+    for(int i=fromIndex; i<toIndex; ++i) {
+        K key = keyList.get(i);
+        ret.put(key, get(key)); // some kind of putNoCheck() method would accelerate this
+    }
+    return ret;
+}*/
+
 @Override
 public Iterator<V> iterator()
 { return valueIterator(); }
 
-public Iterator<K> keyIterator()
-{ return keyList.iterator(); }
+public ListIterator<V> listIterator()
+{ return valueIterator(); }
 
-public Iterator<V> valueIterator()
+public ListIterator<V> listIterator(int index)
+{ return valueIterator(index); }
+
+public ListIterator<K> keyIterator()
+{ return keyList.listIterator(); }
+
+public ListIterator<K> keyIterator(int index)
+{ return keyList.listIterator(index); }
+
+public ListIterator<V> valueIterator()
 { return new ValueIterator(); }
 
-private final class ValueIterator
-implements Iterator<V>
-{
-    int index = -1;
+public ListIterator<V> valueIterator(int index)
+{ return new ValueIterator(index); }
 
+private final class ValueIterator
+implements ListIterator<V>
+{
+    protected int index = -1;
+
+    protected ValueIterator()
+    { this.index = -1; }
+    
+    protected ValueIterator(int startIndex)
+    { this.index = startIndex-1;}
+    
     @Override
     public boolean hasNext()
     { return (index < size()-1); }
@@ -198,6 +271,36 @@ implements Iterator<V>
     @Override
     public void remove()
     { removeAt(index); }
+
+    @Override
+    public void add(V object)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public boolean hasPrevious()
+    { return index>0;}
+
+    @Override
+    public int nextIndex()
+    { return index+1;}
+
+    @Override
+    public V previous()
+    {
+        --index;
+        return getAt(index);
+    }
+
+    @Override
+    public int previousIndex()
+    { return index-1; }
+
+    @Override
+    public void set(V object)
+    { put(keyList.get(index), object); }
 }
 
 
