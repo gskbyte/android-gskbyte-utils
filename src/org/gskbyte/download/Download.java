@@ -27,6 +27,7 @@ import android.os.AsyncTask;
 public abstract class Download
 extends Listenable<Download.Listener>
 {
+
 public static abstract class Request implements Serializable
 {
     private static final long serialVersionUID = 7957702126831831255L;
@@ -124,7 +125,7 @@ protected float notificationMinRate = DEFAULT_NOTIFICATION_RATE;
 protected int numRetries = 0;
 
 protected State state = State.Stopped;
-protected ByteArrayBuffer byteArray;
+protected transient ByteArrayBuffer byteArray;
 
 private DownloadTask downloadTask;
 

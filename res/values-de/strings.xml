@@ -40,4 +40,8 @@
     <string name="event_list_datetime">%1$s Uhr</string>
     
     <string name="load_dialog_loading">Daten werden geladen&#8230;</string>
+    <string name="error_connection_not_available">Netzwerkverbindung nicht verfügbar</string>
+    
+    <string name="no_wifi_detected">Nicht über WLAN verbunden</string>
+    <string name="no_wifi_detected_description">Sie sind über das Mobilfunknetz mit dem Internet verbunden, wollen Sie die Datei dennoch laden?</string>
 </resources>

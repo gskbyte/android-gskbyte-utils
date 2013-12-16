@@ -41,4 +41,8 @@
     <string name="event_list_datetime">%1$s</string>
     
     <string name="load_dialog_loading">Loading data&#8230;</string>
+    <string name="error_connection_not_available">Error: network connection not available</string>
+    
+    <string name="no_wifi_detected">WiFi connection not available</string>
+    <string name="no_wifi_detected_description">Do you want to download this file using a mobile connection?</string>
 </resources>

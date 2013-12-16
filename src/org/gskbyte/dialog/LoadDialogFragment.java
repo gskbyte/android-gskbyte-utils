@@ -47,6 +47,8 @@ public static LoadDialogFragment newInstance()
     return fragment;
 }
 
+
+
 @Override
 public void onCreate(Bundle savedInstanceState)
 {

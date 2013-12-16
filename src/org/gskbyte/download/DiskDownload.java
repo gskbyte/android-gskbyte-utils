@@ -11,7 +11,8 @@ import org.gskbyte.util.IOUtils;
 
 import android.content.Context;
 
-public class DiskDownload extends Download
+public class DiskDownload
+extends Download
 {
 private FileOutputStream tempOutputStream;
 private String tempFilePath;

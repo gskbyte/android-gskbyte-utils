@@ -65,14 +65,38 @@ implements Download.Listener
     }
     
     /**
-     * Requires permission android.permission.ACCESS_NETWORK_STATE
+     * All these methods require permission android.permission.ACCESS_NETWORK_STATE
      * */
-    public static boolean IsConnectionActive(Context context)
+    private static NetworkInfo getNetworkInfo(Context context)
     {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo;
+    }
+    
+    public static boolean IsConnectionActive(Context context)
+    {
+        NetworkInfo netInfo = getNetworkInfo(context);
         if (netInfo != null && netInfo.isConnected()) {
             return true;
+        }
+        return false;
+    }
+    
+    public static boolean IsConnectionWifi(Context context)
+    {
+        NetworkInfo netInfo = getNetworkInfo(context);
+        if(netInfo != null) {
+            return netInfo.isConnected() && netInfo.getType() == ConnectivityManager.TYPE_WIFI;
+        }
+        return false;
+    }
+    
+    public static boolean IsConnectionMobile(Context context)
+    {
+        NetworkInfo netInfo = getNetworkInfo(context);
+        if(netInfo != null) {
+            return netInfo.isConnected() && netInfo.getType() == ConnectivityManager.TYPE_MOBILE;
         }
         return false;
     }
