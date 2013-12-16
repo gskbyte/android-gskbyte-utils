@@ -15,8 +15,6 @@ import java.util.Set;
 
 import org.gskbyte.bitmap.AbstractBitmapManager.ScaleMode;
 
-import lombok.Getter;
-
 import android.graphics.Bitmap;
 
 /**
@@ -34,10 +32,7 @@ protected final Set<String> keys = new HashSet<String>();
 
 protected int uniqueCounter = 0;
 
-@Getter
 protected final AbstractBitmapManager bitmapManager;
-
-@Getter
 protected final int locationForBitmaps;
 
 /**
@@ -51,15 +46,11 @@ public ReferencedBitmaps(AbstractBitmapManager manager, int locationForBitmaps)
     this.locationForBitmaps = locationForBitmaps;
 }
 
-/**
- * Returns the underlying bitmap manager.
- * @deprecated Use getBitmapManager instead.
- * */
-@Deprecated
-public AbstractBitmapManager getManager()
-{
-    return bitmapManager;
-}
+public final AbstractBitmapManager getBitmapManager()
+{ return bitmapManager; }
+
+public final int getLocationForBitmaps()
+{ return locationForBitmaps; }
 
 /**
  * Adds a path to a bitmap, depending on the initial default location.

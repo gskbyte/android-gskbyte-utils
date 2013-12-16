@@ -9,7 +9,6 @@ import java.util.Random;
 
 import org.gskbyte.util.IOUtils;
 
-import lombok.Getter;
 import android.content.Context;
 
 public class DiskDownload extends Download
@@ -17,17 +16,17 @@ public class DiskDownload extends Download
 private FileOutputStream tempOutputStream;
 private String tempFilePath;
 
-@Getter private final Context context;
-@Getter private final int localFileLocation;
-@Getter private final String localFileName;
+private final Context context;
+private final int localFileLocation;
+private final String localFileName;
 
 public static class Request extends Download.Request
 {
     private static final long serialVersionUID = 4480930156991551348L;
     
-    @Getter private final Context context;
-    @Getter private final int localFileLocation;
-    @Getter private final String localFileName;
+    private final Context context;
+    private final int localFileLocation;
+    private final String localFileName;
 
     public Request(URL remoteUrl, Context context, int location, String filePath)
     {
@@ -52,7 +51,17 @@ public static class Request extends Download.Request
         this.localFileLocation = requestToClone.localFileLocation;
         this.localFileName = new String(requestToClone.localFileName);
     }
+
+    public Context getContext()
+    {return context; }
     
+    public int getLocalFileLocation()
+    { return localFileLocation; }
+    
+    public String getLocalFileName()
+    { return localFileName;}
+    
+    @Override
     public boolean savesToDisk()
     { return true; }
 }
@@ -72,6 +81,15 @@ public DiskDownload(URL remoteURL, Context context, int fileLocation, String loc
     this.localFileLocation = fileLocation;
     this.localFileName = localFilePath;
 }
+
+public Context getContext()
+{ return context; }
+
+public int getLocalFileLocation()
+{ return localFileLocation; }
+
+public String getLocalFileName()
+{ return localFileName;}
 
 @Override
 public final boolean savesToDisk()

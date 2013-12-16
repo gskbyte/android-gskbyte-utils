@@ -10,8 +10,6 @@
  ******************************************************************************/
 package org.gskbyte.bitmap;
 
-import lombok.Getter;
-
 import org.gskbyte.util.Logger;
 
 import android.content.Context;
@@ -32,20 +30,16 @@ public final class CachedBitmapColorizer extends BitmapColorizer
 private final class FixedSizeBitmapCache
 extends LRUBitmapCache<Integer> // int color value used as key
 {
-@Getter
-private final int fixedBitmapByteCount;
-
-public FixedSizeBitmapCache(float memoryRate, int fixedBitmapByteCount)
-{ super(memoryRate); this.fixedBitmapByteCount = fixedBitmapByteCount;}
-
-public FixedSizeBitmapCache(int maxSize, int fixedBitmapByteCount)
-{ super(maxSize); this.fixedBitmapByteCount = fixedBitmapByteCount;}
-
-protected int sizeOf(Integer key, Bitmap value)
-{ return fixedBitmapByteCount; }
-
-protected void entryRemoved(boolean evicted, Integer key, Bitmap oldValue, Bitmap newValue)
-{ Logger.info(getClass(), "Entry removed from cache, "+size()/fixedBitmapByteCount+" elements use " + cache.size()/1024 +"/" + getMaxSize()/1024 + "KB used"); }
+    private final int fixedBitmapByteCount;
+    
+    public FixedSizeBitmapCache(int maxSize, int fixedBitmapByteCount)
+    { super(maxSize); this.fixedBitmapByteCount = fixedBitmapByteCount;}
+    
+    protected int sizeOf(Integer key, Bitmap value)
+    { return fixedBitmapByteCount; }
+    
+    protected void entryRemoved(boolean evicted, Integer key, Bitmap oldValue, Bitmap newValue)
+    { Logger.info(getClass(), "Entry removed from cache, "+size()/fixedBitmapByteCount+" elements use " + cache.size()/1024 +"/" + getMaxSize()/1024 + "KB used"); }
 }
 
 private final FixedSizeBitmapCache cache;
@@ -56,15 +50,15 @@ private final int backgroundColor;
  * @param bitmap The source bitmap to which to apply color.
  * @param outputConfig The bitmapConfig to use for the resulting bitmaps.
  * @param backgroundColor The background color for all generated bitmaps.
- * @param memoryRate Maximum memory rate to use, respect to the maximum allowed per application
+ * @param copiesInCache The number of copies to keep in cache
  * */
 
-public CachedBitmapColorizer(Bitmap bitmap, Bitmap.Config outputConfig, int backgroundColor, float memoryRate)
+public CachedBitmapColorizer(Bitmap bitmap, Bitmap.Config outputConfig, int backgroundColor, int copiesInCache)
 {
     super(bitmap, outputConfig);
     this.backgroundColor = backgroundColor;
     int bitmapMemorySize = LRUBitmapCache.BitmapMemorySize(bitmap.getWidth(), bitmap.getHeight(), outputConfig);
-    cache = new FixedSizeBitmapCache(memoryRate, bitmapMemorySize);
+    cache = new FixedSizeBitmapCache(copiesInCache*bitmapMemorySize, bitmapMemorySize);
 }
 
 /**
@@ -73,11 +67,11 @@ public CachedBitmapColorizer(Bitmap bitmap, Bitmap.Config outputConfig, int back
  * @param drawableResource The drawable id to load the bitmap
  * @param outputConfig The bitmapConfig to use for the resulting bitmaps.
  * @param backgroundColor The background color for all generated bitmaps.
- * @param memoryRate Maximum memory rate to use, respect to the maximum allowed per application
+ * @param copiesInCache The number of copies to keep in cache
  * */
-public CachedBitmapColorizer(Context context, int drawableResource, Bitmap.Config outputConfig, int backgroundColor, float memoryRate)
+public CachedBitmapColorizer(Context context, int drawableResource, Bitmap.Config outputConfig, int backgroundColor, int copiesInCache)
 {
-    this(BitmapFactory.decodeResource(context.getResources(), drawableResource), outputConfig, backgroundColor, memoryRate);
+    this(BitmapFactory.decodeResource(context.getResources(), drawableResource), outputConfig, backgroundColor, copiesInCache);
 }
 
 

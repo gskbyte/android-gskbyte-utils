@@ -11,12 +11,11 @@
 package org.gskbyte.bitmap;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 import org.gskbyte.bitmap.AbstractBitmapManager.ScaleMode;
-
-import lombok.Getter;
 
 import android.graphics.Bitmap;
 
@@ -30,8 +29,7 @@ public class IndexedBitmaps
 extends ReferencedBitmaps
 {
 
-@Getter
-protected final List<String> keyList = new ArrayList<String>();
+protected final ArrayList<String> keyList = new ArrayList<String>();
 
 /**
  * Constructor.
@@ -53,6 +51,13 @@ public void addPath(String path, String ... aliases)
     super.addPath(path, aliases);
     keyList.add(path);
 }
+
+/**
+ * Returns an unmodifiable copy of the managed keys.
+ * @return a list with all managed keys.
+ * */
+public List<String> getKeyList()
+{ return Collections.unmodifiableList(keyList); }
 
 /**
  * 

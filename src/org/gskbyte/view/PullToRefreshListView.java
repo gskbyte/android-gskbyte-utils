@@ -1,22 +1,31 @@
 package org.gskbyte.view;
 
-import android.content.Context;
-import android.util.AttributeSet;
-import android.view.*;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-import android.view.animation.*;
-import android.view.animation.Animation.AnimationListener;
-import android.widget.*;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import lombok.Getter;
-import lombok.Setter;
+import java.util.Locale;
 
 import org.gskbyte.R;
-import org.gskbyte.util.Logger;
+
+import android.content.Context;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.OvershootInterpolator;
+import android.view.animation.RotateAnimation;
+import android.view.animation.TranslateAnimation;
+import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 /**
  * A generic, customizable Android ListView implementation that has 'Pull to Refresh' functionality.
@@ -76,7 +85,7 @@ private String  pullToRefreshText;
 private String  releaseToRefreshText;
 private String  refreshingText;
 private String  lastUpdatedText;
-private DateFormat lastUpdatedDateFormat = new SimpleDateFormat("dd.MM HH:mm");
+private DateFormat lastUpdatedDateFormat = new SimpleDateFormat("dd.MM HH:mm", Locale.getDefault());
 
 private float                   previousY;
 private int                     headerPadding;
@@ -88,13 +97,8 @@ private RotateAnimation         flipAnimation, reverseFlipAnimation;
 private ImageView               image;
 private ProgressBar             spinner;
 private TextView                text, lastUpdatedTextView;
-@Setter
-private OnItemClickListener     onItemClickListener;
-@Setter
-private OnItemLongClickListener onItemLongClickListener;
-@Setter
+
 private OnRefreshListener       onRefreshListener;
-@Getter
 private boolean                 pullEnabled;
 
 public PullToRefreshListView(Context context, AttributeSet attrs)
@@ -108,6 +112,17 @@ public PullToRefreshListView(Context context, AttributeSet attrs, int defStyle)
     super(context, attrs, defStyle);
     init();
 }
+
+public OnRefreshListener getOnRefreshListener()
+{
+    return onRefreshListener;
+}
+
+public boolean isPullEnabled()
+{
+    return pullEnabled;
+}
+
 /**
  * @return If the list is in 'Refreshing' state
  */
@@ -495,9 +510,9 @@ private class PTROnItemClickListener implements OnItemClickListener{
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id){
         hasResetHeader = false;
 
-        if(onItemClickListener != null && state == State.PULL_TO_REFRESH){
+        if(getOnItemClickListener() != null && state == State.PULL_TO_REFRESH){
             // Passing up onItemClick. Correct position with the number of header views
-            onItemClickListener.onItemClick(adapterView, view, position - getHeaderViewsCount(), id);
+            getOnItemClickListener().onItemClick(adapterView, view, position - getHeaderViewsCount(), id);
         }
     }
 }
@@ -508,9 +523,9 @@ private class PTROnItemLongClickListener implements OnItemLongClickListener{
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id){
         hasResetHeader = false;
 
-        if(onItemLongClickListener != null && state == State.PULL_TO_REFRESH){
+        if(getOnItemLongClickListener() != null && state == State.PULL_TO_REFRESH){
             // Passing up onItemLongClick. Correct position with the number of header views
-            return onItemLongClickListener.onItemLongClick(adapterView, view, position - getHeaderViewsCount(), id);
+            return getOnItemLongClickListener().onItemLongClick(adapterView, view, position - getHeaderViewsCount(), id);
         }
 
         return false;

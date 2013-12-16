@@ -10,9 +10,6 @@
  ******************************************************************************/
 package org.gskbyte.ui.ColorDialog;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.gskbyte.R;
 import org.gskbyte.bitmap.BitmapColorizer;
 
@@ -46,7 +43,7 @@ public final class ColorDialog extends AlertDialog implements
     {
         public void onColorChosen(ColorDialog dialog, int color);
     }
-    @Getter @Setter
+
     private ColorDialogListener listener;
 
     public ColorDialog(Context context, boolean useAlpha, int color)
@@ -107,6 +104,12 @@ public final class ColorDialog extends AlertDialog implements
         
         updatePreview(color);
     }
+
+    public ColorDialogListener getListener()
+    { return listener; }
+
+    public void setListener(ColorDialogListener listener)
+    { this.listener = listener; }
 
     @Override
     public void onClick(final DialogInterface dialog, final int which)

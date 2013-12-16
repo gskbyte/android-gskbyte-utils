@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import lombok.Getter;
-
 import org.gskbyte.util.IOUtils;
 import org.gskbyte.util.Logger;
 
@@ -50,12 +48,8 @@ public enum ScaleMode
     Full  // Fast scale mode is applied, as well as further resizing if needed
 }
 
-@Getter
 private final int numLoadThreads;
-
-@Getter
 private ScaleMode automaticScaleMode = ScaleMode.None;
-@Getter
 private int maxBitmapWidth, maxBitmapHeight;
 
 
@@ -79,6 +73,18 @@ public AbstractBitmapManager(Context context, int numLoadThreads)
     this.numLoadThreads = Math.max(numLoadThreads, 1);
     this.uniqueCounter = 0;
 }
+
+public int getNumLoadThreads()
+{ return numLoadThreads; }
+
+public ScaleMode getAutomaticScaleMode()
+{ return automaticScaleMode; }
+
+public int getMaxBitmapWidth()
+{ return maxBitmapWidth; }
+
+public int getMaxBitmapHeight()
+{ return maxBitmapHeight; }
 
 /**
  * Enables automatic bitmap scale.

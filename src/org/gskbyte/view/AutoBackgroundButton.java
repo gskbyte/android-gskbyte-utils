@@ -1,8 +1,8 @@
 package org.gskbyte.view;
 
-import lombok.Getter;
 import org.gskbyte.R;
 import org.gskbyte.drawable.AutoBackgroundButtonDrawable;
+
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -28,9 +28,7 @@ public class AutoBackgroundButton
 extends Button
 {
 
-@Getter
 protected int filterColor;
-@Getter
 protected boolean applyFilterToDrawables, applyFilterToText;
 
 protected boolean filterColorLoaded = false;
@@ -64,6 +62,9 @@ protected void initAttributes(Context context, AttributeSet attrs)
     a.recycle();
 }
 
+public int getFilterColor()
+{ return this.filterColor; }
+
 public void setFilterColor(int filterColor)
 {
     this.filterColor = filterColor;
@@ -73,6 +74,9 @@ public void setFilterColor(int filterColor)
     setApplyFilterToText( this.applyFilterToText );
 }
 
+public boolean appliesFilterToDrawables()
+{ return this.applyFilterToDrawables; }
+
 public void setApplyFilterToDrawables(boolean apply)
 {
     this.applyFilterToDrawables = apply;
@@ -80,6 +84,9 @@ public void setApplyFilterToDrawables(boolean apply)
     Drawable[] d = getCompoundDrawables();
     setCompoundDrawables(d[0], d[1], d[2], d[3]);
 }
+
+public boolean appliesFilterToText()
+{ return this.applyFilterToText; }
 
 private ColorStateList originalTextColors = null;
 public void setApplyFilterToText(boolean apply)

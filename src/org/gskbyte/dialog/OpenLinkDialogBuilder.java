@@ -3,8 +3,6 @@ package org.gskbyte.dialog;
 import org.gskbyte.R;
 import org.gskbyte.util.FrequentIntents;
 
-import lombok.Getter;
-import lombok.Setter;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,10 +15,7 @@ protected AlertDialog.Builder internalBuilder;
 // must be saved for API < 11
 private final Context context;
 
-@Getter @Setter
 protected boolean displayLink = true;
-
-@Getter @Setter
 protected String description = "";
 
 public OpenLinkDialogBuilder(Context context)
@@ -38,6 +33,18 @@ public void setTitle(int stringRes)
 {
     internalBuilder.setTitle(stringRes);
 }
+
+public boolean displaysLink()
+{ return displayLink; }
+
+public void setDisplayLink(boolean displayLink)
+{ this.displayLink = displayLink; }
+
+public String getDescription()
+{ return description; }
+
+public void setDescription(String description)
+{ this.description = description; }
 
 public AlertDialog create(final String url)
 {

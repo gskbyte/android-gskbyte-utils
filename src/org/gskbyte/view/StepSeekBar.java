@@ -1,8 +1,9 @@
 package org.gskbyte.view;
 
 import java.lang.ref.WeakReference;
+
 import org.gskbyte.R;
-import lombok.Getter;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -36,8 +37,6 @@ implements SeekBar.OnSeekBarChangeListener
 public static final int DEFAULT_SMOOTH_FACTOR = 128;
 
 private Drawable primaryThumb; // needed for API<16 (JELLY_BEAN), because getThumb() is not implemented
-
-@Getter
 protected Drawable secondaryThumb;
 protected int secondaryThumbOffset; // half of the drawable width, not yet configurable
 
@@ -114,6 +113,9 @@ public Drawable getThumb()
         return primaryThumb;
     }
 }
+
+public Drawable getSecondaryThumb()
+{ return secondaryThumb; }
 
 private void setDefaultSecondaryThumb()
 {

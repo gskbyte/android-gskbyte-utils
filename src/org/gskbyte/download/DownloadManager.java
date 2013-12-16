@@ -12,17 +12,14 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.gskbyte.download.Download.State;
 import org.gskbyte.listener.Listenable;
 import org.gskbyte.util.Logger;
 
-import lombok.Getter;
-import lombok.Setter;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.SparseArray;
-
-import org.gskbyte.download.Download.State;
 
 public class DownloadManager
 extends Listenable<DownloadManager.Listener>
@@ -42,11 +39,11 @@ implements Download.Listener
     public static final int   DEFAULT_NUM_THREADS           = 3;
     public static final float DEFAULT_NOTIFICATION_INTERVAL = 0.01f; // every 1%
     
-    @Getter @Setter private int numThreads = DEFAULT_NUM_THREADS;
-    @Getter @Setter private float rateNotificationInterval = DEFAULT_NOTIFICATION_INTERVAL;
+    private int numThreads = DEFAULT_NUM_THREADS;
+    private float rateNotificationInterval = DEFAULT_NOTIFICATION_INTERVAL;
     
-    @Getter         private float downloadRate;
-    @Getter         private Download.State state;
+    private float downloadRate;
+    private Download.State state;
     
     protected float lastNotifiedRate;
     protected final Map<URL, Download> downloadsForUrls = new HashMap<URL, Download>();
@@ -80,6 +77,32 @@ implements Download.Listener
         return false;
     }
     
+    public int getNumThreads()
+    { return numThreads; }
+
+    public void setNumThreads(int numThreads)
+    {
+        this.numThreads = numThreads;
+        updateRunningQueue();
+    }
+
+    public float getRateNotificationInterval()
+    { return rateNotificationInterval; }
+
+    public void setRateNotificationInterval(float rateNotificationInterval)
+    {
+        this.rateNotificationInterval = rateNotificationInterval;
+        this.lastNotifiedRate = 0; // to force notification
+    }
+
+    public float getDownloadRate()
+    { return downloadRate; }
+
+    public Download.State getState()
+    {
+        return state;
+    }
+
     public Download queueRequest(Download.Request r)
     { return queueRequest(r, false, false); }
 
