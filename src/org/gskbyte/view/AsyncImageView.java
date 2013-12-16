@@ -1,7 +1,5 @@
 package org.gskbyte.view;
 
-import lombok.Getter;
-
 import org.gskbyte.R;
 import org.gskbyte.bitmap.AbstractBitmapManager;
 
@@ -28,11 +26,8 @@ extends FrameLayout
 implements AbstractBitmapManager.BackgroundLoadListener
 {
 
-@Getter
 private ImageView imageView;
 private ProgressBar progressBar;
-
-@Getter
 private volatile boolean loading;
 private volatile String path;
 
@@ -57,6 +52,9 @@ private void commonInit(Context context)
     setLoading(true);
 }
 
+public boolean isLoading()
+{ return this.loading; }
+
 public synchronized void setLoading(boolean loading)
 {
     this.loading = loading;
@@ -65,6 +63,9 @@ public synchronized void setLoading(boolean loading)
         progressBar.setVisibility(loading ? VISIBLE : GONE);
     }
 }
+
+public ImageView getInternalImageView()
+{ return this.imageView; }
 
 public Drawable getDrawable()
 {

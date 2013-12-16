@@ -2,8 +2,6 @@ package org.gskbyte.dialog;
 
 import org.gskbyte.R;
 
-import lombok.Getter;
-import lombok.Setter;
 import android.app.Dialog;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -23,20 +21,15 @@ extends DialogFragment
 
 public static final String DEFAULT_TAG = "LOAD_DIALOG";
 
-@Getter
 protected int windowGravity = Gravity.CENTER;
 
-@Getter
 protected boolean dimsBackground = true;
 
-@Getter
 protected float displayedRate;
-@Getter
 protected boolean showsRate;
 
 protected Drawable customBackground;
 
-@Getter @Setter
 protected String customTitle;
 
 protected ViewGroup rootView;
@@ -118,9 +111,7 @@ public void setBackground(Drawable d)
 }
 
 public Drawable getBackground()
-{
-    return customBackground;
-}
+{ return customBackground; }
 
 public void setProgressRate(float rate)
 {
@@ -178,5 +169,23 @@ protected void updateView()
         progressText.setText( String.format("%.2f %%", percentRate) );
     }
 }
+
+public int getWindowGravity()
+{ return windowGravity; }
+
+public boolean dimsBackground()
+{ return dimsBackground; }
+
+public float getDisplayedRate()
+{ return displayedRate; }
+
+public boolean showsRate()
+{ return showsRate; }
+
+public String getCustomTitle()
+{ return customTitle; }
+
+public void setCustomTitle(String customTitle)
+{ this.customTitle = customTitle; }
 	
 }

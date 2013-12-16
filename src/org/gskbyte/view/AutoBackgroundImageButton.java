@@ -1,7 +1,5 @@
 package org.gskbyte.view;
 
-import lombok.Getter;
-
 import org.gskbyte.R;
 import org.gskbyte.drawable.AutoBackgroundButtonDrawable;
 
@@ -28,9 +26,7 @@ public class AutoBackgroundImageButton
 extends ImageButton
 {
 
-@Getter
 protected int filterColor;
-@Getter
 protected boolean applyFilterToImage;
 
 protected boolean filterColorLoaded = false;
@@ -60,6 +56,9 @@ protected void initAttributes(Context context, AttributeSet attrs)
     a.recycle();
 }
 
+public int getFilterColor()
+{ return this.filterColor; }
+
 public void setFilterColor(int filterColor)
 {
     this.filterColor = filterColor;
@@ -67,6 +66,9 @@ public void setFilterColor(int filterColor)
     setBackground( getBackground() );
     setApplyFilterToImage( this.applyFilterToImage );
 }
+
+public boolean appliesFilterToImage()
+{ return this.applyFilterToImage; }
 
 public void setApplyFilterToImage(boolean apply)
 {

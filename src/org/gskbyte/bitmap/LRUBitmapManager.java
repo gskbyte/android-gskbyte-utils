@@ -18,7 +18,7 @@ public class LRUBitmapManager
 extends AbstractBitmapManager
 {
 
-public static final float DEFAULT_MEMORY_RATE = 0.25f;
+public static final float DEFAULT_MEMORY_RATE = 0.33f;
 
 private final LRUBitmapCache<String> bitmapCache;
 

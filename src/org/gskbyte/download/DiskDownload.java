@@ -9,7 +9,6 @@ import java.util.Random;
 
 import org.gskbyte.util.IOUtils;
 
-import lombok.Getter;
 import android.content.Context;
 
 public class DiskDownload extends Download
@@ -17,17 +16,17 @@ public class DiskDownload extends Download
 private FileOutputStream tempOutputStream;
 private String tempFilePath;
 
-@Getter private final Context context;
-@Getter private final int localFileLocation;
-@Getter private final String localFileName;
+private final Context context;
+private final int localFileLocation;
+private final String localFileName;
 
 public static class Request extends Download.Request
 {
     private static final long serialVersionUID = 4480930156991551348L;
     
-    @Getter private final Context context;
-    @Getter private final int localFileLocation;
-    @Getter private final String localFileName;
+    private final Context context;
+    private final int localFileLocation;
+    private final String localFileName;
 
     public Request(URL remoteUrl, Context context, int location, String filePath)
     {
@@ -52,7 +51,17 @@ public static class Request extends Download.Request
         this.localFileLocation = requestToClone.localFileLocation;
         this.localFileName = new String(requestToClone.localFileName);
     }
+
+    public Context getContext()
+    {return context; }
     
+    public int getLocalFileLocation()
+    { return localFileLocation; }
+    
+    public String getLocalFileName()
+    { return localFileName;}
+    
+    @Override
     public boolean savesToDisk()
     { return true; }
 }
@@ -73,8 +82,17 @@ public DiskDownload(URL remoteURL, Context context, int fileLocation, String loc
     this.localFileName = localFilePath;
 }
 
+public Context getContext()
+{ return context; }
+
+public int getLocalFileLocation()
+{ return localFileLocation; }
+
+public String getLocalFileName()
+{ return localFileName;}
+
 @Override
-public boolean savesToDisk()
+public final boolean savesToDisk()
 { return true; }
 
 @Override
@@ -87,8 +105,9 @@ protected void resetTemporalStuff()
 @Override
 public synchronized boolean stop()
 {
-    if( super.stop() ) {
+    if( super.stop() && tempFilePath != null) {
         IOUtils.DeleteFile(localFileLocation, tempFilePath, context);
+        tempFilePath = null;
         return true;
     } else {
         return false;
@@ -122,9 +141,9 @@ protected class DownloadTask extends Download.DownloadTask
     protected void readFromStream() throws IOException
     {
         final Random r = new Random(System.currentTimeMillis());
-        final String tempName = localFileName + ".dl_" + r.nextInt(1000000);
+        tempFilePath = localFileName + ".dl_" + r.nextInt(1000000);
         
-        tempOutputStream = IOUtils.GetFileOutputStream(localFileLocation, tempName, context);
+        tempOutputStream = IOUtils.GetFileOutputStream(localFileLocation, tempFilePath, context);
         
         byte [] tempArray = new byte[REMOTE_READ_BYTES];
         int readBytes = connectionStream.read(tempArray);
@@ -160,7 +179,8 @@ protected class DownloadTask extends Download.DownloadTask
         buffer = null;        
         byteArray = null;
         
-        IOUtils.MoveFile(localFileLocation, tempName, localFileName, context);
+        IOUtils.MoveFile(localFileLocation, tempFilePath, localFileName, context);
+        tempFilePath = null;
     }
 
 }

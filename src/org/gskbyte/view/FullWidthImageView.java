@@ -23,15 +23,16 @@ public void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     
     Drawable d = getDrawable();
-    final float drawableWidth = d.getIntrinsicWidth();
-    final float drawableHeight = d.getIntrinsicHeight();
-    float proportion = drawableHeight/drawableWidth;
-    
-    final int viewWidth = MeasureSpec.getSize(widthMeasureSpec);
-    final int viewHeight = (int)(viewWidth * proportion);
-    
-    setMeasuredDimension(viewWidth, viewHeight);
-    
+    if(d != null) {
+        final float drawableWidth = d.getIntrinsicWidth();
+        final float drawableHeight = d.getIntrinsicHeight();
+        float proportion = drawableHeight/drawableWidth;
+        
+        final int viewWidth = MeasureSpec.getSize(widthMeasureSpec);
+        final int viewHeight = (int)(viewWidth * proportion);
+        
+        setMeasuredDimension(viewWidth, viewHeight);
+    }
 }
 
 }

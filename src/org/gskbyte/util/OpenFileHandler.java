@@ -6,13 +6,11 @@ import java.util.List;
 
 import org.gskbyte.R;
 
-import lombok.Getter;
-import lombok.Setter;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
@@ -25,10 +23,7 @@ private final Context context;
 private final String mimeContentType;
 private final String [] appNames, appPackages;
 
-@Getter @Setter
 protected String dialogTitle;
-
-@Getter @Setter
 protected int dialogIconResource;
 
 public OpenFileHandler(Context context, String mimeContentType, String [] appNames, String [] appPackages)
@@ -43,6 +38,18 @@ public OpenFileHandler(Context context, String mimeContentType, String [] appNam
     
     this.dialogTitle = context.getString(R.string.openfilehandler_title_param, mimeContentType);
 }
+
+public String getDialogTitle()
+{ return dialogTitle; }
+
+public void setDialogTitle(String dialogTitle)
+{ this.dialogTitle = dialogTitle; }
+
+public int getDialogIconResource()
+{ return dialogIconResource; }
+
+public void setDialogIconResource(int dialogIconResource)
+{ this.dialogIconResource = dialogIconResource; }
 
 public boolean openFile(int location, String filename)
     throws IOException

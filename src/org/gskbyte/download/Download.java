@@ -16,14 +16,10 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.apache.http.util.ByteArrayBuffer;
 import org.gskbyte.listener.Listenable;
 import org.gskbyte.util.IOUtils;
 import org.gskbyte.util.Logger;
-
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
@@ -36,10 +32,10 @@ public static abstract class Request implements Serializable
     private static final long serialVersionUID = 7957702126831831255L;
     public static final int DEFAULT_TAG = 0;
     
-    @Getter protected final URL remoteURL;
-    @Getter protected final int tag;
-    @Getter protected String postParameters = "";
-    @Getter protected String user = "", password = "";
+    protected final URL remoteURL;
+    protected final int tag;
+    protected String postParameters = "";
+    protected String user = "", password = "";
     
     public abstract boolean savesToDisk();
     
@@ -60,6 +56,21 @@ public static abstract class Request implements Serializable
         this.postParameters = requestToClone.postParameters;
     }
     
+    public URL getRemoteURL()
+    { return remoteURL; }
+
+    public int getTag()
+    { return tag; }
+
+    public String getPostParameters()
+    { return postParameters; }
+
+    public String getUser()
+    { return user; }
+
+    public String getPassword()
+    { return password; }
+
     // Should be safer!
     public void addPostParameter(String name, String value)
     {
@@ -95,24 +106,24 @@ public static final float  DEFAULT_NOTIFICATION_RATE   = 0.01f; // Notify every 
 
 static volatile private int GlobalId = 1;
 
-@Getter protected final int uniqueId;
-@Getter protected final int tag;
-@Getter protected final URL remoteURL;
-@Getter protected String postParameters = "";
-@Getter protected String user = "", password = "";
+protected final int uniqueId;
+protected final int tag;
+protected final URL remoteURL;
+protected String postParameters = "";
+protected String user = "", password = "";
 
-@Getter protected int totalSize;
-@Getter protected int downloadedSize;
+protected int totalSize;
+protected int downloadedSize;
 
-@Getter protected float rate;
-@Getter protected long startTime, endTime;
+protected float rate;
+protected long startTime, endTime;
 
-@Getter @Setter protected int notificationMinSize = DEFAULT_NOTIFICATION_SIZE;
-@Getter @Setter protected float notificationMinRate = DEFAULT_NOTIFICATION_RATE;
+protected int notificationMinSize = DEFAULT_NOTIFICATION_SIZE;
+protected float notificationMinRate = DEFAULT_NOTIFICATION_RATE;
 
-@Getter @Setter protected int numRetries = 0;
+protected int numRetries = 0;
 
-@Getter protected State state = State.Stopped;
+protected State state = State.Stopped;
 protected ByteArrayBuffer byteArray;
 
 private DownloadTask downloadTask;
@@ -136,6 +147,60 @@ protected Download(Request request)
     
     resetTemporalStuff();
 }
+
+public int getUniqueId()
+{ return uniqueId; }
+
+public int getTag()
+{ return tag; }
+
+public URL getRemoteURL()
+{ return remoteURL; }
+
+public String getPostParameters()
+{ return postParameters; }
+
+public String getUser()
+{ return user; }
+
+public String getPassword()
+{ return password; }
+
+public int getTotalSize()
+{ return totalSize; }
+
+public int getDownloadedSize()
+{ return downloadedSize; }
+
+public float getRate()
+{ return rate; }
+
+public long getStartTime()
+{ return startTime; }
+
+public long getEndTime()
+{ return endTime; }
+
+public State getState()
+{ return state; }
+
+public int getNotificationMinSize()
+{return notificationMinSize;}
+
+public void setNotificationMinSize(int notificationMinSize)
+{ this.notificationMinSize = notificationMinSize; }
+
+public float getNotificationMinRate()
+{ return notificationMinRate; }
+
+public void setNotificationMinRate(float notificationMinRate)
+{ this.notificationMinRate = notificationMinRate; }
+
+public int getNumRetries()
+{ return numRetries; }
+
+public void setNumRetries(int numRetries)
+{ this.numRetries = numRetries; }
 
 @SuppressLint("NewApi")
 public synchronized boolean resume()
@@ -236,7 +301,7 @@ protected abstract class DownloadTask extends AsyncTask<Void, Float, Integer>
 
         connection.setDoInput(true);
         connection.setConnectTimeout(15000);
-        connection.setReadTimeout(30000);
+        connection.setReadTimeout(15000);
         
         if(postParameters.length()>0) {
             connection.setDoOutput(true);
@@ -306,7 +371,7 @@ protected abstract class DownloadTask extends AsyncTask<Void, Float, Integer>
             }
             connection.disconnect();
         } catch (IOException e) {
-            android.util.Log.e(getClass().getName(), "Error creating connection to URL "+remoteURL + ": "+e);
+            Logger.error(getClass(), "Error creating connection to URL "+remoteURL + ": "+e.getMessage());
             downloadSuccessInBackgroundThread = false;
         } finally {
             if(buffer!=null/* && buffer.length() >= totalSize*/) {
@@ -384,5 +449,6 @@ public String toString()
 
 public int hashCode()
 { return uniqueId; }
+
 
 }

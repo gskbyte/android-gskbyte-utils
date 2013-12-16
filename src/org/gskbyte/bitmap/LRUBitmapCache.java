@@ -1,6 +1,5 @@
 package org.gskbyte.bitmap;
 
-import lombok.Getter;
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -15,7 +14,6 @@ public class LRUBitmapCache<KeyClass>
 extends LruCache<KeyClass, Bitmap>
 {
 
-@Getter
 private final int maxSize;
 
 /**
@@ -26,23 +24,35 @@ public LRUBitmapCache(int maxSize)
 { super(maxSize); this.maxSize = maxSize; }
 
 /**
- * @deprecated Don't use this, as it calculates memory from Runtime and not from ActivityManager. This is wrong.
- * 
- * Constructs an LRU cache with the given max memory rate, respect to
- * the maximum available memory for the application. Good values are around 20%,
- * if this is the only LRU cache present in the application.
- * @param memoryRate The maximum memory rate to use
+ * Returns the maximum size of the whole cache, in bytes.
+ * @return the maximum cache size in bytes
  * */
-@Deprecated
-public LRUBitmapCache(float memoryRate)
-{ this( (int) (Runtime.getRuntime().maxMemory() * memoryRate)); }
+public int getMaxSize()
+{ return maxSize; }
 
 /**
- * Returns the size of a bitmap
+ * Returns the size of a bitmap given its key. Check the method sizeOf in Android's LRUCache class documentation
+ * @param key the key of the saved bitmap
+ * @param value the bitmap for which to get the size
  * */
 @Override
 protected int sizeOf(KeyClass key, Bitmap value)
 { return BitmapMemorySize(value); }
+
+/**
+ * Returns the size of a Bitmap given its key
+ * @param key The key of the Bitmap to retrieve
+ * @return the size in bytes, or -1 if the bitmap is not managed
+ * */
+public int sizeOf(KeyClass key)
+{
+    Bitmap b = get(key);
+    if(b != null) {
+        return BitmapMemorySize( get(key) );
+    } else {
+        return -1;
+    }
+}
 
 /**
  * Returns number of bytes per pixel given a bitmap config.
