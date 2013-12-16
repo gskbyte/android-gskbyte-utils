@@ -1,5 +1,6 @@
 package org.gskbyte.view;
 
+import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -98,8 +99,8 @@ private ImageView               image;
 private ProgressBar             spinner;
 private TextView                text, lastUpdatedTextView;
 
-private OnRefreshListener       onRefreshListener;
-private boolean                 pullEnabled;
+private WeakReference<OnRefreshListener>        onRefreshListenerRef;
+private boolean                                 pullEnabled;
 
 public PullToRefreshListView(Context context, AttributeSet attrs)
 {
@@ -114,14 +115,13 @@ public PullToRefreshListView(Context context, AttributeSet attrs, int defStyle)
 }
 
 public OnRefreshListener getOnRefreshListener()
-{
-    return onRefreshListener;
-}
+{ return onRefreshListenerRef.get(); }
+
+public void setOnRefreshListener(OnRefreshListener listener)
+{ this.onRefreshListenerRef = new WeakReference<OnRefreshListener>(listener); }
 
 public boolean isPullEnabled()
-{
-    return pullEnabled;
-}
+{ return pullEnabled; }
 
 /**
  * @return If the list is in 'Refreshing' state
@@ -407,10 +407,10 @@ private void setState(State state){
             setUiRefreshing();
 
             lastUpdated = System.currentTimeMillis();
-            if(onRefreshListener == null){
+            if(getOnRefreshListener() == null){
                 setState(State.PULL_TO_REFRESH);
             }else{
-                onRefreshListener.onRefresh();
+                getOnRefreshListener().onRefresh();
             }
 
             break;
