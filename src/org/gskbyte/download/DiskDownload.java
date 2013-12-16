@@ -74,7 +74,7 @@ public DiskDownload(URL remoteURL, Context context, int fileLocation, String loc
 }
 
 @Override
-public boolean savesToDisk()
+public final boolean savesToDisk()
 { return true; }
 
 @Override
@@ -87,8 +87,9 @@ protected void resetTemporalStuff()
 @Override
 public synchronized boolean stop()
 {
-    if( super.stop() ) {
+    if( super.stop() && tempFilePath != null) {
         IOUtils.DeleteFile(localFileLocation, tempFilePath, context);
+        tempFilePath = null;
         return true;
     } else {
         return false;
@@ -122,9 +123,9 @@ protected class DownloadTask extends Download.DownloadTask
     protected void readFromStream() throws IOException
     {
         final Random r = new Random(System.currentTimeMillis());
-        final String tempName = localFileName + ".dl_" + r.nextInt(1000000);
+        tempFilePath = localFileName + ".dl_" + r.nextInt(1000000);
         
-        tempOutputStream = IOUtils.GetFileOutputStream(localFileLocation, tempName, context);
+        tempOutputStream = IOUtils.GetFileOutputStream(localFileLocation, tempFilePath, context);
         
         byte [] tempArray = new byte[REMOTE_READ_BYTES];
         int readBytes = connectionStream.read(tempArray);
@@ -160,7 +161,8 @@ protected class DownloadTask extends Download.DownloadTask
         buffer = null;        
         byteArray = null;
         
-        IOUtils.MoveFile(localFileLocation, tempName, localFileName, context);
+        IOUtils.MoveFile(localFileLocation, tempFilePath, localFileName, context);
+        tempFilePath = null;
     }
 
 }

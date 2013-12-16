@@ -24,7 +24,6 @@ import org.gskbyte.listener.Listenable;
 import org.gskbyte.util.IOUtils;
 import org.gskbyte.util.Logger;
 
-
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 
@@ -236,7 +235,7 @@ protected abstract class DownloadTask extends AsyncTask<Void, Float, Integer>
 
         connection.setDoInput(true);
         connection.setConnectTimeout(15000);
-        connection.setReadTimeout(30000);
+        connection.setReadTimeout(15000);
         
         if(postParameters.length()>0) {
             connection.setDoOutput(true);
@@ -306,7 +305,7 @@ protected abstract class DownloadTask extends AsyncTask<Void, Float, Integer>
             }
             connection.disconnect();
         } catch (IOException e) {
-            android.util.Log.e(getClass().getName(), "Error creating connection to URL "+remoteURL + ": "+e);
+            Logger.error(getClass(), "Error creating connection to URL "+remoteURL + ": "+e.getMessage());
             downloadSuccessInBackgroundThread = false;
         } finally {
             if(buffer!=null/* && buffer.length() >= totalSize*/) {

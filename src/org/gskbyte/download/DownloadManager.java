@@ -38,11 +38,9 @@ implements Download.Listener
         void onDownloadFailedInManager(Download download, DownloadManager manager);
         void onDownloadRateInManager(Download download, float rate, DownloadManager manager);
     }
-    
-    private static final String TAG = "DownloadManager";
-    
-    public static final int DEFAULT_NUM_THREADS = 3;
-    public static final float DEFAULT_NOTIFICATION_INTERVAL = 0.01f;
+        
+    public static final int   DEFAULT_NUM_THREADS           = 3;
+    public static final float DEFAULT_NOTIFICATION_INTERVAL = 0.01f; // every 1%
     
     @Getter @Setter private int numThreads = DEFAULT_NUM_THREADS;
     @Getter @Setter private float rateNotificationInterval = DEFAULT_NOTIFICATION_INTERVAL;
@@ -54,8 +52,8 @@ implements Download.Listener
     protected final Map<URL, Download> downloadsForUrls = new HashMap<URL, Download>();
     protected final List<Download> queued = new LinkedList<Download>();
     protected final SparseArray<Download> finished = new SparseArray<Download>(),
-            failed = new SparseArray<Download>(),
-            downloading = new SparseArray<Download>();
+                                          failed = new SparseArray<Download>(),
+                                          downloading = new SparseArray<Download>();
     
     public DownloadManager()
     {
@@ -285,7 +283,7 @@ implements Download.Listener
                 }
             }
         } else {
-            android.util.Log.e(TAG, "Download already removed failed in manager");
+            Logger.error(getClass(), "Download already removed failed in manager");
         }
         
         updateRunningQueue();
@@ -310,7 +308,7 @@ implements Download.Listener
                 }
             }
         } else {
-            android.util.Log.e(TAG, "Download already removed notified rate in manager");
+            Logger.error(getClass(), "Download already removed notified rate in manager");
         }
     }
 
@@ -327,7 +325,7 @@ implements Download.Listener
                 if(l!=null) l.onDownloadCompletedInManager(download, this);
             }
         } else {
-            android.util.Log.e(TAG, "Download already removed notified finish in manager");
+            Logger.error(getClass(), "Download already removed notified finish in manager");
         }
         updateRunningQueue();
     }
@@ -388,5 +386,4 @@ implements Download.Listener
                 }
             }
     };
-
 }
