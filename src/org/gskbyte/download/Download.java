@@ -274,7 +274,6 @@ protected synchronized void resetTemporalStuff()
     totalSize = downloadedSize = 0;
     rate = 0;
     startTime = endTime = -1;
-    byteArray = null;
     
     state = State.Stopped;
     downloadTask = null;

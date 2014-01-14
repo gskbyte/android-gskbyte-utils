@@ -192,16 +192,16 @@ implements Download.Listener
     protected float computeRate()
     {
         final int total = getTotalCount();
-        final int finishedCount = getFinishedCount();
+        final int finishedAndFailedCount = getFinishedCount() + getFailedCount();
         final int queuedCount = getQueuedCount();
-        if(finishedCount == total) {
+        if(finishedAndFailedCount == total) {
             return 1.0f;
         } else if(queuedCount == total) {
             return 0.0f;
         } else {
             float rateProFile = 1.0f / (float)total;
             float totalRate = 0;
-            totalRate += rateProFile * finishedCount;
+            totalRate += rateProFile * finishedAndFailedCount;
             for(int i=0; i<downloading.size(); ++i) {
                 Download d = downloading.valueAt(i);
                 totalRate += rateProFile * d.getRate();
@@ -335,6 +335,18 @@ implements Download.Listener
         
         updateRunningQueue();
     }
+    
+    protected void notifyCurrentRate(boolean force)
+    {
+        downloadRate = computeRate();
+        if(downloadRate - lastNotifiedRate > rateNotificationInterval) {
+            lastNotifiedRate = downloadRate;
+            for(WeakReference<Listener> lref : listeners) {
+                Listener l = lref.get();
+                if(l!=null) l.onDownloadManagerRate(this, downloadRate);
+            }
+        }
+    }
 
     @Override
     public void onDownloadRate(Download download, float rate)
@@ -343,17 +355,11 @@ implements Download.Listener
         if(isDownloading) {
             for(WeakReference<Listener> lref : listeners) {
                 Listener l = lref.get();
-                if(l!=null) l.onDownloadRateInManager(download, rate, this);
-            }
-            
-            downloadRate = computeRate();
-            if(downloadRate - lastNotifiedRate > rateNotificationInterval) {
-                lastNotifiedRate = downloadRate;
-                for(WeakReference<Listener> lref : listeners) {
-                    Listener l = lref.get();
-                    if(l!=null) l.onDownloadManagerRate(this, downloadRate);
+                if(l!=null) {
+                    l.onDownloadRateInManager(download, rate, this);
                 }
             }
+            notifyCurrentRate(false);
         } else {
             Logger.error(getClass(), "Download already removed notified rate in manager");
         }
@@ -369,7 +375,9 @@ implements Download.Listener
             
             for(WeakReference<Listener> lref : listeners) {
                 Listener l = lref.get();
-                if(l!=null) l.onDownloadCompletedInManager(download, this);
+                if(l!=null) {
+                    l.onDownloadCompletedInManager(download, this);
+                }
             }
         } else {
             Logger.error(getClass(), "Download already removed notified finish in manager");
@@ -414,6 +422,8 @@ implements Download.Listener
                 }
             }
         }
+        
+        notifyCurrentRate(true);
     }
     
     public static TrustManager[] trustAllCerts = new TrustManager[]{

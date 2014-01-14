@@ -100,6 +100,7 @@ public final boolean savesToDisk()
 protected void resetTemporalStuff()
 {
     super.resetTemporalStuff();
+    byteArray = null;
     tempOutputStream = null;
 }
 

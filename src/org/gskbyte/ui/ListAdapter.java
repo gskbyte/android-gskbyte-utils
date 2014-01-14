@@ -7,7 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-public abstract class ListAdapter<ModelClass, ViewClass extends View> extends BaseAdapter
+public abstract class ListAdapter<ModelClass, ViewClass extends View>
+extends BaseAdapter
 {
     protected final Context context;
     private final List<ModelClass> models;

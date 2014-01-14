@@ -79,15 +79,6 @@ public void addPaths(List<String> path)
 }
 
 /**
- * @deprecated Use getKeyAt()
- * Returns a path given the index in which it was added.
- * @param index The path's index.
- * */
-@Deprecated
-public String getPathAt(int index)
-{ return keyList.get(index); }
-
-/**
  * Returns a path given the index in which it was added.
  * @param index The key's index.
  * */
@@ -133,16 +124,6 @@ public boolean existsBitmapFileAt(int index)
 { return bitmapManager.existsBitmapFile( keyList.get(index) ); }
 
 /**
- * @deprecated
- * Returns the path for the first existing path. The paths are iterated in insertion order.
- * @return The path for the fist existing bitmap file
- * */
-@Deprecated
-@Override
-public String getFirstExistingFilePath()
-{ return getFirstExistingKey(); }
-
-/**
  * Returns the path for the first existing path. The paths are iterated in insertion order.
  * @return The path for the fist existing bitmap file
  * */
@@ -152,21 +133,12 @@ public String getFirstExistingKey()
     for(int i=0; i<size(); ++i) {
         boolean exists = existsBitmapFileAt(i);
         if(exists) {
-            return getPathAt( i );
+            return getKeyAt( i );
         }
     }
     
     return null;
 }
-
-/**
- * @deprecated Use getRandomExistingKey()
- * Returns the file path for a random bitmap.
- * @return A file path for an existing bitmap file
- * */
-@Deprecated
-public String getRandomExistingFilePath()
-{ return getRandomExistingKey(); }
 
 /**
  * Returns the file path for a random bitmap.
@@ -182,7 +154,7 @@ public String getRandomExistingKey()
             int index = (startindex+i) %numBitmaps;
             boolean exists = existsBitmapFileAt(index);
             if(exists) {
-                return getPathAt( index );
+                return getKeyAt( index );
             }
         }
         return null;

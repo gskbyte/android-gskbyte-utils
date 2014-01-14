@@ -14,7 +14,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
@@ -39,13 +39,10 @@ implements IListenable<ListenerClass>
 {
 
 /**
- * Array of listeners. We use a {@link CopyOnWriteArrayList} to allow add and
- * remove listeners while iterating.
- * 
  * A {@link CopyOnWriteArraySet} would be faster for adding and removing
- * elements, but not for iterating and it's a much more executed action.
+ * elements, but not for iterating and it's a much more frequent action.
  * */
-protected final CopyOnWriteArrayList< WeakReference<ListenerClass> > listeners = new CopyOnWriteArrayList< WeakReference<ListenerClass> >();
+protected final List< WeakReference<ListenerClass> > listeners = new ArrayList< WeakReference<ListenerClass> >();
 
 /**
  * Adds a listener, if it's not already added. Before doing it, this method
@@ -68,15 +65,14 @@ public synchronized boolean addListener(ListenerClass listener)
  * Removes listener references that point to null (because the pointer object
  * has been removed by the garbage collector)
  * */
-private final ArrayList<WeakReference<ListenerClass>> toRemove = new ArrayList<WeakReference<ListenerClass>>();
 protected synchronized void cleanupListeners()
 {
-	for(WeakReference<ListenerClass> lref : listeners) {
-		ListenerClass l = lref.get();
-		if(l == null) toRemove.add(lref);
-	}
-	listeners.removeAll(toRemove);
-	toRemove.clear();
+    for(int i=listeners.size()-1; i>=0; --i) {
+        ListenerClass l = listeners.get(i).get();
+        if(l == null) {
+            listeners.remove(i);
+        }
+    }
 }
 
 /**
@@ -87,17 +83,13 @@ protected synchronized void cleanupListeners()
 public synchronized boolean removeListener(ListenerClass listener)
 {
     boolean removed = false;
-	for(WeakReference<ListenerClass> lref : listeners) {
-		ListenerClass l = lref.get();
-		if(l == null) {
-			toRemove.add(lref);
-		} else if(l == listener) {
-			removed = true;
-			toRemove.add(lref);
-		}
-	}
-	listeners.removeAll(toRemove);
-	toRemove.clear();
+    for(int i=listeners.size()-1; i>=0; --i) {
+        ListenerClass l = listeners.get(i).get();
+        if(l == null || l == listener) {
+            listeners.remove(i);
+            removed = true;
+        }
+    }
     return removed;
 }
 
