@@ -30,10 +30,10 @@ protected boolean showsRate;
 
 protected Drawable customBackground;
 
-protected String customTitle;
+protected String customTitle, subtitleText;
 
 protected ViewGroup rootView;
-protected TextView title, progressText;
+protected TextView title, subtitle, progressText;
 protected ProgressBar horizontalProgressBar;
 
 
@@ -46,8 +46,6 @@ public static LoadDialogFragment newInstance()
     
     return fragment;
 }
-
-
 
 @Override
 public void onCreate(Bundle savedInstanceState)
@@ -78,55 +76,15 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
     View v = inflater.inflate(R.layout.dialog_load, container, false);
     
     rootView = (ViewGroup) v.findViewById(R.id.root);
-    
+
     title = (TextView) v.findViewById(R.id.loading_title);
+    subtitle = (TextView) v.findViewById(R.id.loading_subtitle);
     progressText = (TextView) v.findViewById(R.id.progressText);
     horizontalProgressBar = (ProgressBar) v.findViewById(R.id.determinateProgressBar);
     
     updateView();
     
     return v;
-}
-
-public void setGravity(int g)
-{
-    if(g != windowGravity) {
-        windowGravity = g;
-        updateView();
-    }
-}
-
-public void setDimsBackground(boolean d)
-{
-    if(d != dimsBackground) {
-        dimsBackground = d;
-        updateView();
-    }
-}
-
-public void setBackground(Drawable d)
-{
-    if(d != customBackground) {
-        customBackground = d;
-        updateView();
-    }
-}
-
-public Drawable getBackground()
-{ return customBackground; }
-
-public void setProgressRate(float rate)
-{
-    displayedRate = rate;
-    updateView();
-}
-
-public void setShowsRate(boolean b)
-{
-    if(showsRate != b) {
-        showsRate = b;
-        updateView();
-    }
 }
 
 protected void updateDialog(Dialog d)
@@ -156,8 +114,13 @@ protected void updateView()
     if(progressText == null) // getView() is still null in onCreateView
         return;
     
-    if(customTitle != null) {
-        title.setText(customTitle);
+    title.setText( getTitle() );
+    
+    if(subtitleText == null || subtitleText.isEmpty()) {
+        subtitle.setVisibility(View.GONE);
+    } else {
+        subtitle.setText(subtitleText);
+        subtitle.setVisibility(View.VISIBLE);
     }
     
     updateDialog( getDialog() );
@@ -175,19 +138,83 @@ protected void updateView()
 public int getWindowGravity()
 { return windowGravity; }
 
+public void setGravity(int g)
+{
+    if(g != windowGravity) {
+        windowGravity = g;
+        updateView();
+    }
+}
+
 public boolean dimsBackground()
 { return dimsBackground; }
 
-public float getDisplayedRate()
+public void setDimsBackground(boolean d)
+{
+    if(d != dimsBackground) {
+        dimsBackground = d;
+        updateView();
+    }
+}
+
+
+public float getProgressRate()
 { return displayedRate; }
+
+public void setProgressRate(float rate)
+{
+    displayedRate = rate;
+    updateView();
+}
+
 
 public boolean showsRate()
 { return showsRate; }
 
-public String getCustomTitle()
+public void setShowsRate(boolean b)
+{
+    if(showsRate != b) {
+        showsRate = b;
+        updateView();
+    }
+}
+
+
+public Drawable getBackground()
+{ return customBackground; }
+
+public void setBackground(Drawable d)
+{
+    if(d != customBackground) {
+        customBackground = d;
+        updateView();
+    }
+}
+
+public String getDefaultTitle()
+{ return getString(R.string.load_dialog_loading); }
+
+public String getTitle()
+{
+    if(customTitle == null)
+        return getDefaultTitle();
+    else
+        return customTitle;
+}
+
+public void setTitle(String customTitle)
+{
+    this.customTitle = customTitle;
+    updateView();
+}
+
+public String getSubtitle()
 { return customTitle; }
 
-public void setCustomTitle(String customTitle)
-{ this.customTitle = customTitle; }
+public void setSubtitle(String subtitle)
+{
+    this.subtitleText = subtitle;
+    updateView();
+}
 	
 }
