@@ -47,14 +47,17 @@ public static LoadDialogFragment newInstance()
     return fragment;
 }
 
-public void dismissAfter(long millis, final Runnable runAfterDismiss)
+public void dismissAfter(long millis, Runnable runAfterDismiss)
 {
+    final Runnable finalRunnable = runAfterDismiss;
     getView().postDelayed(new Runnable() {
         @Override
         public void run()
         {
             dismiss();
-            runAfterDismiss.run();
+            if(finalRunnable != null) {
+                finalRunnable.run();
+            }
         }
     }, millis);
 }
