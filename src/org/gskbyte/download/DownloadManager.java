@@ -302,7 +302,7 @@ implements Download.Listener
     @Override
     public void onDownloadStarted(Download download)
     {
-        for(WeakReference<Listener> lref : listeners) {
+        for(WeakReference<Listener> lref : getListeners()) {
             Listener l = lref.get();
             if(l!=null) l.onDownloadStartedInManager(download, this);
         }
@@ -324,7 +324,7 @@ implements Download.Listener
             	updateRunningQueue();
             } else {
                 failed.append(download.getUniqueId(), download);
-                for(WeakReference<Listener> lref : listeners) {
+                for(WeakReference<Listener> lref : getListeners()) {
                     Listener l = lref.get();
                     if(l!=null) l.onDownloadFailedInManager(download, this);
                 }
@@ -341,7 +341,7 @@ implements Download.Listener
         downloadRate = computeRate();
         if(downloadRate - lastNotifiedRate > rateNotificationInterval) {
             lastNotifiedRate = downloadRate;
-            for(WeakReference<Listener> lref : listeners) {
+            for(WeakReference<Listener> lref : getListeners()) {
                 Listener l = lref.get();
                 if(l!=null) l.onDownloadManagerRate(this, downloadRate);
             }
@@ -353,7 +353,7 @@ implements Download.Listener
     {
         boolean isDownloading = isDownloadingDownloadWithId(download.getUniqueId());
         if(isDownloading) {
-            for(WeakReference<Listener> lref : listeners) {
+            for(WeakReference<Listener> lref : getListeners()) {
                 Listener l = lref.get();
                 if(l!=null) {
                     l.onDownloadRateInManager(download, rate, this);
@@ -373,7 +373,7 @@ implements Download.Listener
             downloading.remove(download.getUniqueId());
             finished.append(download.getUniqueId(), download);
             
-            for(WeakReference<Listener> lref : listeners) {
+            for(WeakReference<Listener> lref : getListeners()) {
                 Listener l = lref.get();
                 if(l!=null) {
                     l.onDownloadCompletedInManager(download, this);
@@ -416,7 +416,7 @@ implements Download.Listener
         if(checkFinished) {
             if(downloading.size() == 0) {
                 state = State.Finished;
-                for(WeakReference<Listener> lref : listeners) {
+                for(WeakReference<Listener> lref : getListeners()) {
                     Listener l = lref.get();
                     if(l!=null) l.onDownloadManagerCompleted(this);
                 }

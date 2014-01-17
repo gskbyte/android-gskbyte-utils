@@ -47,17 +47,16 @@
                     android:textAppearance="?android:attr/textAppearanceLarge" />
                 
             </RelativeLayout>
-            
-            <ProgressBar
-                android:id="@+id/determinateProgressBar"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="100"/>
                 
         </LinearLayout>
     </LinearLayout>
     
+    <ProgressBar
+        android:id="@+id/determinateProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100"/>
     <TextView android:id="@+id/loading_subtitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -65,6 +64,6 @@
         android:text="subtitle goes here"
         android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:padding="8dp"/>
+        android:paddingTop="4dp"/>
     
 </LinearLayout>

@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import com.google.common.collect.ImmutableList;
+
 /**
  * Abstract base class for classes who can have listeners (implementation of the
  * delegate design pattern). The methods included in this class are thread safe.
@@ -34,7 +36,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * }
  * 
  * */
-public abstract class Listenable<ListenerClass>
+public class Listenable<ListenerClass>
 implements IListenable<ListenerClass>
 {
 
@@ -42,7 +44,19 @@ implements IListenable<ListenerClass>
  * A {@link CopyOnWriteArraySet} would be faster for adding and removing
  * elements, but not for iterating and it's a much more frequent action.
  * */
-protected final List< WeakReference<ListenerClass> > listeners = new ArrayList< WeakReference<ListenerClass> >();
+private final List< WeakReference<ListenerClass> > listeners = new ArrayList< WeakReference<ListenerClass> >();
+private List<WeakReference<ListenerClass>> listenersCache;
+
+protected List<WeakReference<ListenerClass>> getListeners()
+{
+    if(listenersCache == null) {
+        listenersCache = ImmutableList.copyOf(listeners);
+    }
+    return listenersCache;
+}
+
+private void setDirty()
+{ listenersCache = null; }
 
 /**
  * Adds a listener, if it's not already added. Before doing it, this method
@@ -58,6 +72,7 @@ public synchronized boolean addListener(ListenerClass listener)
             return false;
     }
     listeners.add( new WeakReference<ListenerClass>(listener) );
+    setDirty();
     return true;
 }
 
@@ -73,6 +88,7 @@ protected synchronized void cleanupListeners()
             listeners.remove(i);
         }
     }
+    setDirty();
 }
 
 /**
@@ -90,12 +106,16 @@ public synchronized boolean removeListener(ListenerClass listener)
             removed = true;
         }
     }
+    setDirty();
     return removed;
 }
 
 /** Removes all listeners */
 public synchronized void removeAllListeners()
-{ listeners.clear(); }
+{ 
+    listeners.clear(); 
+    setDirty();
+}
 
 public synchronized void invokeMethodOnListeners(Method m, Object ... args)
         throws IllegalArgumentException, IllegalAccessException, InvocationTargetException

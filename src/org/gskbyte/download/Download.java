@@ -395,7 +395,7 @@ protected abstract class DownloadTask extends AsyncTask<Void, Float, Integer>
     {
         state = State.Failed;
         cleanupListeners();
-        for(WeakReference<Listener> lref : listeners) {
+        for(WeakReference<Listener> lref : getListeners()) {
             Listener l = lref.get();
             if(l!=null) l.onDownloadFailed(Download.this);
         }
@@ -406,7 +406,7 @@ protected abstract class DownloadTask extends AsyncTask<Void, Float, Integer>
     {
         Download thisDownload = Download.this;
         cleanupListeners();
-        for(WeakReference<Listener> lref : listeners) {
+        for(WeakReference<Listener> lref : getListeners()) {
             Listener l = lref.get();
             if(l!=null) l.onDownloadStarted(thisDownload);
         }
@@ -417,7 +417,7 @@ protected abstract class DownloadTask extends AsyncTask<Void, Float, Integer>
     {
         Download thisDownload = Download.this;
         cleanupListeners();
-        for(WeakReference<Listener> lref : listeners) {
+        for(WeakReference<Listener> lref : getListeners()) {
             Listener l = lref.get();
             if(l!=null) l.onDownloadRate(thisDownload, values[0]);
         }
@@ -429,7 +429,7 @@ protected abstract class DownloadTask extends AsyncTask<Void, Float, Integer>
         Download thisDownload = Download.this;
         if(bytes != null && bytes >= 0 && downloadSuccessInBackgroundThread) { // only if no error
             cleanupListeners();
-            for(WeakReference<Listener> lref : listeners) {
+            for(WeakReference<Listener> lref : getListeners()) {
                 Listener l = lref.get();
                 if(l!=null) l.onDownloadFinished(thisDownload);
             }
