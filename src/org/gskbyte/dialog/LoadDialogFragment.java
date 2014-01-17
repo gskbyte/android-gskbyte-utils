@@ -47,6 +47,18 @@ public static LoadDialogFragment newInstance()
     return fragment;
 }
 
+public void dismissAfter(long millis, final Runnable runAfterDismiss)
+{
+    getView().postDelayed(new Runnable() {
+        @Override
+        public void run()
+        {
+            dismiss();
+            runAfterDismiss.run();
+        }
+    }, millis);
+}
+
 @Override
 public void onCreate(Bundle savedInstanceState)
 {
