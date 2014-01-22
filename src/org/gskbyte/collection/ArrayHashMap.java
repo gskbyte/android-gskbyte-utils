@@ -48,6 +48,8 @@ public ArrayHashMap(Map<K,V> map)
 
 // TODO add other constructors
 
+public K keyAt(int location)
+{ return keyList.get(location); }
 
 public V getAt(int location)
 { return get( keyList.get(location) ); }

@@ -73,12 +73,12 @@ public class MemoryDownload extends Download
                 buffer.append(tempArray, 0, readBytes);
                 downloadedSize += readBytes;
                 readBytes = connectionStream.read(tempArray);
-                if(totalSize > 0)
+                if(totalSize > 0) {
                     rate = (float)downloadedSize / (float) totalSize;
-                
-                if(downloadedSize-lastNotificationSize > notificationSizeDif || downloadedSize == totalSize) {
-                    lastNotificationSize = downloadedSize;
-                    publishProgress(rate);
+                    if(downloadedSize-lastNotificationSize > notificationSizeDif || downloadedSize == totalSize) {
+                        lastNotificationSize = downloadedSize;
+                        publishProgress(rate);
+                    }
                 }
             }
         }

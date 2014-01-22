@@ -1,8 +1,11 @@
 package org.gskbyte.dialog;
 
+import java.lang.ref.WeakReference;
+
 import org.gskbyte.R;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -12,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -31,11 +35,26 @@ protected boolean showsRate;
 protected Drawable customBackground;
 
 protected String customTitle, subtitleText;
+protected CancelMode cancelMode = CancelMode.Invisible;
+protected WeakReference<LoadDialogCancelListener> cancelListener = null;
+protected boolean dismissOnCancel = true;
 
 protected ViewGroup rootView;
 protected TextView title, subtitle, progressText;
 protected ProgressBar horizontalProgressBar;
+protected Button cancel;
 
+public static enum CancelMode
+{
+    Invisible,  // button not visible, can't cancel pressing back
+    Disabled,   // button visible but disabled, can't cancel pressing back
+    Enabled     // button visible and enabled, can cancel pressing back
+}
+
+public static interface LoadDialogCancelListener
+{
+    public void onLoadDialogCanceled(LoadDialogFragment dialog);
+}
 
 public static LoadDialogFragment newInstance()
 {
@@ -96,6 +115,12 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle sa
     subtitle = (TextView) v.findViewById(R.id.loading_subtitle);
     progressText = (TextView) v.findViewById(R.id.progressText);
     horizontalProgressBar = (ProgressBar) v.findViewById(R.id.determinateProgressBar);
+    cancel = (Button) v.findViewById(R.id.cancel);
+    cancel.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v)
+        { onCancel( getDialog() );}
+    });
     
     updateView();
     
@@ -142,13 +167,46 @@ protected void updateView()
     
     progressText.setVisibility( showsRate ? View.VISIBLE : View.GONE);
     horizontalProgressBar.setVisibility( showsRate ? View.VISIBLE : View.GONE );
-
+    
+    cancel.setEnabled( (cancelMode==CancelMode.Enabled) );
+    cancel.setVisibility( (cancelMode!=CancelMode.Invisible) ? View.VISIBLE : View.GONE );
+    
     if(showsRate) {
         float percentRate = displayedRate * 100;
         horizontalProgressBar.setProgress( Math.round( percentRate ) );
         progressText.setText( String.format("%.2f %%", percentRate) );
     }
 }
+
+@Override
+public void onCancel(DialogInterface dialog)
+{
+    super.onCancel(dialog);
+    if(cancelListener != null && cancelListener.get() != null) {
+        cancelListener.get().onLoadDialogCanceled(this);
+    }
+    
+    if(dismissOnCancel) {
+        dismiss();
+    }
+}
+
+public CancelMode getCancelMode()
+{ return cancelMode; }
+
+public void setCancelMode(CancelMode m)
+{
+    this.cancelMode = m;
+    setCancelable((m == CancelMode.Enabled));
+    updateView();
+}
+
+public void setCancelListener(LoadDialogCancelListener l)
+{ this.cancelListener = new WeakReference<LoadDialogCancelListener>(l); }
+
+// dismiss the dialog automatically when canceled
+public void setDismissOnCancel(boolean d)
+{ dismissOnCancel = d; }
 
 public int getWindowGravity()
 { return windowGravity; }

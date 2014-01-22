@@ -71,7 +71,7 @@ public static abstract class Request implements Serializable
 
     public String getPassword()
     { return password; }
-
+    
     // Should be safer!
     public void addPostParameter(String name, String value)
     {
@@ -100,7 +100,7 @@ public interface Listener
 public enum State
 { Stopped, Running, Paused, Failed, Finished}
 
-public static final int    REMOTE_READ_BYTES           = 8 * 1024; // Read every 16 KB
+public static final int    REMOTE_READ_BYTES           = 16 * 1024; // Read every 16 KB
 public static final int    DEFAULT_BUFFER_SIZE         = 256 * 1024; // Memory cache size
 public static final int    DEFAULT_NOTIFICATION_SIZE   = 64 * 1024; // Notify every 64 KB
 public static final float  DEFAULT_NOTIFICATION_RATE   = 0.01f; // Notify every 1%
@@ -112,6 +112,7 @@ protected final int tag;
 protected final URL remoteURL;
 protected String postParameters = "";
 protected String user = "", password = "";
+protected boolean followRedirections = true;
 
 protected int totalSize;
 protected int downloadedSize;
@@ -166,6 +167,12 @@ public String getUser()
 
 public String getPassword()
 { return password; }
+
+public boolean followsRedirections()
+{ return followRedirections; }
+
+public void setFollowRedirections()
+{ followRedirections = true; }
 
 public int getTotalSize()
 { return totalSize; }
@@ -286,11 +293,11 @@ protected abstract class DownloadTask extends AsyncTask<Void, Float, Integer>
     protected HttpURLConnection connection;
     protected InputStream connectionStream;
 
-    protected InputStream initConnectionInputStream() throws IOException
+    protected InputStream initConnectionInputStream(URL url) throws IOException
     {
-        connection= (HttpURLConnection) remoteURL.openConnection();
+        connection= (HttpURLConnection) url.openConnection();
         
-    	String protocol = remoteURL.getProtocol();
+    	String protocol = url.getProtocol();
     	if(protocol.equals("https")) {
     		HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
 				@Override
@@ -302,10 +309,11 @@ protected abstract class DownloadTask extends AsyncTask<Void, Float, Integer>
         connection.setDoInput(true);
         connection.setConnectTimeout(15000);
         connection.setReadTimeout(15000);
+        if(followRedirections)
+            connection.setInstanceFollowRedirects(true);
         
         if(postParameters.length()>0) {
             connection.setDoOutput(true);
-            connection.setInstanceFollowRedirects(true);
             connection.setRequestMethod("POST"); 
             DataOutputStream wr = new DataOutputStream(connection.getOutputStream ());
             wr.writeBytes(postParameters);
@@ -331,6 +339,13 @@ protected abstract class DownloadTask extends AsyncTask<Void, Float, Integer>
         // Make sure response code is in the 200 range.
         int responseCode = connection.getResponseCode();
         if (responseCode / 100 != 2) {
+            if(responseCode / 100 == 3 && followRedirections) { // try redirection
+                String newUrlString = connection.getHeaderField("Location");
+                Logger.debug(getClass(), "Redirection code " + responseCode + " received, redirecting to " + newUrlString);
+
+                URL newURL = new URL(newUrlString);
+                return initConnectionInputStream(newURL);
+            }
         	Logger.debug(getClass(), "Error connecting to URL, response code: "+responseCode);
             return null;
         }
@@ -361,7 +376,7 @@ protected abstract class DownloadTask extends AsyncTask<Void, Float, Integer>
     protected Integer doInBackground(Void ... unused)
     {
         try {
-            connectionStream = initConnectionInputStream();
+            connectionStream = initConnectionInputStream(Download.this.remoteURL);
             if(connectionStream != null) {
                 readFromStream();
                 // Connection close

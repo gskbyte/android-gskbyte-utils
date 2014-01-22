@@ -10,16 +10,17 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 
-public class ArrayAdapterWithDefaultValue
+public class ArrayAdapterWithDefaultValue<T>
 extends BaseAdapter
 {
 
-private final Context context;
-private final int textViewResource, textViewResourceInView;
-private final List<?> list;
-private final String defaultValue;
+private final   Context context;
+private final   int textViewResource, textViewResourceInView;
+private final   List<T> list;
+private final   String defaultValue;
+private         T itemForDefaultValue;
 
-public ArrayAdapterWithDefaultValue(Context context, int viewResource, List<?> list, String defaultValue)
+public ArrayAdapterWithDefaultValue(Context context, int viewResource, List<T> list, String defaultValue)
 {
     this.context = context;
     this.textViewResource = viewResource;
@@ -28,7 +29,7 @@ public ArrayAdapterWithDefaultValue(Context context, int viewResource, List<?> l
     this.defaultValue = defaultValue;
 }
 
-public ArrayAdapterWithDefaultValue(Context context, int viewResource, int textViewResourceInView, List<?> list, String defaultValue)
+public ArrayAdapterWithDefaultValue(Context context, int viewResource, int textViewResourceInView, List<T> list, String defaultValue)
 {
     this.context = context;
     this.textViewResource = viewResource;
@@ -37,17 +38,22 @@ public ArrayAdapterWithDefaultValue(Context context, int viewResource, int textV
     this.defaultValue = defaultValue;
 }
 
+public void setItemForDefaultValue(T item)
+{
+    this.itemForDefaultValue = item;
+}
+
 @Override
 public int getCount()
 { return list.size() + 1; }
 
 @Override
-public Object getItem(int position)
+public T getItem(int position)
 {
     if(position>0) {
         return list.get(position-1);
     } else {
-        return null;
+        return itemForDefaultValue;
     }
 }
 
