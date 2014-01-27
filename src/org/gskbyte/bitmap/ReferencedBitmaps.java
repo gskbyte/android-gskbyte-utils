@@ -71,13 +71,18 @@ public void addPath(String path, String ... aliases)
  * Adds an alias to an already referenced bitmap, depending on the initial default location.
  * @param path A path to a bitmap.
  * @param alias An extra alias to a bitmap. Must have length() > 0.
+ * @return true if the given path existed (if not, nothing is done)
  * */
-public void addAliases(String path, String ... aliases)
+public boolean addAliases(String path, String ... aliases)
 {
-    bitmapManager.addAliases(path, aliases);
-    keys.add(path);
-    for(String alias : aliases)
-        keys.add(alias);
+    if(keys.contains(path)) {
+        bitmapManager.addAliases(path, aliases);
+        for(String alias : aliases)
+            keys.add(alias);
+        return true;
+    } else {
+        return false;
+    }
 }
 
 /**

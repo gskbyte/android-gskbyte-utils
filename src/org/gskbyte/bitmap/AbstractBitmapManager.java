@@ -129,9 +129,8 @@ public boolean addPath(int location, String filepath, String ... aliases)
         isNewRef = true;
         ++uniqueCounter;
     }
-    
-    if(aliases.length>0)
-        addAliases(filepath, aliases);
+
+    addAliases(ref, aliases);
     
     return isNewRef;
 }
@@ -144,13 +143,19 @@ public boolean addPath(int location, String filepath, String ... aliases)
  * */
 public void addAliases(String filepath, String ... aliases)
 {
-    BitmapRef ref = references.get(filepath);
+    final BitmapRef ref = references.get(filepath);
     if(ref != null) {
-        for(String alias : aliases) {
-            references.put(alias,  ref);
-        }
+        addAliases(ref, aliases);
     } else {
         throw new IllegalArgumentException("Filepath not mapped: " + filepath);
+    }
+}
+
+// assumes ref != null
+private void addAliases(BitmapRef ref, String ... aliases)
+{
+    for(String alias : aliases) {
+        references.put(alias,  ref);
     }
 }
 

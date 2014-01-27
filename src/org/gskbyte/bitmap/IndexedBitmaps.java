@@ -23,6 +23,8 @@ import android.graphics.Bitmap;
  * Class used to reference a subset of a bitmap manager.
  * Provides the same functionality as ReferencedBitmaps, but also allows to
  * access the bitmaps in the order their paths were added.
+ * 
+ * Duplicates are allowed in the list.
  * */
 
 public class IndexedBitmaps
@@ -50,6 +52,8 @@ public void addPath(String path, String ... aliases)
 {
     super.addPath(path, aliases);
     keyList.add(path);
+    for(String alias : aliases)
+        keyList.add(alias);
 }
 
 /**
