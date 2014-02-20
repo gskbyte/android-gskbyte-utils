@@ -10,9 +10,11 @@
       Jose Alcalá Correa - initial API and implementation
 -->
 <resources>
+    <string name="ok">OK</string>
+    <string name="cancel">Abbrechen</string>
+    
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
-    <string name="cancel">Abbrechen</string>
     
     <string name="openlinkdialog_title">Webseite öffnen?</string>
     

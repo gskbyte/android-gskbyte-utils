@@ -10,9 +10,11 @@
       Jose Alcalá Correa - initial API and implementation
 -->
 <resources>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="cancel">Cancel</string>
     
     <string name="openfilehandler_title_param">Please install an app to open this kind of file: %1$s</string>
     <string name="openfilehandler_title_pdf">Please install a PDF reader to view this file</string>

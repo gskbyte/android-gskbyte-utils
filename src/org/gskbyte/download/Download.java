@@ -100,10 +100,10 @@ public interface Listener
 public enum State
 { Stopped, Running, Paused, Failed, Finished}
 
-public static final int    REMOTE_READ_BYTES           = 16 * 1024; // Read every 16 KB
-public static final int    DEFAULT_BUFFER_SIZE         = 256 * 1024; // Memory cache size
-public static final int    DEFAULT_NOTIFICATION_SIZE   = 64 * 1024; // Notify every 64 KB
-public static final float  DEFAULT_NOTIFICATION_RATE   = 0.01f; // Notify every 1%
+public static final int     REMOTE_READ_BYTES           = 16 * 1024; // Read every 16 KB
+public static final int     DEFAULT_BUFFER_SIZE         = 256 * 1024; // Memory cache size
+protected static int        DefaultNotificationSize     = 64 * 1024; // Notify every 64 KB
+protected static float      DefaultNotificationRate     = 0.01f; // Notify every 1%
 
 static volatile private int GlobalId = 1;
 
@@ -120,8 +120,8 @@ protected int downloadedSize;
 protected float rate;
 protected long startTime, endTime;
 
-protected int notificationMinSize = DEFAULT_NOTIFICATION_SIZE;
-protected float notificationMinRate = DEFAULT_NOTIFICATION_RATE;
+protected int notificationMinSize = DefaultNotificationSize;
+protected float notificationMinRate = DefaultNotificationRate;
 
 protected int numRetries = 0;
 
@@ -136,6 +136,12 @@ protected Download(URL remoteURL)
     this.tag = Request.DEFAULT_TAG;
     this.remoteURL = remoteURL;
     resetTemporalStuff();
+}
+
+public static void SetDefaultNotificationSizes(int minNotificationSizeInBytes, float minNotificationRate)
+{
+    DefaultNotificationSize = minNotificationSizeInBytes;
+    DefaultNotificationRate = minNotificationRate;
 }
 
 protected Download(Request request)
@@ -299,12 +305,16 @@ protected abstract class DownloadTask extends AsyncTask<Void, Float, Integer>
         
     	String protocol = url.getProtocol();
     	if(protocol.equals("https")) {
-    		HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
-				@Override
-				public boolean verify(String arg0, SSLSession arg1) {
-					return true;
-				}});
-    	}
+    		if(connection instanceof HttpsURLConnection) {
+    		    ((HttpsURLConnection) connection).setHostnameVerifier(new HostnameVerifier() {
+                    @Override
+                    public boolean verify(String hostname, SSLSession session)
+                    {
+                        return true;
+                    }
+                });
+    		}
+    	} 
 
         connection.setDoInput(true);
         connection.setConnectTimeout(15000);
@@ -346,7 +356,7 @@ protected abstract class DownloadTask extends AsyncTask<Void, Float, Integer>
                 URL newURL = new URL(newUrlString);
                 return initConnectionInputStream(newURL);
             }
-        	Logger.debug(getClass(), "Error connecting to URL, response code: "+responseCode);
+        	Logger.debug(getClass(), "Error connecting to ["+url+"], response code: "+responseCode);
             return null;
         }
 

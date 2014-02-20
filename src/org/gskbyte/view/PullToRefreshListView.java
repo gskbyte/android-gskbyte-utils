@@ -99,6 +99,8 @@ private ImageView               image;
 private ProgressBar             spinner;
 private TextView                text, lastUpdatedTextView;
 
+private OnItemClickListener     onItemClickListener;
+private OnItemLongClickListener onItemLongClickListener;
 private WeakReference<OnRefreshListener>        onRefreshListenerRef;
 private boolean                                 pullEnabled;
 
@@ -116,6 +118,17 @@ public PullToRefreshListView(Context context, AttributeSet attrs, int defStyle)
 
 public OnRefreshListener getOnRefreshListener()
 { return onRefreshListenerRef.get(); }
+
+
+@Override
+public void setOnItemClickListener(OnItemClickListener onItemClickListener){
+    this.onItemClickListener = onItemClickListener;
+}
+
+@Override
+public void setOnItemLongClickListener(OnItemLongClickListener onItemLongClickListener){
+    this.onItemLongClickListener = onItemLongClickListener;
+}
 
 public void setOnRefreshListener(OnRefreshListener listener)
 { this.onRefreshListenerRef = new WeakReference<OnRefreshListener>(listener); }
@@ -509,10 +522,10 @@ private class PTROnItemClickListener implements OnItemClickListener{
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id){
         hasResetHeader = false;
-
-        if(getOnItemClickListener() != null && state == State.PULL_TO_REFRESH){
+        
+        if(onItemClickListener != null && state == State.PULL_TO_REFRESH){
             // Passing up onItemClick. Correct position with the number of header views
-            getOnItemClickListener().onItemClick(adapterView, view, position - getHeaderViewsCount(), id);
+            onItemClickListener.onItemClick(adapterView, view, position - getHeaderViewsCount(), id);
         }
     }
 }
@@ -522,10 +535,10 @@ private class PTROnItemLongClickListener implements OnItemLongClickListener{
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id){
         hasResetHeader = false;
-
-        if(getOnItemLongClickListener() != null && state == State.PULL_TO_REFRESH){
+        
+        if(onItemLongClickListener != null && state == State.PULL_TO_REFRESH){
             // Passing up onItemLongClick. Correct position with the number of header views
-            return getOnItemLongClickListener().onItemLongClick(adapterView, view, position - getHeaderViewsCount(), id);
+            return onItemLongClickListener.onItemLongClick(adapterView, view, position - getHeaderViewsCount(), id);
         }
 
         return false;

@@ -28,3 +28,4 @@ proguard/
 *.iws
 .idea/
 /.apt_generated
+/target
