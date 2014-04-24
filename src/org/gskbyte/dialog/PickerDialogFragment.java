@@ -1,6 +1,11 @@
 package org.gskbyte.dialog;
 
-import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.gskbyte.R;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -12,22 +17,20 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import org.gskbyte.R;
 
 public class PickerDialogFragment
 extends DialogFragment
 implements DialogInterface.OnMultiChoiceClickListener, OnCheckedChangeListener
 {
 
-public interface OnButtonPressedListener
+public interface ActionListener
 {
-    public void onPickerDialogFragmentCompleted(PickerDialogFragment dialog, String [] options, boolean [] selectedOptions);
+    public void onPickerDialogFragmentCompleted(PickerDialogFragment dialog, List<String> options, Set<Integer> selectedIndices);
     public void onPickerDialogFragmentCanceled(PickerDialogFragment dialog);
 }
 
@@ -35,28 +38,28 @@ protected static final String KEY_TITLE = "title";
 protected static final String KEY_TITLE_RES = "titleRes";
 protected static final String KEY_ICON_RES = "iconRes";
 protected static final String KEY_OPTIONS = "options";
-protected static final String KEY_SELECTED_OPTIONS = "selected";
+protected static final String KEY_SELECTED_INDICES = "selected";
 
 protected String title;
 protected int iconRes;
-protected String [] options;
-protected boolean [] selectedOptions;
+protected ArrayList<String> options;
+protected Set<Integer> selectedIndices;
 protected boolean allOptionsSelected;
 
 protected PickerTitle dialogTitleView;
 protected AlertDialog dialog;
 
-private WeakReference<OnButtonPressedListener> buttonListenerRef = new WeakReference<OnButtonPressedListener>(null);
+private ActionListener actionListener = null;
 
-public static PickerDialogFragment newInstance(String title, int iconRes, String [] options, boolean [] selectedOptions)
+public static PickerDialogFragment newInstance(String title, int iconRes, List<String> options, Set<Integer> selectedIndices)
 {
     PickerDialogFragment f = new PickerDialogFragment();
     
     Bundle args = new Bundle();
     args.putString(KEY_TITLE, title);
     args.putInt(KEY_ICON_RES, iconRes);
-    args.putStringArray(KEY_OPTIONS, options);
-    args.putBooleanArray(KEY_SELECTED_OPTIONS, selectedOptions);
+    args.putStringArrayList(KEY_OPTIONS, new ArrayList<String>(options));
+    args.putIntegerArrayList(KEY_SELECTED_INDICES, new ArrayList<Integer>(selectedIndices));
     f.setArguments(args);
     
     return f;
@@ -65,14 +68,9 @@ public static PickerDialogFragment newInstance(String title, int iconRes, String
 public boolean areAllOptionsSelected()
 { return allOptionsSelected; }
 
-public void setOnButtonPressedListener(OnButtonPressedListener listener)
+public void setActionListener(ActionListener listener)
 {
-    buttonListenerRef = new WeakReference<PickerDialogFragment.OnButtonPressedListener>(listener);
-}
-
-public OnButtonPressedListener getOnButtonPressedListener()
-{
-    return buttonListenerRef.get();
+    actionListener = listener;
 }
 
 @Override
@@ -91,15 +89,19 @@ public void onCreate(Bundle savedInstanceState)
         title = args.getString(KEY_TITLE);
     }
     
-    options = args.getStringArray(KEY_OPTIONS);
-    selectedOptions = args.getBooleanArray(KEY_SELECTED_OPTIONS);
+    options = args.getStringArrayList(KEY_OPTIONS);
+    selectedIndices = new TreeSet<Integer>( args.getIntegerArrayList(KEY_SELECTED_INDICES) );
 }
 
 public Dialog onCreateDialog(Bundle savedInstanceState)
 {
     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-            
-    alertDialogBuilder.setMultiChoiceItems(options, selectedOptions, this);
+    
+    boolean [] selectedOptions = new boolean[ options.size() ];
+    for(int i : selectedIndices) {
+        selectedOptions[i] = true;
+    }
+    alertDialogBuilder.setMultiChoiceItems(options.toArray(new String[options.size()]), selectedOptions, this);
     
     dialogTitleView = new PickerTitle(getActivity(), null);
     dialogTitleView.setIconResource(iconRes);
@@ -123,81 +125,59 @@ public Dialog onCreateDialog(Bundle savedInstanceState)
         }
     });
     
-    updateCheckStatus(true);
     dialog = alertDialogBuilder.create();
+    updateCheckStatus();
     return dialog;
 }
 
 protected void onOkButtonPressed()
 {
-    OnButtonPressedListener listener = getOnButtonPressedListener();
-    if(listener != null)
-        listener.onPickerDialogFragmentCompleted(this, options, selectedOptions);
+    if(actionListener != null)
+        actionListener.onPickerDialogFragmentCompleted(this, options, selectedIndices);
 }
 
 protected void onCancelButtonPressed()
 {
     dialog.dismiss();
-    OnButtonPressedListener listener = getOnButtonPressedListener();
-    if(listener != null)
-        listener.onPickerDialogFragmentCanceled(this);
+    if(actionListener != null)
+        actionListener.onPickerDialogFragmentCanceled(this);
 }
 
-protected boolean updateCheckStatus(boolean modifyChecksInList)
-{
-    boolean allSelected = true;
-    boolean allDeselected = true;
+protected void updateCheckStatus()
+{    
+    this.allOptionsSelected = options.size()==selectedIndices.size();
     
-    allOptionsSelected = true;
-    
-    for(boolean b : selectedOptions) {
-        if(b) {
-            allDeselected = false;
-        } else {
-            allSelected = false;
-        }
-        if(!allDeselected && !allSelected)
-            break;
-    }
-    
-    allOptionsSelected = (allSelected || allDeselected);
-    updateAllCheckedCheckBox(allOptionsSelected);
-    if(modifyChecksInList && allOptionsSelected) {
-        for(int i=0; i<selectedOptions.length; ++i) {
-            selectedOptions[i] = allOptionsSelected;
-        }
-    }
-    
-    return allOptionsSelected;
-}
-
-protected void updateAllCheckedCheckBox(boolean mark)
-{
     dialogTitleView.allElements.setOnCheckedChangeListener(null);
-    dialogTitleView.setChecked(mark);
+    dialogTitleView.setChecked(this.allOptionsSelected);
+    ListView listView = dialog.getListView();
+    for(int i=0; i<options.size(); ++i) {
+        listView.setItemChecked(i, selectedIndices.contains(i));
+    }
     dialogTitleView.allElements.setOnCheckedChangeListener(this);
 }
 
 public void onClick(DialogInterface dialog, int which, boolean isChecked)
 {
-    selectedOptions[which] = isChecked;
-    updateCheckStatus(false);
+    if(isChecked) {
+        selectedIndices.add(which);
+    } else {
+        selectedIndices.remove(which);
+    }
+    updateCheckStatus();
 }
 
 @Override
 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
 {
-    if(!isChecked) {
-        buttonView.setChecked(true);
-        return;
+    if(isChecked) {
+        for(int i=0; i<options.size(); ++i) {
+            selectedIndices.add(i);
+        }
+    } else {
+        selectedIndices.clear();
     }
     
-    ListView listView = dialog.getListView();
-    for(int i=0; i<selectedOptions.length; ++i) {
-        listView.setItemChecked(i, isChecked);
-        selectedOptions[i] = isChecked;
-    }
-    updateCheckStatus(false);
+    updateCheckStatus();
 }
 
 @SuppressWarnings("unused")

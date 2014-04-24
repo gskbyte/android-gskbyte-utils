@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
@@ -196,6 +197,76 @@ public void setSecondaryThumb(Drawable d)
 @Override
 protected synchronized void onDraw(Canvas canvas)
 {
+    if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1) {
+        onDrawBefore3(canvas);
+    } else {
+        onDrawFrom3(canvas);
+    }
+
+}
+
+/**
+ * THIS METHOD IS LIKELY TO BE BUGGY, has benn tested in an app in which I had LOTS of time pressure
+ * */
+
+final Rect copyBounds = new Rect();
+private void onDrawBefore3(Canvas canvas)
+{
+    final float xscale = 0.90f;
+    
+    Drawable d = getProgressDrawable();
+    final int pl = getPaddingLeft();
+    final int pt = getPaddingTop();
+    final int width = getWidth();
+    final int scaledpl = (int) ( width*xscale * ((1-xscale)*0.5));
+
+    if(d != null) {
+        canvas.save();
+        canvas.scale(xscale, 1);
+        canvas.translate(scaledpl, pt);
+        d.draw(canvas);
+        canvas.restore();
+    }
+    
+    final int max = getSmoothedMax();
+    final int increment = (width-secondaryThumb.getIntrinsicWidth()) / max;   
+    if(secondaryThumb != null) {
+        canvas.save();
+        canvas.translate(pl, 0);
+        for(int i=0; i<max+1; ++i) {
+            secondaryThumb.draw(canvas);
+            canvas.translate(increment, 0);
+        }
+        canvas.restore();
+    }
+    
+    
+    Drawable thumb = getThumb();
+    if (thumb != null) {
+        final float rate = getProgress() / (float) getMax();
+                
+        final int x = (int) (rate*increment*getSmoothedMax());
+        final int w = thumb.getIntrinsicWidth();
+        
+        canvas.save();
+        
+        copyBounds.set( thumb.getBounds() );
+        
+        thumb.getBounds().left = x;
+        thumb.getBounds().right = x + w;
+        
+        thumb.draw(canvas);
+        
+        thumb.setBounds(copyBounds);
+        canvas.restore();
+    }
+}
+
+
+
+@SuppressLint("WrongCall")
+private void onDrawFrom3(Canvas canvas)
+{
     super.onDraw(canvas);
     
     if (secondaryThumb != null) {
@@ -204,7 +275,7 @@ protected synchronized void onDraw(Canvas canvas)
         final int paddingTop = getPaddingTop();
         final int increment = (getWidth()-secondaryThumb.getIntrinsicWidth()) / max;                
         canvas.save();
-        
+        // draw secondary thumbs
         for(int i=0; i<max+1; ++i) {
             if(i!=0)
                 canvas.translate(increment, paddingTop);
@@ -215,14 +286,17 @@ protected synchronized void onDraw(Canvas canvas)
         
         // thumb needs to be repainted over the secondary thumbs
         // @see AbsSeekBar#onDraw()
+        
         if(getThumb() != null) {
             canvas.save();
-            canvas.translate(getPaddingLeft() - getThumbOffset(), getPaddingTop());
+            canvas.translate(getPaddingLeft() - getThumbOffset(), paddingTop);
+            
             getThumb().draw(canvas);
             canvas.restore();
         }
     }
 }
+
 
 @Override
 public void setOnSeekBarChangeListener(OnSeekBarChangeListener l)

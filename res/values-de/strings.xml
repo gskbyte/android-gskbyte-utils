@@ -34,6 +34,9 @@
     <string name="intent_phone_choose">Anrufen</string>
     <string name="intent_phone_error">Mit diesem Gerät können Sie leider nicht anrufen.</string>
     
+    <string name="intent_sms_choose">Bitte wählen Sie eine SMS App</string>
+    <string name="intent_sms_error">Mit diesem Gerät können Sie leider keine SMS schicken</string>
+    
     <string name="intent_email_error">Keine E-Mail app oder Account gefunden.</string>
     <string name="intent_email_choose">Bitte wählen Sie eine E-Mail Applikation</string>
     

@@ -48,6 +48,26 @@ public static void CallPhone(Context context, String number)
     }
 }
 
+public static Intent GetSendSMSIntent(String number, String body)
+{
+    Intent callIntent = new Intent(Intent.ACTION_SENDTO);
+    callIntent.setData(Uri.parse("sms:"+number));
+    callIntent.putExtra("sms_body", body);
+    return callIntent;
+}
+
+public static void SendSMS(Context context, String number, String body)
+{
+    Intent intent = GetSendSMSIntent(number, body);
+    
+    try {
+        Intent chooser = Intent.createChooser(intent, context.getString(R.string.intent_sms_choose));
+        context.startActivity(chooser);
+    } catch (ActivityNotFoundException ex) {
+        Toast.makeText(context, R.string.intent_sms_error, Toast.LENGTH_SHORT).show();
+    }
+}
+
 
 public static Intent GetEmailIntent(String address, String subject, CharSequence content)
 {

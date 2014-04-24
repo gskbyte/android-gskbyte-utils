@@ -35,6 +35,9 @@
     <string name="intent_phone_choose">Please choose an application to call with</string>
     <string name="intent_phone_error">This device does not support calls</string>
     
+    <string name="intent_sms_choose">Please choose an SMS application</string>
+    <string name="intent_sms_error">This device does not support SMS</string>
+    
     <string name="intent_email_choose">Please choose an e-mail application</string>
     <string name="intent_email_error">No e-mail clients found</string>
     

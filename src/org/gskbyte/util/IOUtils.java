@@ -94,8 +94,13 @@ public static String StringForLocation(int location)
 public static String InputStreamToString( InputStream is )
     throws IOException
 {
-    Scanner s = new Scanner(is).useDelimiter("\\A");
-    return s.hasNext() ? s.next() : "";
+    Scanner s = new Scanner(is);
+    s.useDelimiter("\\A");
+    String ret = "";
+    if( s.hasNext() )
+        ret = s.next();
+    s.close();
+    return ret;
 }
 
 /**
