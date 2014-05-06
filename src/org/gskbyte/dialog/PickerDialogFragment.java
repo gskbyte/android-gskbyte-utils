@@ -39,8 +39,9 @@ protected static final String KEY_TITLE_RES = "titleRes";
 protected static final String KEY_ICON_RES = "iconRes";
 protected static final String KEY_OPTIONS = "options";
 protected static final String KEY_SELECTED_INDICES = "selected";
+protected static final String KEY_ALL_ELEMENTS_TITLE = "allElements";
 
-protected String title;
+protected String title, allElements;
 protected int iconRes;
 protected ArrayList<String> options;
 protected Set<Integer> selectedIndices;
@@ -65,6 +66,9 @@ public static PickerDialogFragment newInstance(String title, int iconRes, List<S
     return f;
 }
 
+public void setAllElementsTitle(String s)
+{ this.allElements = s; }
+
 public boolean areAllOptionsSelected()
 { return allOptionsSelected; }
 
@@ -82,11 +86,15 @@ public void onCreate(Bundle savedInstanceState)
     Bundle args = getArguments();
     iconRes = args.getInt(KEY_ICON_RES, 0);
     
-    int iconRes = args.getInt(KEY_TITLE_RES);
-    if(iconRes != 0) {
-        title = getString(iconRes);
+    int titleRes = args.getInt(KEY_TITLE_RES);
+    if(titleRes != 0) {
+        title = getString(titleRes);
     } else {
         title = args.getString(KEY_TITLE);
+    }
+    
+    if(allElements == null) {
+        allElements = getString(R.string.all_elements);
     }
     
     options = args.getStringArrayList(KEY_OPTIONS);
@@ -106,6 +114,7 @@ public Dialog onCreateDialog(Bundle savedInstanceState)
     dialogTitleView = new PickerTitle(getActivity(), null);
     dialogTitleView.setIconResource(iconRes);
     dialogTitleView.setTitle( title );
+    dialogTitleView.setAllElementsTitle( allElements );
     dialogTitleView.allElements.setOnCheckedChangeListener(this);
     
     alertDialogBuilder.setCustomTitle(dialogTitleView);
@@ -201,6 +210,9 @@ extends RelativeLayout
     
     public void setTitle(CharSequence text)
     { title.setText(text); }
+    
+    public void setAllElementsTitle(CharSequence text)
+    { allElements.setText(text); }
     
     public void setChecked(boolean checked)
     { allElements.setChecked(checked); }

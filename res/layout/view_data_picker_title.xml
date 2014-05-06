@@ -19,7 +19,7 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         
-        android:text="All elements"/>
+        android:text="@string/all_elements"/>
     
     <TextView
         android:id="@+id/title"

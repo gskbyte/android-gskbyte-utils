@@ -23,6 +23,7 @@
     
     <string name="openlinkdialog_title">Open website?</string>
     
+    <string name="all_elements">All elements</string>
     
     <string name="pull_to_refresh_pull_label">Pull to refresh&#8230;</string>
     <string name="pull_to_refresh_release_label">Release to refresh&#8230;</string>

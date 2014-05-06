@@ -344,6 +344,7 @@ protected abstract class DownloadTask extends AsyncTask<Void, Float, Integer>
         // to be able to resume downloads
         if(downloadedSize>0)
             connection.setRequestProperty("Range", "bytes=" + downloadedSize + "-");
+        
         connection.connect();
 
         // Make sure response code is in the 200 range.

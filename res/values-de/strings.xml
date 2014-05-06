@@ -18,6 +18,8 @@
     
     <string name="openlinkdialog_title">Webseite öffnen?</string>
     
+    <string name="all_elements">Alle Elemente</string>
+    
     <string name="openfilehandler_title_param">Bitte installieren Sie eine App, um diese Datei zu öffnen: %1$s</string>
     <string name="openfilehandler_title_pdf">Bitte installieren Sie einen PDF Leser</string>
     <string name="openfilehandler_noapp_message">Möchten Sie Apps in Google Play suchen?</string>
