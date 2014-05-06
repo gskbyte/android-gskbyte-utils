@@ -8,11 +8,12 @@ import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.util.ByteArrayBuffer;
-import org.gskbyte.collection.ArrayHashMap;
 import org.gskbyte.util.IOUtils;
 import org.gskbyte.util.Logger;
 
@@ -24,6 +25,15 @@ public interface ProgressListener
     public void onProgressChanged(int readBytes, int totalBytes);
 }
 
+protected static final class Param
+{
+    final String key, value;
+    public Param(String k, String v) {
+        key = k;
+        value = v;
+    }
+}
+
 // this class is intended for small request, we shouldn't need too much memory (16KB by default)
 public static final int DEFAULT_BUFFER_SIZE = 16 * 1024;
 public static final int REMOTE_READ_BYTES   = 8 * 1024; // read every 8 KB
@@ -33,7 +43,7 @@ private String user, password;
 private volatile boolean running;
 private boolean followRedirects = true;
 private String requestMethod = "GET";
-private ArrayHashMap<String, String> parameters;
+private List<Param> parameters;
 
 private int responseCode = 0;
 private int totalBytes = 0;
@@ -76,20 +86,23 @@ public void setAuthentication(String user, String password)
 private void initializeParameters()
 {
     if(parameters == null) {
-        parameters = new ArrayHashMap<String, String>();
+        parameters = new ArrayList<Param>();
     }
 }
 
 public void addParameter(String key, String value)
 {
     initializeParameters();
-    parameters.put(key, value);
+    parameters.add(new Param(key, value));
 }
 
-public void addParameters(String key, Map<String, String> params)
+public void addParameters(Map<String, String> params)
 {
     initializeParameters();
-    parameters.putAll(params);
+    for(String key : params.keySet()) {
+        String value = params.get(key);
+        parameters.add( new Param(key, value) );
+    }
 }
 
 public InputStream execute(ProgressListener progressListener)
@@ -140,14 +153,11 @@ protected void configureConnection(HttpURLConnection conn)
         conn.setDoOutput(true);
         conn.setRequestMethod(requestMethod);
         StringBuffer pstr = new StringBuffer();
-        for(String key : parameters.keyList()) {
+        for(Param p : parameters) {
             if(pstr.length()>0) {
                 pstr.append('&');
             }
-            pstr.append(key);
-            pstr.append('=');
-            String value = parameters.get(key);
-            pstr.append(value);
+            pstr.append(p.key + '=' + p.value);
         }
         
         DataOutputStream wr = new DataOutputStream( conn.getOutputStream() );
