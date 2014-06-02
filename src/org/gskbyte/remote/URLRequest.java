@@ -33,34 +33,40 @@ protected static final class Param
         value = v;
     }
 }
-
 // this class is intended for small request, we shouldn't need too much memory (16KB by default)
 public static final int DEFAULT_BUFFER_SIZE = 16 * 1024;
 public static final int REMOTE_READ_BYTES   = 8 * 1024; // read every 8 KB
 
-private final String urlBase;
+private final String url;
 private String user, password;
 private volatile boolean running;
-private boolean followRedirects = true;
 private String requestMethod = "GET";
 private List<Param> parameters;
 
 private int responseCode = 0;
 private int totalBytes = 0;
 
+private boolean followRedirects = true;
+private String redirectionUrl;
+
+private Map<String, List<String>> headerFields;
+
 public URLRequest(String urlBase)
 {
-    this.urlBase = urlBase;
+    this.url = urlBase;
 }
 
 public URLRequest(String urlBase, String requestMethod)
 {
-    this.urlBase = urlBase;
+    this.url = urlBase;
     this.requestMethod = requestMethod;
 }
 
-public String getURLBase()
-{ return urlBase; }
+public String getURL()
+{ return url; }
+
+public Map<String, List<String>> getHeaderFields()
+{ return headerFields; }
 
 public synchronized boolean isRunning()
 { return running; }
@@ -74,8 +80,12 @@ public void setRequestMethod(String method)
 public int getResponseCode()
 { return this.responseCode; }
 
+// returns something if received a redirection code (302 usually)
+public String getRedirectionURL()
+{ return this.redirectionUrl; }
+
 public int getTotalBytes()
-{ return this.getTotalBytes(); }
+{ return this.totalBytes; }
 
 public void setAuthentication(String user, String password)
 {
@@ -108,8 +118,8 @@ public void addParameters(Map<String, String> params)
 public InputStream execute(ProgressListener progressListener)
         throws IOException
 {
-    URL url = new URL(urlBase);
-    return internalExecute(url, progressListener);
+    URL remoteUrl = new URL(this.url);
+    return internalExecute(remoteUrl, progressListener);
 }
 
 public InputStream execute()
@@ -177,15 +187,22 @@ protected InputStream internalExecute(URL url, ProgressListener progressListener
     
     // manage possible redirections
     responseCode = conn.getResponseCode();
+    headerFields = conn.getHeaderFields();
     if (responseCode / 100 != 2) {
         conn.disconnect();
-        if(responseCode / 100 == 3 && followRedirects) { // try redirection
+        
+        if(responseCode / 100 == 3) { // try redirection
+            redirectionUrl = conn.getHeaderField("Location");
             
-            String newUrlString = conn.getHeaderField("Location");
-            Logger.debug(getClass(), "Redirection code " + responseCode + " received, redirecting to " + newUrlString);
-
-            URL newURL = new URL(newUrlString);
-            return internalExecute(newURL, progressListener);
+            final String redirectionString = "Redirection code " + responseCode + " received -> " + redirectionUrl;
+            Logger.debug(getClass(), redirectionString);
+            
+            if(followRedirects) {
+                URL newURL = new URL(redirectionUrl);
+                return internalExecute(newURL, progressListener);
+            } else {
+                throw new HttpResponseException(responseCode, redirectionString);
+            }
         }
         throw new HttpResponseException(responseCode, "Error connecting to ["+url+"], response code: "+responseCode);
     }
@@ -202,11 +219,15 @@ protected InputStream internalExecute(URL url, ProgressListener progressListener
     
     byte [] tempArray = new byte[REMOTE_READ_BYTES];
     int readBytes = remoteStream.read(tempArray);
+    totalBytes = readBytes>=0 ? readBytes : 0;
     while(readBytes>0) {
         byteArrayBuffer.append(tempArray, 0, readBytes);
         readBytes = remoteStream.read(tempArray);
+        if(readBytes > 0) {
+            totalBytes += readBytes;
+        }
         if(progressListener != null) {
-            progressListener.onProgressChanged(readBytes, totalBytes);
+            progressListener.onProgressChanged(totalBytes, totalBytes);
         }
     }
     

@@ -35,6 +35,10 @@
         <attr name="font" />
     </declare-styleable>
     
+    <declare-styleable name="org.gskbyte.view.ProportionalHeightLayout">
+        <attr name="heightProportion" format="float"/>
+    </declare-styleable>
+    
     <declare-styleable name="org.gskbyte.view.AutoHeightImageView">
         <attr name="minHeightProportion" format="float"/>
         <attr name="maxHeightProportion" format="float"/>

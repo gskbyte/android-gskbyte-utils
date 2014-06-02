@@ -42,6 +42,15 @@ public String getString()
         throws IOException
 { return IOUtils.InputStreamToString(inputStream); }
 
+public String getStringSafe()
+{
+    try {
+        return IOUtils.InputStreamToString(inputStream);
+    } catch (IOException e) {
+        return null;
+    }
+}
+
 @SuppressLint("NewApi")
 public boolean executeAsync(CompletionListener listener, RateListener rateListener)
 {
