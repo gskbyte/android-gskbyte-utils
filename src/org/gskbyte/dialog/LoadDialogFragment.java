@@ -24,6 +24,7 @@ extends DialogFragment
 {
 
 public static final String DEFAULT_TAG = "LOAD_DIALOG";
+public static final String KEY_ARG_SIZE_MODE = "SIZE_MODE";
 
 protected int windowGravity = Gravity.CENTER;
 
@@ -36,6 +37,7 @@ protected Drawable customBackground;
 
 protected String customTitle, subtitleText;
 protected CancelMode cancelMode = CancelMode.Invisible;
+protected SizeMode sizeMode = SizeMode.Normal;
 protected WeakReference<LoadDialogCancelListener> cancelListener = null;
 protected boolean dismissOnCancel = true;
 
@@ -44,6 +46,7 @@ protected TextView title, subtitle, progressText;
 protected ProgressBar horizontalProgressBar;
 protected Button cancel;
 
+
 public static enum CancelMode
 {
     Invisible,  // button not visible, can't cancel pressing back
@@ -51,16 +54,29 @@ public static enum CancelMode
     Enabled     // button visible and enabled, can cancel pressing back
 }
 
+public static enum SizeMode
+{
+    Normal,
+    Compact
+}
+
 public static interface LoadDialogCancelListener
 {
     public void onLoadDialogCanceled(LoadDialogFragment dialog);
 }
 
+@Deprecated
 public static LoadDialogFragment newInstance()
+{
+    return newInstance(SizeMode.Normal);
+}
+
+public static LoadDialogFragment newInstance(SizeMode sizeMode)
 {
     LoadDialogFragment fragment = new LoadDialogFragment();
     
     Bundle args = new Bundle();
+    args.putSerializable(KEY_ARG_SIZE_MODE, sizeMode);
     fragment.setArguments(args);
     
     return fragment;
@@ -88,6 +104,14 @@ public void onCreate(Bundle savedInstanceState)
 	
 	// Disable title
 	setStyle(STYLE_NO_TITLE, 0);
+	
+	Bundle args = getArguments();
+	if(args != null) {
+	    SizeMode szm = (SizeMode) args.getSerializable(KEY_ARG_SIZE_MODE);
+	    if(szm != null) {
+	        this.sizeMode = szm;
+	    }
+	}
 }
 
 @Override
@@ -107,7 +131,9 @@ public Dialog onCreateDialog(Bundle savedInstanceState)
 @Override
 public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 {
-    View v = inflater.inflate(R.layout.dialog_load, container, false);
+    final int layoutRes = (sizeMode==SizeMode.Compact) ? R.layout.dialog_load_compact : R.layout.dialog_load;
+    
+    View v = inflater.inflate(layoutRes, container, false);
     
     rootView = (ViewGroup) v.findViewById(R.id.root);
 
@@ -200,6 +226,9 @@ public void setCancelMode(CancelMode m)
     setCancelable((m == CancelMode.Enabled));
     updateView();
 }
+
+public SizeMode getSizeMode()
+{ return this.sizeMode; }
 
 public void setCancelListener(LoadDialogCancelListener l)
 { this.cancelListener = new WeakReference<LoadDialogCancelListener>(l); }

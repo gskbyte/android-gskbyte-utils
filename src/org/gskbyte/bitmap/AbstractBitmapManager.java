@@ -389,7 +389,7 @@ protected final Bitmap loadBitmap(ScaleMode scaleMode, int maxWidth, int maxHeig
             
             InputStream is = IOUtils.GetInputStreamForDrawable(location, path, context);
             Bitmap b = BitmapFactory.decodeStream(is, null, opts);
-            if(scaleMode == ScaleMode.Full) {
+            if(scaleMode == ScaleMode.Full && b != null) {
                 // recompute factors if inSample has been used
                 wfactor = (float)opts.outWidth / maxWidth;
                 hfactor = (float)opts.outHeight / maxHeight;
