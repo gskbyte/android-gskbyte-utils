@@ -17,12 +17,12 @@ protected InputStream inputStream;
 
 public interface CompletionListener
 {
-    public void onCompletion(boolean success, IOException exception);
+    public void onCompletion(AsyncURLRequest request, boolean success, IOException exception);
 }
 
 public interface RateListener
 {
-    public void onRate(float rate);
+    public void onRate(AsyncURLRequest request, float rate);
 }
 
 public AsyncURLRequest(String urlBase)
@@ -89,7 +89,7 @@ protected Integer doInBackground(Void... params)
     try {
         AsyncURLRequest.this.inputStream = AsyncURLRequest.this.execute(this);
     } catch (IOException e) {
-        completionListener.onCompletion(false, e);
+        completionListener.onCompletion(AsyncURLRequest.this, false, e);
     }
     return AsyncURLRequest.this.getTotalBytes();
 }
@@ -105,13 +105,13 @@ public void onProgressChanged(int readBytes, int totalBytes)
 protected void onProgressUpdate(Float ... values)
 {
     float rate = values[0];
-    rateListener.onRate(rate);
+    rateListener.onRate(AsyncURLRequest.this, rate);
 }
 
 @Override
 protected void onPostExecute(Integer bytes)
 {
-    completionListener.onCompletion(true, null);
+    completionListener.onCompletion(AsyncURLRequest.this, true, null);
 }
 
 }

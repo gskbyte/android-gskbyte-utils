@@ -395,7 +395,7 @@ protected final Bitmap loadBitmap(ScaleMode scaleMode, int maxWidth, int maxHeig
                 hfactor = (float)opts.outHeight / maxHeight;
                 scale = Math.min(1, Math.min(1/wfactor, 1/hfactor) );
                 if(scale<1) {
-                    Logger.error(getClass(), "sizes: " + size.x + "," + size.y + " (" + maxWidth +","+maxHeight + ") -> " + minfactor + ", " + scale);
+                    //Logger.error(getClass(), "sizes: " + size.x + "," + size.y + " (" + maxWidth +","+maxHeight + ") -> " + minfactor + ", " + scale);
                     b = Bitmap.createScaledBitmap(b, (int)(opts.outWidth*scale), (int)(opts.outHeight*scale), false);
                 }
             }

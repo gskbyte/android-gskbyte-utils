@@ -11,6 +11,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.util.ByteArrayBuffer;
@@ -49,7 +50,8 @@ private int totalBytes = 0;
 private boolean followRedirects = true;
 private String redirectionUrl;
 
-private Map<String, List<String>> headerFields;
+private Map<String, List<String>> headerFields; // data obtained when connection is open
+private Map<String, String> customHeaderFields; // to be added when creating connection
 
 public URLRequest(String urlBase)
 {
@@ -65,8 +67,22 @@ public URLRequest(String urlBase, String requestMethod)
 public String getURL()
 { return url; }
 
-public Map<String, List<String>> getHeaderFields()
+public Map<String, List<String>> getConnectionHeaderFields()
 { return headerFields; }
+
+public Map<String, String> getCustomHeaderFields()
+{ return customHeaderFields; }
+
+public void setCustomHeaderFields(Map<String, String> properties)
+{ this.customHeaderFields = properties; }
+
+public void putCustomHeaderField(String key, String value)
+{
+    if(this.customHeaderFields == null) {
+        this.customHeaderFields = new TreeMap<String, String>();
+    }
+    this.customHeaderFields.put(key, value);
+}
 
 public synchronized boolean isRunning()
 { return running; }
@@ -146,6 +162,12 @@ protected void configureConnection(HttpURLConnection conn)
     conn.setDoInput(true);
     conn.setConnectTimeout(15000);
     conn.setReadTimeout(15000);
+    
+    if(customHeaderFields != null) {
+        for(String key : customHeaderFields.keySet()) {
+            conn.addRequestProperty(key, customHeaderFields.get(key));
+        }
+    }
     
     if(user!=null && user.length()>0) {
         Authenticator au = new Authenticator() {
